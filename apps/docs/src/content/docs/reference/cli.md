@@ -10,7 +10,7 @@ LNAI provides three commands for managing your unified AI configuration.
 ## Installation
 
 ```bash
-pnpm add -g @lnai/cli
+pnpm add -g lnai
 ```
 
 ## lnai init

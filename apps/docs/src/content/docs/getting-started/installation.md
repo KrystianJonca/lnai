@@ -14,20 +14,20 @@ description: How to install LNAI
 
 ```bash
 # Using pnpm
-pnpm add -g @lnai/cli
+pnpm add -g lnai
 
 # Using npm
-npm install -g @lnai/cli
+npm install -g lnai
 ```
 
 ## Install as dev dependency
 
 ```bash
 # Using pnpm
-pnpm add -D @lnai/cli
+pnpm add -D lnai
 
 # Using npm
-npm install -D @lnai/cli
+npm install -D lnai
 ```
 
 ## Verify installation
