@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": ["Bash(git:*)"],
+    "ask": ["Bash(npm:*)"],
+    "deny": ["Read(.env)"]
+  },
+  "mcpServers": {
+    "db": {
+      "command": "npx",
+      "args": ["-y", "@example/db"],
+      "env": {
+        "DB_URL": "${DB_URL}"
+      }
+    },
+    "api": {
+      "type": "http",
+      "url": "https://api.example.com/mcp"
+    }
+  }
+}

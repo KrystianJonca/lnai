@@ -1,0 +1,58 @@
+{
+  "name": "@lnai/core",
+  "version": "0.1.0",
+  "description": "Core library for LNAI - unified AI config management",
+  "type": "module",
+  "license": "MIT",
+  "author": "Krystian Jonca",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KrystianJonca/lnai.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/KrystianJonca/lnai/issues"
+  },
+  "homepage": "https://github.com/KrystianJonca/lnai#readme",
+  "keywords": [
+    "ai",
+    "config",
+    "configuration",
+    "claude",
+    "opencode",
+    "cli",
+    "ai-tools"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "deepmerge": "^4.3.1",
+    "gray-matter": "^4.0.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@lnai/typescript-config": "workspace:*",
+    "@types/node": "^25.0.10",
+    "eslint": "^9.39.2",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}

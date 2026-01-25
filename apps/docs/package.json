@@ -1,0 +1,25 @@
+{
+  "name": "@lnai/docs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Documentation for LNAI",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "clean": "rm -rf dist .turbo .astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.37.4",
+    "astro": "^5.16.15",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@lnai/typescript-config": "workspace:*",
+    "eslint": "^9.39.2",
+    "typescript": "^5.9.3"
+  }
+}

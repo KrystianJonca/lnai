@@ -1,0 +1,12 @@
+{
+  "tools": {
+    "claudeCode": {
+      "enabled": true,
+      "versionControl": false
+    },
+    "opencode": {
+      "enabled": true,
+      "versionControl": true
+    }
+  }
+}
