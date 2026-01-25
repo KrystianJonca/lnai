@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+.astro/
+*.tsbuildinfo
+
+# Turbo
+.turbo/
+
+# Test coverage
+coverage/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+# lnai-generated
+.claude/CLAUDE.md
+.claude/rules
+.claude/skills/deploy
+.claude/settings.json
+.opencode/AGENTS.md
+.opencode/rules
+.opencode/skills/deploy
+opencode.json
+# end lnai-generated

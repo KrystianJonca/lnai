@@ -1,0 +1,10 @@
+{
+  "tools": {
+    "claudeCode": {
+      "enabled": true
+    },
+    "opencode": {
+      "enabled": true
+    }
+  }
+}

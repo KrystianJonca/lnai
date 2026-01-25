@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "declaration": false,
+    "sourceMap": true,
+    "noEmit": true
+  }
+}

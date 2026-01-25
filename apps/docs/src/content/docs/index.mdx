@@ -1,0 +1,63 @@
+---
+title: LNAI
+description: CLI tool that syncs a unified .ai/ config to native formats for AI coding tools
+template: splash
+hero:
+  tagline: One config to rule them all. Manage AI coding tool configurations from a single source of truth.
+  actions:
+    - text: Get Started
+      link: /getting-started/introduction/
+      icon: right-arrow
+    - text: View on GitHub
+      link: https://github.com/KrystianJonca/lnai
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+## Features
+
+<CardGrid stagger>
+  <Card title="Unified Configuration" icon="document">
+    Define your AI tool settings once in `.ai/` and sync to all supported tools.
+  </Card>
+  <Card title="Multiple Tools" icon="puzzle">
+    Support for Claude Code, OpenCode, and more tools coming soon.
+  </Card>
+  <Card title="Type-Safe" icon="approve-check">
+    Full TypeScript support with Zod schema validation.
+  </Card>
+  <Card title="Extensible" icon="add-document">
+    Plugin architecture makes it easy to add support for new tools.
+  </Card>
+</CardGrid>
+
+---
+
+## Quick Example
+
+```bash
+# Create unified config
+mkdir -p .ai && cat > .ai/config.json << 'EOF'
+{
+  "tools": {
+    "claudeCode": { "enabled": true },
+    "opencode": { "enabled": true }
+  }
+}
+EOF
+
+# Sync to all tools
+lnai sync
+```
+
+```
+claudeCode:
+  + .claude/CLAUDE.md
+  + .claude/settings.json
+
+opencode:
+  + .opencode/AGENTS.md
+  + opencode.json
+```
