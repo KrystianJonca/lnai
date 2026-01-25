@@ -5,7 +5,7 @@ Unified AI configuration management CLI. Define your AI tool configurations once
 ## Installation
 
 ```bash
-npm install -g @lnai/cli
+npm install -g lnai
 ```
 
 ## Quick Start
@@ -40,7 +40,7 @@ lnai sync
 
 ## Documentation
 
-See the [documentation](https://github.com/KrystianJonca/lnai) for detailed guides.
+See the [documentation](https://krystianjonca.github.io/lnai/) for detailed guides.
 
 ## License
 
