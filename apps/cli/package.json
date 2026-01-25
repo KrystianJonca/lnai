@@ -1,0 +1,58 @@
+{
+  "name": "lnai",
+  "version": "0.1.0",
+  "description": "CLI tool that syncs a unified .ai/ config to native formats for AI coding tools",
+  "type": "module",
+  "license": "MIT",
+  "author": "Krystian Jonca",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KrystianJonca/lnai.git",
+    "directory": "apps/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/KrystianJonca/lnai/issues"
+  },
+  "homepage": "https://github.com/KrystianJonca/lnai#readme",
+  "keywords": [
+    "ai",
+    "config",
+    "configuration",
+    "claude",
+    "opencode",
+    "cli",
+    "ai-tools",
+    "lnai"
+  ],
+  "bin": {
+    "lnai": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@lnai/core": "workspace:*",
+    "chalk": "^5.6.2",
+    "commander": "^14.0.2",
+    "ora": "^9.1.0"
+  },
+  "devDependencies": {
+    "@lnai/typescript-config": "workspace:*",
+    "@types/node": "^25.0.10",
+    "eslint": "^9.39.2",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}
