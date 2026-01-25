@@ -2,6 +2,8 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 
 export default defineConfig({
+  site: "https://krystianjonca.github.io",
+  base: "/lnai",
   integrations: [
     starlight({
       title: "LNAI",
