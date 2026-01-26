@@ -34,7 +34,7 @@ describe("validateToolIds", () => {
   });
 
   it("returns invalid with error listing multiple invalid tools", () => {
-    const result = validateToolIds(["foo", "bar"] as ToolId[]);
+    const result = validateToolIds(["foo", "bar"] as unknown as ToolId[]);
 
     expect(result.valid).toBe(false);
     expect(result.errors).toHaveLength(1);
