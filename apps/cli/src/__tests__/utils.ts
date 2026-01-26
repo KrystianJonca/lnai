@@ -5,7 +5,9 @@ import * as path from "node:path";
 /**
  * Create an isolated temporary directory for testing
  */
-export async function createTempDir(prefix = "lnai-cli-test-"): Promise<string> {
+export async function createTempDir(
+  prefix = "lnai-cli-test-"
+): Promise<string> {
   const tempBase = os.tmpdir();
   return await fs.mkdtemp(path.join(tempBase, prefix));
 }

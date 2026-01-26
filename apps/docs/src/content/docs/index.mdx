@@ -3,6 +3,7 @@ title: LNAI
 description: CLI tool that syncs a unified .ai/ config to native formats for AI coding tools
 template: splash
 hero:
+  title: lnai
   tagline: One config to rule them all. Manage AI coding tool configurations from a single source of truth.
   actions:
     - text: Get Started
@@ -38,15 +39,8 @@ import { Card, CardGrid } from "@astrojs/starlight/components";
 ## Quick Example
 
 ```bash
-# Create unified config
-mkdir -p .ai && cat > .ai/config.json << 'EOF'
-{
-  "tools": {
-    "claudeCode": { "enabled": true },
-    "opencode": { "enabled": true }
-  }
-}
-EOF
+# Initialize unified config
+lnai init
 
 # Sync to all tools
 lnai sync

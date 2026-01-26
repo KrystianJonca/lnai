@@ -1,6 +1,14 @@
+<p align="center">
+  <img alt="LNAI Logo" src="apps/docs/public/lnai_white_on_black.png" width="200">
+</p>
+
 # LNAI
 
 Unified AI configuration management CLI. Define your AI tool configurations once in `.ai/` and sync them to native formats for Claude Code, Opencode, and more.
+
+## Documentation
+
+See the [documentation](https://lnai.sh) for detailed guides.
 
 ## Installation
 
@@ -37,10 +45,6 @@ lnai sync
 ├── rules/           # Path-based rules
 └── skills/          # Custom commands
 ```
-
-## Documentation
-
-See the [documentation](https://krystianjonca.github.io/lnai/) for detailed guides.
 
 ## License
 

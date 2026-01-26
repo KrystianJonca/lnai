@@ -1,11 +1,57 @@
 import { describe, expect, it } from "vitest";
 
 import { createFullState, createMinimalState } from "../__tests__/utils";
+import type { ToolId } from "../constants";
 import {
   validateConfig,
   validateSettings,
+  validateToolIds,
   validateUnifiedState,
 } from "./index";
+
+describe("validateToolIds", () => {
+  it("returns valid for empty array", () => {
+    const result = validateToolIds([]);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it("returns valid for valid tool IDs", () => {
+    const result = validateToolIds(["claudeCode", "opencode"]);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  it("returns invalid with error for single invalid tool", () => {
+    const result = validateToolIds(["invalidTool" as ToolId]);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0]?.message).toContain("Invalid tool(s): invalidTool");
+    expect(result.errors[0]?.path).toEqual(["tools"]);
+  });
+
+  it("returns invalid with error listing multiple invalid tools", () => {
+    const result = validateToolIds(["foo", "bar"] as unknown as ToolId[]);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0]?.message).toContain("foo");
+    expect(result.errors[0]?.message).toContain("bar");
+  });
+
+  it("returns invalid when mixing valid and invalid tools", () => {
+    const result = validateToolIds(["claudeCode", "invalidTool"] as ToolId[]);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0]?.message).toContain("invalidTool");
+    // Valid tool should not be in the invalid tools list
+    expect(result.errors[0]?.value).toEqual(["invalidTool"]);
+  });
+});
 
 describe("validateConfig", () => {
   it("returns valid for correct config", () => {

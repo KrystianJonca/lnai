@@ -1,5 +1,6 @@
 import type { z } from "zod";
 
+import { TOOL_IDS, type ToolId } from "../constants";
 import {
   configSchema,
   ruleFrontmatterSchema,
@@ -164,4 +165,32 @@ export function validateUnifiedState(state: UnifiedState): ValidationResult {
     warnings,
     skipped: [],
   };
+}
+
+/**
+ * Validate tool IDs against known tools
+ * @param tools - Array of tool IDs to validate
+ * @returns Validation result
+ */
+export function validateToolIds(tools: ToolId[]): ValidationResult {
+  const invalidTools = tools.filter(
+    (t) => !TOOL_IDS.includes(t as (typeof TOOL_IDS)[number])
+  );
+
+  if (invalidTools.length > 0) {
+    return {
+      valid: false,
+      errors: [
+        {
+          path: ["tools"],
+          message: `Invalid tool(s): ${invalidTools.join(", ")}. Valid tools: ${TOOL_IDS.join(", ")}`,
+          value: invalidTools,
+        },
+      ],
+      warnings: [],
+      skipped: [],
+    };
+  }
+
+  return { valid: true, errors: [], warnings: [], skipped: [] };
 }
