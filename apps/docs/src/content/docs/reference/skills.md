@@ -44,7 +44,7 @@ pnpm deploy:prod
 
 ```typescript
 {
-  name: string;        // Required
+  name: string; // Required
   description: string; // Required
 }
 ```

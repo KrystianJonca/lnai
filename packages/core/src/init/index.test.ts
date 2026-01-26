@@ -4,7 +4,13 @@ import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { cleanupTempDir, createTempDir } from "../__tests__/utils";
-import { CONFIG_DIRS, CONFIG_FILES, TOOL_IDS, type ToolId, UNIFIED_DIR } from "../constants";
+import {
+  CONFIG_DIRS,
+  CONFIG_FILES,
+  TOOL_IDS,
+  type ToolId,
+  UNIFIED_DIR,
+} from "../constants";
 import { ValidationError } from "../errors";
 import {
   generateDefaultConfig,

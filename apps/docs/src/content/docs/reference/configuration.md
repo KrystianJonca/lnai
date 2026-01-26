@@ -32,9 +32,9 @@ Controls which tools are enabled and their sync behavior.
 }
 ```
 
-| Field            | Type      | Description                                |
-| ---------------- | --------- | ------------------------------------------ |
-| `enabled`        | `boolean` | Whether to sync configuration to this tool |
+| Field            | Type      | Description                                   |
+| ---------------- | --------- | --------------------------------------------- |
+| `enabled`        | `boolean` | Whether to sync configuration to this tool    |
 | `versionControl` | `boolean` | Track generated files in git (default: false) |
 
 If `config.json` is missing, all tools are synced by default.

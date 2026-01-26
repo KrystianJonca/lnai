@@ -76,9 +76,9 @@ Place files in tool-specific directories within `.ai/`:
 
 Files are symlinked to the tool's output directory:
 
-| Source               | Target           |
-| -------------------- | ---------------- |
-| `.ai/.claude/<path>` | `.claude/<path>` |
+| Source                 | Target             |
+| ---------------------- | ------------------ |
+| `.ai/.claude/<path>`   | `.claude/<path>`   |
 | `.ai/.opencode/<path>` | `.opencode/<path>` |
 
 ### Example
