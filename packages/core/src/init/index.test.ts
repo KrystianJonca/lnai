@@ -4,7 +4,8 @@ import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { cleanupTempDir, createTempDir } from "../__tests__/utils";
-import { CONFIG_DIRS, CONFIG_FILES, TOOL_IDS, UNIFIED_DIR } from "../constants";
+import { CONFIG_DIRS, CONFIG_FILES, TOOL_IDS, type ToolId, UNIFIED_DIR } from "../constants";
+import { ValidationError } from "../errors";
 import {
   generateDefaultConfig,
   hasUnifiedConfig,
@@ -84,6 +85,15 @@ describe("generateDefaultConfig", () => {
     for (const toolId of TOOL_IDS) {
       expect(config.tools?.[toolId]?.enabled).toBe(false);
     }
+  });
+
+  it("throws ValidationError for invalid tool", () => {
+    expect(() => generateDefaultConfig(["invalidTool" as ToolId])).toThrow(
+      ValidationError
+    );
+    expect(() => generateDefaultConfig(["invalidTool" as ToolId])).toThrow(
+      /Invalid tool\(s\): invalidTool/
+    );
   });
 });
 
@@ -196,5 +206,32 @@ describe("initUnifiedConfig", () => {
     // Check formatting (2-space indentation, trailing newline)
     expect(content).toContain("  ");
     expect(content.endsWith("\n")).toBe(true);
+  });
+
+  it("throws ValidationError for invalid tool", async () => {
+    await expect(
+      initUnifiedConfig({
+        rootDir: tempDir,
+        tools: ["invalidTool" as ToolId],
+      })
+    ).rejects.toThrow(ValidationError);
+    await expect(
+      initUnifiedConfig({
+        rootDir: tempDir,
+        tools: ["invalidTool" as ToolId],
+      })
+    ).rejects.toThrow(/Invalid tool\(s\): invalidTool/);
+  });
+
+  it("does not create files when invalid tool provided", async () => {
+    await expect(
+      initUnifiedConfig({
+        rootDir: tempDir,
+        tools: ["invalidTool" as ToolId],
+      })
+    ).rejects.toThrow();
+
+    // Verify .ai directory was not created
+    await expect(fs.access(path.join(tempDir, UNIFIED_DIR))).rejects.toThrow();
   });
 });

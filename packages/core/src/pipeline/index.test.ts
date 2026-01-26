@@ -4,6 +4,8 @@ import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { cleanupTempDir, copyFixture, createTempDir } from "../__tests__/utils";
+import type { ToolId } from "../constants";
+import { ValidationError } from "../errors";
 import { runSyncPipeline } from "./index";
 
 describe("runSyncPipeline", () => {
@@ -58,7 +60,7 @@ describe("runSyncPipeline", () => {
   });
 
   describe("validation errors", () => {
-    it("returns early with validation errors for invalid config", async () => {
+    it("throws ValidationError for invalid config", async () => {
       const aiDir = path.join(tempDir, ".ai");
       await fs.mkdir(aiDir, { recursive: true });
 
@@ -69,14 +71,12 @@ describe("runSyncPipeline", () => {
         "utf-8"
       );
 
-      const results = await runSyncPipeline({ rootDir: tempDir });
-
-      expect(results).toHaveLength(1);
-      expect(results[0]?.validation.valid).toBe(false);
-      expect(results[0]?.validation.errors.length).toBeGreaterThan(0);
+      await expect(runSyncPipeline({ rootDir: tempDir })).rejects.toThrow(
+        /Unified config validation failed/
+      );
     });
 
-    it("returns early with validation errors for invalid settings", async () => {
+    it("throws ValidationError for invalid settings", async () => {
       const aiDir = path.join(tempDir, ".ai");
       await fs.mkdir(aiDir, { recursive: true });
 
@@ -91,10 +91,26 @@ describe("runSyncPipeline", () => {
         "utf-8"
       );
 
-      const results = await runSyncPipeline({ rootDir: tempDir });
+      await expect(runSyncPipeline({ rootDir: tempDir })).rejects.toThrow(
+        /Unified config validation failed/
+      );
+    });
 
-      expect(results).toHaveLength(1);
-      expect(results[0]?.validation.valid).toBe(false);
+    it("throws ValidationError for invalid tool ID", async () => {
+      await copyFixture("valid/minimal", tempDir);
+
+      await expect(
+        runSyncPipeline({
+          rootDir: tempDir,
+          tools: ["invalidTool" as ToolId],
+        })
+      ).rejects.toThrow(ValidationError);
+      await expect(
+        runSyncPipeline({
+          rootDir: tempDir,
+          tools: ["invalidTool" as ToolId],
+        })
+      ).rejects.toThrow(/Invalid tool\(s\): invalidTool/);
     });
   });
 

@@ -1,8 +1,9 @@
 import type { ToolId } from "../constants";
+import { ValidationError } from "../errors";
 import { parseUnifiedConfig } from "../parser/index";
 import { pluginRegistry } from "../plugins/index";
 import type { SyncResult } from "../types/index";
-import { validateUnifiedState } from "../validator/index";
+import { validateToolIds, validateUnifiedState } from "../validator/index";
 import { updateGitignore, writeFiles } from "../writer/index";
 
 /**
@@ -56,17 +57,30 @@ export async function runSyncPipeline(
 ): Promise<SyncResult[]> {
   const { rootDir, dryRun = false, tools: requestedTools } = options;
 
+  if (requestedTools && requestedTools.length > 0) {
+    const toolValidation = validateToolIds(requestedTools);
+    if (!toolValidation.valid) {
+      const error = toolValidation.errors[0];
+      throw new ValidationError(
+        error?.message ?? "Invalid tools",
+        error?.path ?? ["tools"],
+        error?.value
+      );
+    }
+  }
+
   const state = await parseUnifiedConfig(rootDir);
 
   const unifiedValidation = validateUnifiedState(state);
   if (!unifiedValidation.valid) {
-    return [
-      {
-        tool: "claudeCode" as ToolId,
-        changes: [],
-        validation: unifiedValidation,
-      },
-    ];
+    const errorMessages = unifiedValidation.errors
+      .map((e) => `${e.path.join(".")}: ${e.message}`)
+      .join("; ");
+    throw new ValidationError(
+      `Unified config validation failed: ${errorMessages}`,
+      ["config"],
+      unifiedValidation.errors
+    );
   }
 
   const toolsToSync = getToolsToSync(state.config, requestedTools);
