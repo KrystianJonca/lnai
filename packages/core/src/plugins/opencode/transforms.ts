@@ -1,3 +1,6 @@
+import type { McpServer, Permissions } from "../../types/index";
+
+/** OpenCode-specific MCP server output format */
 interface OpenCodeMcpServer {
   type: "local" | "remote";
   command?: string[];
@@ -11,23 +14,14 @@ type OpenCodePermission = Record<
   Record<string, "allow" | "ask" | "deny">
 >;
 
-interface ClaudeMcpServer {
-  command?: string;
-  args?: string[];
-  env?: Record<string, string>;
-  type?: "http" | "sse";
-  url?: string;
-  headers?: Record<string, string>;
-}
-
 /**
- * Transform MCP servers from Claude format to OpenCode format.
+ * Transform MCP servers from LNAI format to OpenCode format.
  *
- * Claude: { command: "npx", args: ["-y", "@example/db"], env: { "DB_URL": "${DB_URL}" } }
+ * LNAI: { command: "npx", args: ["-y", "@example/db"], env: { "DB_URL": "${DB_URL}" } }
  * OpenCode: { type: "local", command: ["npx", "-y", "@example/db"], environment: { "DB_URL": "{env:DB_URL}" } }
  */
 export function transformMcpToOpenCode(
-  servers: Record<string, unknown> | undefined
+  servers: Record<string, McpServer> | undefined
 ): Record<string, OpenCodeMcpServer> | undefined {
   if (!servers || Object.keys(servers).length === 0) {
     return undefined;
@@ -35,8 +29,7 @@ export function transformMcpToOpenCode(
 
   const result: Record<string, OpenCodeMcpServer> = {};
 
-  for (const [name, serverRaw] of Object.entries(servers)) {
-    const server = serverRaw as ClaudeMcpServer;
+  for (const [name, server] of Object.entries(servers)) {
 
     if (server.type === "http" || server.type === "sse") {
       const openCodeServer: OpenCodeMcpServer = {
@@ -64,13 +57,13 @@ export function transformMcpToOpenCode(
 }
 
 /**
- * Transform permissions from Claude format to OpenCode format.
+ * Transform permissions from LNAI format to OpenCode format.
  *
- * Claude: { allow: ["Bash(git:*)"], ask: ["Bash(npm:*)"], deny: ["Read(.env)"] }
+ * LNAI: { allow: ["Bash(git:*)"], ask: ["Bash(npm:*)"], deny: ["Read(.env)"] }
  * OpenCode: { "bash": { "git *": "allow", "npm *": "ask" }, "read": { ".env": "deny" } }
  */
 export function transformPermissionsToOpenCode(
-  permissions: { allow?: string[]; ask?: string[]; deny?: string[] } | undefined
+  permissions: Permissions | undefined
 ): OpenCodePermission | undefined {
   if (!permissions) {
     return undefined;
