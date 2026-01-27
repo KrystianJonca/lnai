@@ -4,7 +4,8 @@ import * as path from "node:path";
 import deepmerge from "deepmerge";
 
 import type { ToolId } from "../constants";
-import { OVERRIDE_DIRS, UNIFIED_DIR } from "../constants";
+import { OVERRIDE_DIRS, TOOL_OUTPUT_DIRS, UNIFIED_DIR } from "../constants";
+import type { OutputFile } from "../types/index";
 
 /**
  * Information about a file in the override directory
@@ -82,4 +83,32 @@ export async function fileExists(filePath: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+/**
+ * Get OutputFile entries for tool-specific override files.
+ * Creates symlinks from the tool's output directory to the .ai override directory,
+ * skipping files that already exist at the target location.
+ */
+export async function getOverrideOutputFiles(
+  rootDir: string,
+  toolId: ToolId
+): Promise<OutputFile[]> {
+  const outputDir = TOOL_OUTPUT_DIRS[toolId];
+  const overrideFiles = await scanOverrideDirectory(rootDir, toolId);
+  const result: OutputFile[] = [];
+
+  for (const overrideFile of overrideFiles) {
+    const targetPath = path.join(rootDir, outputDir, overrideFile.relativePath);
+    if (await fileExists(targetPath)) {
+      continue;
+    }
+    result.push({
+      path: `${outputDir}/${overrideFile.relativePath}`,
+      type: "symlink",
+      target: `../${UNIFIED_DIR}/${OVERRIDE_DIRS[toolId]}/${overrideFile.relativePath}`,
+    });
+  }
+
+  return result;
 }
