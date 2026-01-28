@@ -234,7 +234,7 @@ describe("claudeCodePlugin", () => {
         );
         expect(customCommand).toBeDefined();
         expect(customCommand?.type).toBe("symlink");
-        expect(customCommand?.target).toBe("../.ai/.claude/commands/custom.md");
+        expect(customCommand?.target).toBe("../../.ai/.claude/commands/custom.md");
       });
 
       it("does not create symlink if target file already exists", async () => {
@@ -279,7 +279,7 @@ describe("claudeCodePlugin", () => {
         );
         expect(nestedFile).toBeDefined();
         expect(nestedFile?.type).toBe("symlink");
-        expect(nestedFile?.target).toBe("../.ai/.claude/deep/nested/file.md");
+        expect(nestedFile?.target).toBe("../../../.ai/.claude/deep/nested/file.md");
       });
     });
   });

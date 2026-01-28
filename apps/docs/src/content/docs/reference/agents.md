@@ -9,7 +9,7 @@ The main instructions file that provides context and guidelines to AI coding too
 
 ## Location
 
-```
+```text
 .ai/AGENTS.md
 ```
 

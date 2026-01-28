@@ -350,7 +350,7 @@ describe("cursorPlugin", () => {
         );
         expect(customConfig).toBeDefined();
         expect(customConfig?.type).toBe("symlink");
-        expect(customConfig?.target).toBe("../.ai/.cursor/custom/config.md");
+        expect(customConfig?.target).toBe("../../.ai/.cursor/custom/config.md");
       });
 
       it("does not create symlink if target file already exists", async () => {
@@ -395,7 +395,7 @@ describe("cursorPlugin", () => {
         );
         expect(nestedFile).toBeDefined();
         expect(nestedFile?.type).toBe("symlink");
-        expect(nestedFile?.target).toBe("../.ai/.cursor/deep/nested/file.md");
+        expect(nestedFile?.target).toBe("../../../.ai/.cursor/deep/nested/file.md");
       });
     });
 

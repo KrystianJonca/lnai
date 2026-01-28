@@ -9,7 +9,7 @@ LNAI exports unified configuration to Cursor IDE's native `.cursor/` format, tra
 
 ## Output Structure
 
-```
+```text
 AGENTS.md                  # Symlink → .ai/AGENTS.md (at project root)
 .cursor/
 ├── rules/<name>.mdc       # Transformed from .ai/rules/<name>.md
@@ -137,7 +137,7 @@ Use strict TypeScript...
 
 Place Cursor-specific files in `.ai/.cursor/` to have them symlinked directly:
 
-```
+```text
 .ai/.cursor/
 └── custom-config.json → .cursor/custom-config.json
 ```

@@ -27,7 +27,7 @@ Each tool has its own configuration format, leading to:
 
 LNAI provides a single source of truth in the `.ai/` directory that exports to native formats:
 
-```
+```text
 .ai/                              →    .claude/
 ├── config.json                        ├── CLAUDE.md
 ├── settings.json                      ├── settings.json

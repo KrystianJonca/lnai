@@ -9,7 +9,7 @@ Skills are reusable capabilities that can be invoked by AI tools.
 
 ## Location
 
-```
+```text
 .ai/skills/<skill-name>/SKILL.md
 ```
 
@@ -51,7 +51,7 @@ pnpm deploy:prod
 
 ## Directory Structure
 
-```
+```text
 .ai/skills/
 ├── deploy/
 │   └── SKILL.md

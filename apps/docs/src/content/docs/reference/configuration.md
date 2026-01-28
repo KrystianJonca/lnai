@@ -11,7 +11,7 @@ LNAI uses two JSON files for configuration: `config.json` for tool settings and 
 
 Controls which tools are enabled and their sync behavior.
 
-```
+```text
 .ai/config.json
 ```
 
@@ -45,7 +45,7 @@ If `config.json` is missing, all tools are synced by default.
 
 Contains shared configuration that applies to all tools.
 
-```
+```text
 .ai/settings.json
 ```
 

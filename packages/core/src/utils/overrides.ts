@@ -103,10 +103,13 @@ export async function getOverrideOutputFiles(
     if (await fileExists(targetPath)) {
       continue;
     }
+    const symlinkPath = `${outputDir}/${overrideFile.relativePath}`;
+    const symlinkDir = path.dirname(symlinkPath);
+    const sourcePath = `${UNIFIED_DIR}/${OVERRIDE_DIRS[toolId]}/${overrideFile.relativePath}`;
     result.push({
-      path: `${outputDir}/${overrideFile.relativePath}`,
+      path: symlinkPath,
       type: "symlink",
-      target: `../${UNIFIED_DIR}/${OVERRIDE_DIRS[toolId]}/${overrideFile.relativePath}`,
+      target: path.relative(symlinkDir, sourcePath),
     });
   }
 
