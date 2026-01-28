@@ -2,6 +2,12 @@
   <img alt="LNAI Logo" src="apps/docs/public/lnai_white_on_black.png" width="200">
 </p>
 
+<p align="center">
+  <a href="https://github.com/KrystianJonca/lnai/stargazers">
+    <img alt="GitHub stars" src="https://img.shields.io/github/stars/KrystianJonca/lnai?style=social">
+  </a>
+</p>
+
 # LNAI
 
 Unified AI configuration management CLI. Define your AI tool configurations once in `.ai/` and sync them to native formats for Claude Code, Opencode, and more.
@@ -49,3 +55,7 @@ lnai sync
 ## License
 
 MIT
+
+---
+
+If you find LNAI helpful, please [star us on GitHub](https://github.com/KrystianJonca/lnai)!
