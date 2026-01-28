@@ -32,6 +32,11 @@ export const initCommand = new Command("init")
           chalk.cyan("lnai sync") +
           chalk.gray(" to generate tool configs.")
       );
+
+      console.log(
+        chalk.gray("\nIf you find LNAI helpful, please star us on GitHub:")
+      );
+      console.log(chalk.blue("https://github.com/KrystianJonca/lnai"));
     } catch (error) {
       spinner.fail("Initialization failed");
       console.error(

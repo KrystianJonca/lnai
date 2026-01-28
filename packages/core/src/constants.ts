@@ -1,6 +1,6 @@
 export const UNIFIED_DIR = ".ai";
 
-export const TOOL_IDS = ["claudeCode", "opencode"] as const;
+export const TOOL_IDS = ["claudeCode", "opencode", "cursor"] as const;
 
 export type ToolId = (typeof TOOL_IDS)[number];
 
@@ -19,10 +19,12 @@ export const CONFIG_DIRS = {
 export const TOOL_OUTPUT_DIRS: Record<ToolId, string> = {
   claudeCode: ".claude",
   opencode: ".opencode",
+  cursor: ".cursor",
 };
 
 /** Tool-specific override directories within .ai/ */
 export const OVERRIDE_DIRS: Record<ToolId, string> = {
   claudeCode: ".claude",
   opencode: ".opencode",
+  cursor: ".cursor",
 };

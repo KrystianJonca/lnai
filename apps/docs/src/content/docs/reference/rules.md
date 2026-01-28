@@ -9,7 +9,7 @@ Rules are path-specific instructions that apply to certain files or directories.
 
 ## Location
 
-```
+```text
 .ai/rules/*.md
 ```
 

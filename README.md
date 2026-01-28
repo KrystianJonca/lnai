@@ -1,10 +1,19 @@
 <p align="center">
-  <img alt="LNAI Logo" src="apps/docs/public/lnai_white_on_black.png" width="200">
+  <img alt="LNAI Logo" src="https://raw.githubusercontent.com/KrystianJonca/lnai/main/apps/docs/public/lnai_white_on_black.png" width="200">
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/lnai">
+    <img alt="npm version" src="https://img.shields.io/npm/v/lnai">
+  </a>
+  <a href="https://github.com/KrystianJonca/lnai/stargazers">
+    <img alt="GitHub stars" src="https://img.shields.io/github/stars/KrystianJonca/lnai?style=social">
+  </a>
 </p>
 
 # LNAI
 
-Unified AI configuration management CLI. Define your AI tool configurations once in `.ai/` and sync them to native formats for Claude Code, Opencode, and more.
+Unified AI configuration management CLI. Define your AI tool configurations once in `.ai/` and sync them to native formats for Claude Code, Cursor, OpenCode, and more.
 
 ## Documentation
 
@@ -49,3 +58,7 @@ lnai sync
 ## License
 
 MIT
+
+---
+
+If you find LNAI helpful, please [star us on GitHub](https://github.com/KrystianJonca/lnai)!

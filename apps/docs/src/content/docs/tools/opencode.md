@@ -9,7 +9,7 @@ LNAI exports unified configuration to OpenCode's native format, transforming set
 
 ## Output Structure
 
-```
+```text
 .opencode/
 ├── AGENTS.md          # Symlink → ../.ai/AGENTS.md
 ├── rules/             # Symlink → ../.ai/rules/

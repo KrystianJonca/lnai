@@ -1,6 +1,4 @@
-import * as path from "node:path";
-
-import { OVERRIDE_DIRS, TOOL_OUTPUT_DIRS, UNIFIED_DIR } from "../../constants";
+import { TOOL_OUTPUT_DIRS, UNIFIED_DIR } from "../../constants";
 import type {
   OutputFile,
   UnifiedState,
@@ -8,8 +6,7 @@ import type {
 } from "../../types/index";
 import {
   deepMergeConfigs,
-  fileExists,
-  scanOverrideDirectory,
+  getOverrideOutputFiles,
 } from "../../utils/overrides";
 import type { Plugin } from "../types";
 
@@ -89,22 +86,8 @@ export const claudeCodePlugin: Plugin = {
       });
     }
 
-    const overrideFiles = await scanOverrideDirectory(rootDir, "claudeCode");
-    for (const overrideFile of overrideFiles) {
-      const targetPath = path.join(
-        rootDir,
-        outputDir,
-        overrideFile.relativePath
-      );
-      if (await fileExists(targetPath)) {
-        continue;
-      }
-      files.push({
-        path: `${outputDir}/${overrideFile.relativePath}`,
-        type: "symlink",
-        target: `../${UNIFIED_DIR}/${OVERRIDE_DIRS.claudeCode}/${overrideFile.relativePath}`,
-      });
-    }
+    const overrideFiles = await getOverrideOutputFiles(rootDir, "claudeCode");
+    files.push(...overrideFiles);
 
     return files;
   },

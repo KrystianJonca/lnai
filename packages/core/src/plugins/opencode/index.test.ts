@@ -253,7 +253,7 @@ describe("opencodePlugin", () => {
         );
         expect(customConfig).toBeDefined();
         expect(customConfig?.type).toBe("symlink");
-        expect(customConfig?.target).toBe("../.ai/.opencode/custom/config.md");
+        expect(customConfig?.target).toBe("../../.ai/.opencode/custom/config.md");
       });
 
       it("does not create symlink if target file already exists", async () => {
@@ -298,7 +298,7 @@ describe("opencodePlugin", () => {
         );
         expect(nestedFile).toBeDefined();
         expect(nestedFile?.type).toBe("symlink");
-        expect(nestedFile?.target).toBe("../.ai/.opencode/deep/nested/file.md");
+        expect(nestedFile?.target).toBe("../../../.ai/.opencode/deep/nested/file.md");
       });
     });
   });

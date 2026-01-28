@@ -9,7 +9,11 @@ hero:
     - text: Get Started
       link: getting-started/introduction/
       icon: right-arrow
-    - text: View on GitHub
+    - text: npm
+      link: https://www.npmjs.com/package/lnai
+      icon: external
+      variant: minimal
+    - text: GitHub
       link: https://github.com/KrystianJonca/lnai
       icon: external
       variant: minimal
@@ -24,7 +28,7 @@ import { Card, CardGrid } from "@astrojs/starlight/components";
     Define your AI tool settings once in `.ai/` and sync to all supported tools.
   </Card>
   <Card title="Multiple Tools" icon="puzzle">
-    Support for Claude Code, OpenCode, and more tools coming soon.
+    Support for Claude Code, Cursor, OpenCode, and more tools coming soon.
   </Card>
   <Card title="Type-Safe" icon="approve-check">
     Full TypeScript support with Zod schema validation.
@@ -46,10 +50,14 @@ lnai init
 lnai sync
 ```
 
-```
+```text
 claudeCode:
   + .claude/CLAUDE.md
   + .claude/settings.json
+
+cursor:
+  + AGENTS.md
+  + .cursor/mcp.json
 
 opencode:
   + .opencode/AGENTS.md

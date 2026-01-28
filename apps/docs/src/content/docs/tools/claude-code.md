@@ -9,7 +9,7 @@ LNAI exports unified configuration to Claude Code's native `.claude/` format.
 
 ## Output Structure
 
-```
+```text
 .claude/
 ├── CLAUDE.md          # Symlink → ../.ai/AGENTS.md
 ├── rules/             # Symlink → ../.ai/rules/

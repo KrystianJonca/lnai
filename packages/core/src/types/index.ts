@@ -1,5 +1,11 @@
 import type { ToolId } from "../constants";
-import type { RuleFrontmatter, SkillFrontmatter } from "../schemas/index";
+import type {
+  McpServer,
+  Permissions,
+  RuleFrontmatter,
+  SkillFrontmatter,
+  ToolConfig,
+} from "../schemas/index";
 
 export type {
   Config,
@@ -29,13 +35,11 @@ export interface MarkdownFrontmatter {
 /** All parsed configuration from the .ai directory */
 export interface UnifiedState {
   config: {
-    tools?: Partial<
-      Record<ToolId, { enabled: boolean; versionControl?: boolean }>
-    >;
+    tools?: Partial<Record<ToolId, ToolConfig>>;
   };
   settings: {
-    permissions?: { allow?: string[]; ask?: string[]; deny?: string[] };
-    mcpServers?: Record<string, unknown>;
+    permissions?: Permissions;
+    mcpServers?: Record<string, McpServer>;
     overrides?: Partial<Record<ToolId, Record<string, unknown>>>;
   } | null;
   agents: string | null;

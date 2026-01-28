@@ -7,6 +7,7 @@ import { cleanupTempDir, createTempDir } from "../__tests__/utils";
 import {
   deepMergeConfigs,
   fileExists,
+  getOverrideOutputFiles,
   parseJsonFile,
   scanOverrideDirectory,
 } from "./overrides";
@@ -195,6 +196,59 @@ describe("overrides utilities", () => {
       const result = await fileExists(dirPath);
 
       expect(result).toBe(true);
+    });
+  });
+
+  describe("getOverrideOutputFiles", () => {
+    it("creates symlink with correct relative path for top-level file", async () => {
+      const overrideDir = path.join(tempDir, ".ai", ".claude");
+      await fs.mkdir(overrideDir, { recursive: true });
+      await fs.writeFile(path.join(overrideDir, "custom.json"), "{}");
+
+      const result = await getOverrideOutputFiles(tempDir, "claudeCode");
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({
+        path: ".claude/custom.json",
+        type: "symlink",
+        target: "../.ai/.claude/custom.json",
+      });
+    });
+
+    it("creates symlink with correct relative path for nested file", async () => {
+      const nestedDir = path.join(tempDir, ".ai", ".claude", "commands", "deep");
+      await fs.mkdir(nestedDir, { recursive: true });
+      await fs.writeFile(path.join(nestedDir, "nested.md"), "# Nested");
+
+      const result = await getOverrideOutputFiles(tempDir, "claudeCode");
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({
+        path: ".claude/commands/deep/nested.md",
+        type: "symlink",
+        target: "../../../.ai/.claude/commands/deep/nested.md",
+      });
+    });
+
+    it("skips files that already exist at target location", async () => {
+      const overrideDir = path.join(tempDir, ".ai", ".claude");
+      await fs.mkdir(overrideDir, { recursive: true });
+      await fs.writeFile(path.join(overrideDir, "existing.json"), "{}");
+
+      // Create the target file so it should be skipped
+      const targetDir = path.join(tempDir, ".claude");
+      await fs.mkdir(targetDir, { recursive: true });
+      await fs.writeFile(path.join(targetDir, "existing.json"), "{}");
+
+      const result = await getOverrideOutputFiles(tempDir, "claudeCode");
+
+      expect(result).toHaveLength(0);
+    });
+
+    it("returns empty array when no override files exist", async () => {
+      const result = await getOverrideOutputFiles(tempDir, "claudeCode");
+
+      expect(result).toEqual([]);
     });
   });
 });

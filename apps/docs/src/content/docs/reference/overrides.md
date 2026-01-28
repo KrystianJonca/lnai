@@ -68,7 +68,7 @@ Values are deep-merged into the generated configuration.
 
 Place files in tool-specific directories within `.ai/`:
 
-```
+```text
 .ai/
 ├── .claude/       # Claude Code file overrides
 └── .opencode/     # OpenCode file overrides
@@ -83,7 +83,7 @@ Files are symlinked to the tool's output directory:
 
 ### Example
 
-```
+```text
 .ai/.claude/
 └── commands/
     └── deploy.md
@@ -91,7 +91,7 @@ Files are symlinked to the tool's output directory:
 
 After `lnai sync`:
 
-```
+```text
 .claude/
 ├── CLAUDE.md          # from unified config
 ├── settings.json      # generated
