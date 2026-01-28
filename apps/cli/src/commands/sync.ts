@@ -3,6 +3,8 @@ import chalk from "chalk";
 import { Command } from "commander";
 import ora from "ora";
 
+import { printGitHubPromo, printValidationItems } from "../utils/format";
+
 export const syncCommand = new Command("sync")
   .description("Export .ai/ to native configs")
   .option("--dry-run", "Preview without writing")
@@ -50,18 +52,11 @@ export const syncCommand = new Command("sync")
       for (const result of results) {
         if (result.validation.warnings.length > 0) {
           console.log(chalk.yellow(`\n${result.tool} warnings:`));
-          for (const warning of result.validation.warnings) {
-            console.log(
-              chalk.yellow(`  - ${warning.path.join(".")}: ${warning.message}`)
-            );
-          }
+          printValidationItems(result.validation.warnings, "yellow");
         }
       }
 
-      console.log(
-        chalk.gray("\nIf you find LNAI helpful, please star us on GitHub:")
-      );
-      console.log(chalk.blue("https://github.com/KrystianJonca/lnai"));
+      printGitHubPromo();
     } catch (error) {
       spinner.fail("Sync failed");
       console.error(

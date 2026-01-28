@@ -1,16 +1,12 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-import {
-  cleanupTempDir,
-  createFullConfig,
-  createMinimalConfig,
-  createTempDir,
-} from "../__tests__/utils";
+import { setupTempDirFixture } from "../__tests__/setup";
+import { createFullConfig, createMinimalConfig } from "../__tests__/utils";
 
-// Mock ora and chalk
+// Mock ora and chalk to avoid spinner output in tests
 vi.mock("ora", () => ({
   default: () => ({
     start: () => ({ succeed: vi.fn(), fail: vi.fn() }),
@@ -33,26 +29,14 @@ vi.mock("chalk", () => ({
 import { runSyncPipeline } from "@lnai/core";
 
 describe("sync command logic", () => {
-  let tempDir: string;
-  let originalCwd: string;
-
-  beforeEach(async () => {
-    tempDir = await createTempDir();
-    originalCwd = process.cwd();
-    process.chdir(tempDir);
-  });
-
-  afterEach(async () => {
-    process.chdir(originalCwd);
-    await cleanupTempDir(tempDir);
-  });
+  const { getTempDir } = setupTempDirFixture();
 
   describe("runSyncPipeline", () => {
     it("syncs minimal configuration successfully", async () => {
-      await createMinimalConfig(tempDir);
+      await createMinimalConfig(getTempDir());
 
       const results = await runSyncPipeline({
-        rootDir: tempDir,
+        rootDir: getTempDir(),
         dryRun: false,
       });
 
@@ -62,10 +46,10 @@ describe("sync command logic", () => {
     });
 
     it("syncs full configuration with all features", async () => {
-      await createFullConfig(tempDir);
+      await createFullConfig(getTempDir());
 
       const results = await runSyncPipeline({
-        rootDir: tempDir,
+        rootDir: getTempDir(),
         dryRun: false,
       });
 
@@ -80,15 +64,15 @@ describe("sync command logic", () => {
     });
 
     it("creates tool-specific output files", async () => {
-      await createFullConfig(tempDir);
+      await createFullConfig(getTempDir());
 
       await runSyncPipeline({
-        rootDir: tempDir,
+        rootDir: getTempDir(),
         dryRun: false,
       });
 
       // Check for Claude Code output (.claude directory)
-      const claudeDir = path.join(tempDir, ".claude");
+      const claudeDir = path.join(getTempDir(), ".claude");
       const claudeDirExists = await fs
         .stat(claudeDir)
         .then((s) => s.isDirectory())
@@ -99,7 +83,7 @@ describe("sync command logic", () => {
     it("throws error when .ai/ directory is missing", async () => {
       await expect(
         runSyncPipeline({
-          rootDir: tempDir,
+          rootDir: getTempDir(),
           dryRun: false,
         })
       ).rejects.toThrow();
@@ -108,17 +92,17 @@ describe("sync command logic", () => {
 
   describe("--dry-run flag", () => {
     it("does not write files when dry-run is true", async () => {
-      await createMinimalConfig(tempDir);
+      await createMinimalConfig(getTempDir());
 
       const results = await runSyncPipeline({
-        rootDir: tempDir,
+        rootDir: getTempDir(),
         dryRun: true,
       });
 
       expect(results.length).toBeGreaterThan(0);
 
       // Check that no output directories were created
-      const claudeDir = path.join(tempDir, ".claude");
+      const claudeDir = path.join(getTempDir(), ".claude");
       const claudeDirExists = await fs
         .stat(claudeDir)
         .then(() => true)
@@ -127,10 +111,10 @@ describe("sync command logic", () => {
     });
 
     it("reports changes that would be made", async () => {
-      await createMinimalConfig(tempDir);
+      await createMinimalConfig(getTempDir());
 
       const results = await runSyncPipeline({
-        rootDir: tempDir,
+        rootDir: getTempDir(),
         dryRun: true,
       });
 
@@ -144,10 +128,10 @@ describe("sync command logic", () => {
 
   describe("--tools flag", () => {
     it("filters to specific tools", async () => {
-      await createMinimalConfig(tempDir);
+      await createMinimalConfig(getTempDir());
 
       const results = await runSyncPipeline({
-        rootDir: tempDir,
+        rootDir: getTempDir(),
         dryRun: true,
         tools: ["claudeCode"],
       });
@@ -158,10 +142,10 @@ describe("sync command logic", () => {
     });
 
     it("handles multiple tools filter", async () => {
-      await createMinimalConfig(tempDir);
+      await createMinimalConfig(getTempDir());
 
       const results = await runSyncPipeline({
-        rootDir: tempDir,
+        rootDir: getTempDir(),
         dryRun: true,
         tools: ["claudeCode", "opencode"],
       });
@@ -175,7 +159,7 @@ describe("sync command logic", () => {
 
     it("defaults to all plugins when no tools are explicitly enabled", async () => {
       // Create config with all tools disabled
-      const aiDir = path.join(tempDir, ".ai");
+      const aiDir = path.join(getTempDir(), ".ai");
       await fs.mkdir(aiDir, { recursive: true });
       await fs.writeFile(
         path.join(aiDir, "config.json"),
@@ -192,7 +176,7 @@ describe("sync command logic", () => {
       );
 
       const results = await runSyncPipeline({
-        rootDir: tempDir,
+        rootDir: getTempDir(),
         dryRun: true,
       });
 
@@ -204,10 +188,10 @@ describe("sync command logic", () => {
 
   describe("change actions", () => {
     it("reports create action for new files", async () => {
-      await createMinimalConfig(tempDir);
+      await createMinimalConfig(getTempDir());
 
       const results = await runSyncPipeline({
-        rootDir: tempDir,
+        rootDir: getTempDir(),
         dryRun: true,
       });
 
@@ -221,17 +205,17 @@ describe("sync command logic", () => {
     });
 
     it("reports unchanged action when files match", async () => {
-      await createMinimalConfig(tempDir);
+      await createMinimalConfig(getTempDir());
 
       // First sync to create files
       await runSyncPipeline({
-        rootDir: tempDir,
+        rootDir: getTempDir(),
         dryRun: false,
       });
 
       // Second sync should report unchanged
       const results = await runSyncPipeline({
-        rootDir: tempDir,
+        rootDir: getTempDir(),
         dryRun: false,
       });
 

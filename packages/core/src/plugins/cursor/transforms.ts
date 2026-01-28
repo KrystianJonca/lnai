@@ -4,6 +4,7 @@ import type {
   Permissions,
   RuleFrontmatter,
 } from "../../types/index";
+import { deriveDescription, transformEnvVars } from "../../utils/transforms";
 
 export interface CursorRuleFrontmatter {
   description: string;
@@ -32,21 +33,6 @@ export function transformRuleToCursor(
     },
     content: rule.content,
   };
-}
-
-/**
- * Derive a description from the first H1 heading or filename.
- */
-export function deriveDescription(filename: string, content: string): string {
-  const headingMatch = content.match(/^#\s+(.+)$/m);
-  if (headingMatch && headingMatch[1]) {
-    return headingMatch[1];
-  }
-
-  const baseName = filename.replace(/\.md$/, "");
-  return baseName
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 /**
@@ -107,7 +93,7 @@ export function transformMcpToCursor(
         url: server.url,
       };
       if (server.headers) {
-        cursorServer.headers = transformEnvVarsToCursor(server.headers);
+        cursorServer.headers = transformEnvVars(server.headers, "cursor");
       }
       result[name] = cursorServer;
     } else if (server.command) {
@@ -118,30 +104,13 @@ export function transformMcpToCursor(
         cursorServer.args = server.args;
       }
       if (server.env) {
-        cursorServer.env = transformEnvVarsToCursor(server.env);
+        cursorServer.env = transformEnvVars(server.env, "cursor");
       }
       result[name] = cursorServer;
     }
   }
 
   return Object.keys(result).length > 0 ? result : undefined;
-}
-
-/**
- * Transform ${VAR} or ${VAR:-default} to ${env:VAR}
- */
-export function transformEnvVarToCursor(value: string): string {
-  return value.replace(/\$\{([^}:]+)(:-[^}]*)?\}/g, "${env:$1}");
-}
-
-function transformEnvVarsToCursor(
-  env: Record<string, string>
-): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (const [key, value] of Object.entries(env)) {
-    result[key] = transformEnvVarToCursor(value);
-  }
-  return result;
 }
 
 export interface CursorPermissions {

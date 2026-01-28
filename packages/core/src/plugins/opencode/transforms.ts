@@ -1,4 +1,8 @@
 import type { McpServer, Permissions } from "../../types/index";
+import {
+  parsePermissionRule as parseRule,
+  transformEnvVars,
+} from "../../utils/transforms";
 
 /** OpenCode-specific MCP server output format */
 interface OpenCodeMcpServer {
@@ -47,7 +51,7 @@ export function transformMcpToOpenCode(
         command,
       };
       if (server.env) {
-        openCodeServer.environment = transformEnvVars(server.env);
+        openCodeServer.environment = transformEnvVars(server.env, "opencode");
       }
       result[name] = openCodeServer;
     }
@@ -80,7 +84,7 @@ export function transformPermissionsToOpenCode(
     }
 
     for (const rule of rules) {
-      const parsed = parsePermissionRule(rule);
+      const parsed = parsePermissionRuleForOpenCode(rule);
       if (!parsed) {
         continue;
       }
@@ -102,41 +106,24 @@ export function transformPermissionsToOpenCode(
   return Object.keys(result).length > 0 ? result : undefined;
 }
 
-// --- Helper functions ---
-
-/** Transform ${VAR} or ${VAR:-default} to {env:VAR} */
-function transformEnvVar(value: string): string {
-  return value.replace(/\$\{([^}:]+)(:-[^}]*)?\}/g, "{env:$1}");
-}
-
-function transformEnvVars(env: Record<string, string>): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (const [key, value] of Object.entries(env)) {
-    result[key] = transformEnvVar(value);
-  }
-  return result;
-}
-
-/** Parse "Tool(pattern)" format, returns { tool, pattern } or null */
-function parsePermissionRule(
+/**
+ * Parse and normalize a permission rule for OpenCode format.
+ * Uses shared parsing, then applies OpenCode-specific normalization:
+ * - Tool names are lowercased
+ * - `:*` patterns are converted to ` *` (word boundary)
+ */
+function parsePermissionRuleForOpenCode(
   rule: string
 ): { tool: string; pattern: string } | null {
-  const match = rule.match(/^(\w+)\(([^)]+)\)$/);
-  if (!match) {
+  const parsed = parseRule(rule);
+  if (!parsed) {
     return null;
   }
 
-  const tool = match[1];
-  const pattern = match[2];
-
-  if (!tool || !pattern) {
-    return null;
-  }
-
-  const normalizedTool = tool.toLowerCase();
+  const normalizedTool = parsed.tool.toLowerCase();
 
   // Convert `:*` to ` *` (word boundary)
-  let normalizedPattern = pattern;
+  let normalizedPattern = parsed.pattern;
   if (normalizedPattern.includes(":*")) {
     normalizedPattern = normalizedPattern.replace(/:(\*)/g, " $1");
   }
