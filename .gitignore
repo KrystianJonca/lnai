@@ -40,4 +40,10 @@ pnpm-debug.log*
 .opencode/rules
 .opencode/skills/deploy
 opencode.json
+AGENTS.md
+.cursor/rules/code-organization.mdc
+.cursor/rules/typescript.mdc
+.cursor/skills/deploy
+.cursor/mcp.json
+.cursor/cli.json
 # end lnai-generated

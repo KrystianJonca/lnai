@@ -14,7 +14,7 @@
     },
     "memory": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-memory"]
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
     }
   },
   "overrides": {
@@ -22,7 +22,12 @@
       "model": "opus"
     },
     "opencode": {
-      "theme": "system"
+      "theme": "catpuccin"
+    },
+    "cursor": {
+      "editor": {
+        "vimMode": true
+      }
     }
   }
 }

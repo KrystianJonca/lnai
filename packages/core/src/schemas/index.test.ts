@@ -144,8 +144,14 @@ describe("toolIdSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rejects unknown tool", () => {
+  it("accepts cursor", () => {
     const result = toolIdSchema.safeParse("cursor");
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects unknown tool", () => {
+    const result = toolIdSchema.safeParse("unknownTool");
 
     expect(result.success).toBe(false);
   });

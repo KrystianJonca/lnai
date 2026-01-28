@@ -83,6 +83,7 @@ export function createFullState(
       tools: {
         claudeCode: { enabled: true, versionControl: false },
         opencode: { enabled: true, versionControl: true },
+        cursor: { enabled: true, versionControl: false },
       },
     },
     settings: {

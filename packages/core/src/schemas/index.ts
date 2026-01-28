@@ -21,7 +21,7 @@ export const toolConfigSchema = z.object({
   versionControl: z.boolean().optional().default(false),
 });
 
-export const toolIdSchema = z.enum(["claudeCode", "opencode"]);
+export const toolIdSchema = z.enum(["claudeCode", "opencode", "cursor"]);
 
 /** Settings configuration (Claude format as source of truth) */
 export const settingsSchema = z.object({
@@ -31,6 +31,7 @@ export const settingsSchema = z.object({
     .object({
       claudeCode: z.record(z.string(), z.unknown()).optional(),
       opencode: z.record(z.string(), z.unknown()).optional(),
+      cursor: z.record(z.string(), z.unknown()).optional(),
     })
     .optional(),
 });
@@ -41,6 +42,7 @@ export const configSchema = z.object({
     .object({
       claudeCode: toolConfigSchema,
       opencode: toolConfigSchema,
+      cursor: toolConfigSchema,
     })
     .partial()
     .optional(),

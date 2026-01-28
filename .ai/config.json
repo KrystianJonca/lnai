@@ -1,6 +1,7 @@
 {
   "tools": {
     "claudeCode": { "enabled": true },
-    "opencode": { "enabled": true }
+    "opencode": { "enabled": true },
+    "cursor": { "enabled": true }
   }
 }
