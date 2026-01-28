@@ -2,6 +2,7 @@
   "tools": {
     "claudeCode": { "enabled": true },
     "opencode": { "enabled": true },
-    "cursor": { "enabled": true }
+    "cursor": { "enabled": true },
+    "copilot": { "enabled": true }
   }
 }

@@ -21,6 +21,12 @@ Define in `settings.json` under the `overrides` key:
     },
     "opencode": {
       "theme": "dark"
+    },
+    "cursor": {
+      "customSetting": true
+    },
+    "copilot": {
+      "mcpServers": { "extra": { "type": "stdio", "command": "node" } }
     }
   }
 }
@@ -62,6 +68,22 @@ Values are deep-merged into the generated configuration.
 }
 ```
 
+**GitHub Copilot:**
+
+```json
+{
+  "overrides": {
+    "copilot": {
+      "mcpServers": {
+        "copilot-only": { "type": "stdio", "command": "node", "args": ["server.js"] }
+      }
+    }
+  }
+}
+```
+
+Note: Copilot MCP server overrides should be in Copilot's native format (with explicit `type: "stdio"` for stdio servers).
+
 ---
 
 ## File Overrides
@@ -71,7 +93,9 @@ Place files in tool-specific directories within `.ai/`:
 ```text
 .ai/
 ├── .claude/       # Claude Code file overrides
-└── .opencode/     # OpenCode file overrides
+├── .opencode/     # OpenCode file overrides
+├── .cursor/       # Cursor file overrides
+└── .copilot/      # GitHub Copilot file overrides
 ```
 
 Files are symlinked to the tool's output directory:
@@ -80,6 +104,8 @@ Files are symlinked to the tool's output directory:
 | ---------------------- | ------------------ |
 | `.ai/.claude/<path>`   | `.claude/<path>`   |
 | `.ai/.opencode/<path>` | `.opencode/<path>` |
+| `.ai/.cursor/<path>`   | `.cursor/<path>`   |
+| `.ai/.copilot/<path>`  | `.github/<path>`   |
 
 ### Example
 

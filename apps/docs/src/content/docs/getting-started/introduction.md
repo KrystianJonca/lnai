@@ -36,12 +36,17 @@ LNAI provides a single source of truth in the `.ai/` directory that exports to n
 ├── skills/<name>/SKILL.md       →    .cursor/
 ├── .claude/  (overrides)              ├── rules/*.mdc
 ├── .cursor/  (overrides)              ├── mcp.json
-└── .opencode/ (overrides)             └── cli.json
-                                  →    .opencode/
+├── .opencode/ (overrides)             └── cli.json
+└── .copilot/ (overrides)        →    .opencode/
                                        ├── AGENTS.md
                                        ├── rules/
                                        └── skills/
                                   →    opencode.json
+                                  →    .github/
+                                       ├── copilot-instructions.md
+                                       ├── instructions/*.instructions.md
+                                       └── skills/
+                                  →    .vscode/mcp.json
 ```
 
 ## Releases

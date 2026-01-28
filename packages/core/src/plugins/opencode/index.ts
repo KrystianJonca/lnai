@@ -29,12 +29,10 @@ export const opencodePlugin: Plugin = {
   name: "OpenCode",
 
   async detect(_rootDir: string): Promise<boolean> {
-    // TODO: Implement in v0.2
     return false;
   },
 
   async import(_rootDir: string): Promise<Partial<UnifiedState> | null> {
-    // TODO: Implement in v0.2
     return null;
   },
 

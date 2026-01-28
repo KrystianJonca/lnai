@@ -27,6 +27,14 @@ Controls which tools are enabled and their sync behavior.
     "opencode": {
       "enabled": true,
       "versionControl": false
+    },
+    "cursor": {
+      "enabled": true,
+      "versionControl": false
+    },
+    "copilot": {
+      "enabled": true,
+      "versionControl": false
     }
   }
 }
@@ -66,7 +74,9 @@ Contains shared configuration that applies to all tools.
   },
   "overrides": {
     "claudeCode": { "model": "opus" },
-    "opencode": { "theme": "dark" }
+    "opencode": { "theme": "dark" },
+    "cursor": { "customSetting": true },
+    "copilot": { "mcpServers": { "extra": { "type": "stdio", "command": "node" } } }
   }
 }
 ```

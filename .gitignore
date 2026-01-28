@@ -46,4 +46,9 @@ AGENTS.md
 .cursor/skills/deploy
 .cursor/mcp.json
 .cursor/cli.json
+.github/copilot-instructions.md
+.github/instructions/code-organization.instructions.md
+.github/instructions/typescript.instructions.md
+.github/skills/deploy
+.vscode/mcp.json
 # end lnai-generated
