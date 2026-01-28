@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import type { MarkdownFile, RuleFrontmatter } from "../../types/index";
+import { deriveDescription, transformEnvVar } from "../../utils/transforms";
 import {
-  deriveDescription,
   serializeCopilotInstruction,
-  transformEnvVarToCopilot,
   transformMcpToCopilot,
   transformRuleToCopilot,
 } from "./transforms";
@@ -72,7 +71,7 @@ describe("transformRuleToCopilot", () => {
   });
 });
 
-describe("deriveDescription (reused from cursor)", () => {
+describe("deriveDescription (shared utility)", () => {
   it("extracts first H1 heading", () => {
     const content = "# My Awesome Rules\n\nSome content here.";
 
@@ -316,29 +315,29 @@ describe("transformMcpToCopilot", () => {
   });
 });
 
-describe("transformEnvVarToCopilot", () => {
+describe("transformEnvVar for copilot format", () => {
   it("transforms ${VAR} to ${env:VAR}", () => {
-    expect(transformEnvVarToCopilot("${DB_URL}")).toBe("${env:DB_URL}");
+    expect(transformEnvVar("${DB_URL}", "copilot")).toBe("${env:DB_URL}");
   });
 
   it("transforms ${VAR:-default} to ${env:VAR}", () => {
-    expect(transformEnvVarToCopilot("${API_KEY:-default}")).toBe(
+    expect(transformEnvVar("${API_KEY:-default}", "copilot")).toBe(
       "${env:API_KEY}"
     );
   });
 
   it("preserves regular values", () => {
-    expect(transformEnvVarToCopilot("production")).toBe("production");
+    expect(transformEnvVar("production", "copilot")).toBe("production");
   });
 
   it("handles mixed content", () => {
-    expect(transformEnvVarToCopilot("Bearer ${TOKEN}")).toBe(
+    expect(transformEnvVar("Bearer ${TOKEN}", "copilot")).toBe(
       "Bearer ${env:TOKEN}"
     );
   });
 
   it("handles multiple variables", () => {
-    expect(transformEnvVarToCopilot("${HOST}:${PORT}")).toBe(
+    expect(transformEnvVar("${HOST}:${PORT}", "copilot")).toBe(
       "${env:HOST}:${env:PORT}"
     );
   });

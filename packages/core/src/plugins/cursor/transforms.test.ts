@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import type { MarkdownFile, RuleFrontmatter } from "../../types/index";
+import { deriveDescription, transformEnvVar } from "../../utils/transforms";
 import {
-  deriveDescription,
   serializeCursorRule,
-  transformEnvVarToCursor,
   transformMcpToCursor,
   transformPermissionRule,
   transformPermissionsToCursor,
@@ -332,29 +331,29 @@ describe("transformMcpToCursor", () => {
   });
 });
 
-describe("transformEnvVarToCursor", () => {
+describe("transformEnvVar for cursor format", () => {
   it("transforms ${VAR} to ${env:VAR}", () => {
-    expect(transformEnvVarToCursor("${DB_URL}")).toBe("${env:DB_URL}");
+    expect(transformEnvVar("${DB_URL}", "cursor")).toBe("${env:DB_URL}");
   });
 
   it("transforms ${VAR:-default} to ${env:VAR}", () => {
-    expect(transformEnvVarToCursor("${API_KEY:-default}")).toBe(
+    expect(transformEnvVar("${API_KEY:-default}", "cursor")).toBe(
       "${env:API_KEY}"
     );
   });
 
   it("preserves regular values", () => {
-    expect(transformEnvVarToCursor("production")).toBe("production");
+    expect(transformEnvVar("production", "cursor")).toBe("production");
   });
 
   it("handles mixed content", () => {
-    expect(transformEnvVarToCursor("Bearer ${TOKEN}")).toBe(
+    expect(transformEnvVar("Bearer ${TOKEN}", "cursor")).toBe(
       "Bearer ${env:TOKEN}"
     );
   });
 
   it("handles multiple variables", () => {
-    expect(transformEnvVarToCursor("${HOST}:${PORT}")).toBe(
+    expect(transformEnvVar("${HOST}:${PORT}", "cursor")).toBe(
       "${env:HOST}:${env:PORT}"
     );
   });

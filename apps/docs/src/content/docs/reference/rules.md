@@ -50,7 +50,15 @@ Components in this directory should:
 
 ## Export Mapping
 
-| Tool        | Output                                    |
-| ----------- | ----------------------------------------- |
-| Claude Code | `.claude/rules/` (symlink to directory)   |
-| OpenCode    | `.opencode/rules/` (symlink to directory) |
+| Tool        | Output                                                    |
+| ----------- | --------------------------------------------------------- |
+| Claude Code | `.claude/rules/` (symlink to directory)                   |
+| Cursor      | `.cursor/rules/<name>.mdc` (generated, transformed)       |
+| Copilot     | `.github/instructions/<name>.instructions.md` (generated) |
+| OpenCode    | `.opencode/rules/` (symlink to directory)                 |
+
+### Format Differences
+
+- **Claude Code & OpenCode**: Symlink entire rules directory
+- **Cursor**: Transforms rules to `.mdc` format with Cursor-specific frontmatter (`description`, `globs`, `alwaysApply`)
+- **Copilot**: Transforms rules to `.instructions.md` format with Copilot-specific frontmatter (`applyTo`, `description`)

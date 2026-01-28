@@ -3,6 +3,8 @@ import chalk from "chalk";
 import { Command } from "commander";
 import ora from "ora";
 
+import { printGitHubPromo } from "../utils/format";
+
 export const initCommand = new Command("init")
   .description("Initialize a new .ai/ configuration directory")
   .option("--force", "Overwrite existing .ai/ directory")
@@ -33,10 +35,7 @@ export const initCommand = new Command("init")
           chalk.gray(" to generate tool configs.")
       );
 
-      console.log(
-        chalk.gray("\nIf you find LNAI helpful, please star us on GitHub:")
-      );
-      console.log(chalk.blue("https://github.com/KrystianJonca/lnai"));
+      printGitHubPromo();
     } catch (error) {
       spinner.fail("Initialization failed");
       console.error(

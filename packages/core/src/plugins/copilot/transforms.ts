@@ -3,10 +3,7 @@ import type {
   McpServer,
   RuleFrontmatter,
 } from "../../types/index";
-
-// Re-export deriveDescription from cursor transforms for reuse
-export { deriveDescription } from "../cursor/transforms";
-import { deriveDescription } from "../cursor/transforms";
+import { deriveDescription, transformEnvVars } from "../../utils/transforms";
 
 export interface CopilotRuleFrontmatter {
   applyTo?: string;
@@ -111,7 +108,7 @@ export function transformMcpToCopilot(
       };
       if (server.headers && Object.keys(server.headers).length > 0) {
         copilotServer.requestInit = {
-          headers: transformEnvVarsToCopilot(server.headers),
+          headers: transformEnvVars(server.headers, "copilot"),
         };
       }
       result[name] = copilotServer;
@@ -125,7 +122,7 @@ export function transformMcpToCopilot(
         copilotServer.args = server.args;
       }
       if (server.env && Object.keys(server.env).length > 0) {
-        copilotServer.env = transformEnvVarsToCopilot(server.env);
+        copilotServer.env = transformEnvVars(server.env, "copilot");
       }
       result[name] = copilotServer;
     }
@@ -139,21 +136,4 @@ export function transformMcpToCopilot(
     inputs: [],
     servers: result,
   };
-}
-
-/**
- * Transform ${VAR} or ${VAR:-default} to ${env:VAR}
- */
-export function transformEnvVarToCopilot(value: string): string {
-  return value.replace(/\$\{([^}:]+)(:-[^}]*)?\}/g, "${env:$1}");
-}
-
-function transformEnvVarsToCopilot(
-  env: Record<string, string>
-): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (const [key, value] of Object.entries(env)) {
-    result[key] = transformEnvVarToCopilot(value);
-  }
-  return result;
 }

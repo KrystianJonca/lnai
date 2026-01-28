@@ -1,6 +1,7 @@
 import { TOOL_OUTPUT_DIRS, UNIFIED_DIR } from "../../constants";
 import type {
   OutputFile,
+  Permissions,
   UnifiedState,
   ValidationResult,
 } from "../../types/index";
@@ -102,31 +103,11 @@ export const cursorPlugin: Plugin = {
     }
 
     // Generate cli.json if permissions exist or cursor overrides have non-mcpServers keys
-    const permissionsResult = transformPermissionsToCursor(
-      state.settings?.permissions
+    const cliContent = buildCliContent(
+      state.settings?.permissions,
+      cursorOverrides
     );
-    const hasCliOverrides =
-      cursorOverrides !== undefined &&
-      Object.keys(cursorOverrides).some((key) => key !== "mcpServers");
-
-    if (permissionsResult.permissions || hasCliOverrides) {
-      let cliContent: Record<string, unknown> = permissionsResult.permissions
-        ? { permissions: permissionsResult.permissions }
-        : {};
-
-      if (cursorOverrides) {
-        // Extract all non-mcpServers keys for cli.json (permissions + custom fields)
-        const cliOverrides: Record<string, unknown> = {};
-        for (const [key, value] of Object.entries(cursorOverrides)) {
-          if (key !== "mcpServers") {
-            cliOverrides[key] = value;
-          }
-        }
-        if (Object.keys(cliOverrides).length > 0) {
-          cliContent = deepMergeConfigs(cliContent, cliOverrides);
-        }
-      }
-
+    if (cliContent) {
       files.push({
         path: `${outputDir}/cli.json`,
         type: "json",
@@ -181,3 +162,39 @@ export const cursorPlugin: Plugin = {
     return { valid: true, errors: [], warnings, skipped: [] };
   },
 };
+
+/**
+ * Build CLI config content from permissions and cursor-specific overrides.
+ * Returns undefined if there's no content to generate.
+ */
+function buildCliContent(
+  permissions: Permissions | undefined,
+  cursorOverrides: Record<string, unknown> | undefined
+): Record<string, unknown> | undefined {
+  const permissionsResult = transformPermissionsToCursor(permissions);
+  const hasCliOverrides =
+    cursorOverrides !== undefined &&
+    Object.keys(cursorOverrides).some((key) => key !== "mcpServers");
+
+  if (!permissionsResult.permissions && !hasCliOverrides) {
+    return undefined;
+  }
+
+  let cliContent: Record<string, unknown> = permissionsResult.permissions
+    ? { permissions: permissionsResult.permissions }
+    : {};
+
+  if (cursorOverrides) {
+    const cliOverrides: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(cursorOverrides)) {
+      if (key !== "mcpServers") {
+        cliOverrides[key] = value;
+      }
+    }
+    if (Object.keys(cliOverrides).length > 0) {
+      cliContent = deepMergeConfigs(cliContent, cliOverrides);
+    }
+  }
+
+  return cliContent;
+}
