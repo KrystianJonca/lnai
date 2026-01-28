@@ -45,6 +45,23 @@ export const syncCommand = new Command("sync")
           console.log(`  ${icon} ${change.path}`);
         }
       }
+
+      // Display validation warnings for synced tools
+      for (const result of results) {
+        if (result.validation.warnings.length > 0) {
+          console.log(chalk.yellow(`\n${result.tool} warnings:`));
+          for (const warning of result.validation.warnings) {
+            console.log(
+              chalk.yellow(`  - ${warning.path.join(".")}: ${warning.message}`)
+            );
+          }
+        }
+      }
+
+      console.log(
+        chalk.gray("\nIf you find LNAI helpful, please star us on GitHub:")
+      );
+      console.log(chalk.blue("https://github.com/KrystianJonca/lnai"));
     } catch (error) {
       spinner.fail("Sync failed");
       console.error(
