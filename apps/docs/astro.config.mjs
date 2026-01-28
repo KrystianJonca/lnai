@@ -16,6 +16,11 @@ export default defineConfig({
         "CLI tool that syncs a unified .ai/ config to native formats for AI coding tools",
       social: [
         {
+          icon: "npm",
+          label: "npm",
+          href: "https://www.npmjs.com/package/lnai",
+        },
+        {
           icon: "github",
           label: "GitHub",
           href: "https://github.com/KrystianJonca/lnai",

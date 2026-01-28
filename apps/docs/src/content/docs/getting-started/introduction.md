@@ -33,17 +33,17 @@ LNAI provides a single source of truth in the `.ai/` directory that exports to n
 ├── settings.json                      ├── settings.json
 ├── AGENTS.md                          ├── rules/
 ├── rules/*.md                         └── skills/
-├── skills/<name>/SKILL.md       →    .opencode/
-├── .claude/  (overrides)              ├── AGENTS.md
-└── .opencode/ (overrides)             ├── rules/
+├── skills/<name>/SKILL.md       →    .cursor/
+├── .claude/  (overrides)              ├── rules/*.mdc
+├── .cursor/  (overrides)              ├── mcp.json
+└── .opencode/ (overrides)             └── cli.json
+                                  →    .opencode/
+                                       ├── AGENTS.md
+                                       ├── rules/
                                        └── skills/
                                   →    opencode.json
 ```
 
-## v0.1 Scope
+## Releases
 
-The initial release focuses on:
-
-- **Export only**: Sync from `.ai/` to native configs
-- **Two tools**: Claude Code and OpenCode
-- **Two commands**: `sync` and `validate`
+See the [GitHub releases](https://github.com/KrystianJonca/lnai/releases) for the full changelog.
