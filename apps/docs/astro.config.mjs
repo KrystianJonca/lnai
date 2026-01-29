@@ -40,6 +40,22 @@ export default defineConfig({
           autogenerate: { directory: "tools" },
         },
       ],
+      head: [
+        {
+          tag: "meta",
+          attrs: {
+            property: "og:image",
+            content: "https://lnai.sh/og_image.png",
+          },
+        },
+        {
+          tag: "meta",
+          attrs: {
+            name: "twitter:image",
+            content: "https://lnai.sh/og_image.png",
+          },
+        },
+      ],
     }),
   ],
 });
