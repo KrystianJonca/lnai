@@ -102,9 +102,12 @@ export function transformMcpToCopilot(
 
   for (const [name, server] of Object.entries(servers)) {
     if (server.type === "http" || server.type === "sse") {
-      // Remote server
+      // Remote server - url is validated by plugin.validate()
+      if (!server.url) {
+        continue;
+      }
       const copilotServer: CopilotMcpRemoteServer = {
-        url: server.url!,
+        url: server.url,
       };
       if (server.headers && Object.keys(server.headers).length > 0) {
         copilotServer.requestInit = {

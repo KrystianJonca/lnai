@@ -140,7 +140,12 @@ export const copilotPlugin: Plugin = {
       for (const [name, server] of Object.entries(mcpServers)) {
         const isRemote = server.type === "http" || server.type === "sse";
         const hasCommand = !!server.command;
-        if (!isRemote && !hasCommand) {
+        if (isRemote && !server.url) {
+          warnings.push({
+            path: ["settings", "mcpServers", name],
+            message: `MCP server "${name}" is type "${server.type}" but has no url - it will be skipped`,
+          });
+        } else if (!isRemote && !hasCommand) {
           warnings.push({
             path: ["settings", "mcpServers", name],
             message: `MCP server "${name}" has no command or type - it will be skipped`,
