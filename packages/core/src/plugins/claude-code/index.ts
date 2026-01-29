@@ -4,10 +4,7 @@ import type {
   UnifiedState,
   ValidationResult,
 } from "../../types/index";
-import {
-  deepMergeConfigs,
-  getOverrideOutputFiles,
-} from "../../utils/overrides";
+import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
 
 /**
@@ -60,34 +57,23 @@ export const claudeCodePlugin: Plugin = {
       });
     }
 
-    const baseSettings: Record<string, unknown> = {};
+    const settings: Record<string, unknown> = {};
     if (state.settings?.permissions) {
-      baseSettings["permissions"] = state.settings.permissions;
+      settings["permissions"] = state.settings.permissions;
     }
     if (state.settings?.mcpServers) {
-      baseSettings["mcpServers"] = state.settings.mcpServers;
+      settings["mcpServers"] = state.settings.mcpServers;
     }
 
-    let finalSettings = baseSettings;
-    if (state.settings?.overrides?.claudeCode) {
-      finalSettings = deepMergeConfigs(
-        baseSettings,
-        state.settings.overrides.claudeCode
-      );
-    }
-
-    if (Object.keys(finalSettings).length > 0) {
+    if (Object.keys(settings).length > 0) {
       files.push({
         path: `${outputDir}/settings.json`,
         type: "json",
-        content: finalSettings,
+        content: settings,
       });
     }
 
-    const overrideFiles = await getOverrideOutputFiles(rootDir, "claudeCode");
-    files.push(...overrideFiles);
-
-    return files;
+    return applyFileOverrides(files, rootDir, "claudeCode");
   },
 
   validate(state: UnifiedState): ValidationResult {

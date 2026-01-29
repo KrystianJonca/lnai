@@ -27,14 +27,6 @@ export const toolIdSchema = z.enum(["claudeCode", "opencode", "cursor", "copilot
 export const settingsSchema = z.object({
   permissions: permissionsSchema.optional(),
   mcpServers: z.record(z.string(), mcpServerSchema).optional(),
-  overrides: z
-    .object({
-      claudeCode: z.record(z.string(), z.unknown()).optional(),
-      opencode: z.record(z.string(), z.unknown()).optional(),
-      cursor: z.record(z.string(), z.unknown()).optional(),
-      copilot: z.record(z.string(), z.unknown()).optional(),
-    })
-    .optional(),
 });
 
 /** Main config.json structure. Uses partial object to allow partial tool configs. */

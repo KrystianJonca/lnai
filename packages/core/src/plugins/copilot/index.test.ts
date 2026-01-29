@@ -381,25 +381,36 @@ describe("copilotPlugin", () => {
         expect(customConfig?.target).toBe("../../.ai/.copilot/custom/config.md");
       });
 
-      it("does not create symlink if target file already exists", async () => {
-        // Create override file
-        const overrideDir = path.join(tempDir, ".ai", ".copilot", "custom");
-        await fs.mkdir(overrideDir, { recursive: true });
-        await fs.writeFile(path.join(overrideDir, "existing.md"), "# Override");
+      it("replaces generated file with override symlink when paths match", async () => {
+        // Create override file that matches a generated file path
+        const overrideDir = path.join(tempDir, ".ai", ".copilot");
+        await fs.mkdir(path.join(overrideDir, "instructions"), { recursive: true });
+        await fs.writeFile(
+          path.join(overrideDir, "instructions", "typescript.instructions.md"),
+          "# Custom Instructions"
+        );
 
-        // Create existing file at target location
-        const targetDir = path.join(tempDir, ".github", "custom");
-        await fs.mkdir(targetDir, { recursive: true });
-        await fs.writeFile(path.join(targetDir, "existing.md"), "# Existing");
-
-        const state = createMinimalState();
+        const state = createMinimalState({
+          rules: [
+            {
+              path: "typescript.md",
+              frontmatter: { paths: ["*.ts"] },
+              content: "# TypeScript Rules",
+            },
+          ],
+        });
 
         const files = await copilotPlugin.export(state, tempDir);
 
-        const existingFile = files.find(
-          (f) => f.path === ".github/custom/existing.md"
+        // Should have the override symlink, not the generated file
+        const rule = files.find(
+          (f) => f.path === ".github/instructions/typescript.instructions.md"
         );
-        expect(existingFile).toBeUndefined();
+        expect(rule).toBeDefined();
+        expect(rule?.type).toBe("symlink");
+        expect(rule?.target).toBe(
+          "../../.ai/.copilot/instructions/typescript.instructions.md"
+        );
       });
 
       it("handles nested override directories", async () => {
@@ -429,99 +440,6 @@ describe("copilotPlugin", () => {
       });
     });
 
-    describe("JSON overrides", () => {
-      it("deep merges mcpServers from state.settings.overrides.copilot into mcp.json", async () => {
-        const state = createMinimalState({
-          settings: {
-            mcpServers: {
-              db: { command: "npx", args: ["-y", "@example/db"] },
-            },
-            overrides: {
-              copilot: {
-                mcpServers: {
-                  custom: { type: "stdio", command: "node", args: ["server.js"] },
-                },
-              },
-            },
-          },
-        });
-
-        const files = await copilotPlugin.export(state, tempDir);
-
-        const mcpJson = files.find((f) => f.path === ".vscode/mcp.json");
-        expect(mcpJson).toBeDefined();
-        const content = mcpJson?.content as {
-          servers: Record<string, unknown>;
-        };
-        // Original transformed server should exist
-        expect(content.servers["db"]).toBeDefined();
-        // Override server should be merged in (passed through as-is)
-        expect(content.servers["custom"]).toEqual({
-          type: "stdio",
-          command: "node",
-          args: ["server.js"],
-        });
-      });
-
-      it("creates mcp.json from overrides even without base mcpServers", async () => {
-        const state = createMinimalState({
-          settings: {
-            overrides: {
-              copilot: {
-                mcpServers: {
-                  custom: { type: "stdio", command: "node" },
-                },
-              },
-            },
-          },
-        });
-
-        const files = await copilotPlugin.export(state, tempDir);
-
-        const mcpJson = files.find((f) => f.path === ".vscode/mcp.json");
-        expect(mcpJson).toBeDefined();
-        const content = mcpJson?.content as {
-          inputs: unknown[];
-          servers: Record<string, unknown>;
-        };
-        expect(content.inputs).toEqual([]);
-        expect(content.servers["custom"]).toEqual({
-          type: "stdio",
-          command: "node",
-        });
-      });
-
-      it("does not include overrides from other tools", async () => {
-        const state = createMinimalState({
-          settings: {
-            mcpServers: {
-              db: { command: "npx" },
-            },
-            overrides: {
-              copilot: {
-                mcpServers: { copilotOnly: { type: "stdio", command: "a" } },
-              },
-              cursor: {
-                mcpServers: { cursorOnly: { command: "b" } },
-              },
-              claudeCode: {
-                mcpServers: { claudeOnly: { command: "c" } },
-              },
-            },
-          },
-        });
-
-        const files = await copilotPlugin.export(state, tempDir);
-
-        const mcpJson = files.find((f) => f.path === ".vscode/mcp.json");
-        const content = mcpJson?.content as {
-          servers: Record<string, unknown>;
-        };
-        expect(content.servers["copilotOnly"]).toBeDefined();
-        expect(content.servers["cursorOnly"]).toBeUndefined();
-        expect(content.servers["claudeOnly"]).toBeUndefined();
-      });
-    });
   });
 
   describe("validate", () => {
@@ -622,49 +540,6 @@ describe("copilotPlugin", () => {
       const result = copilotPlugin.validate(state);
 
       expect(result.skipped).toHaveLength(0);
-    });
-
-    it("returns warning for non-mcpServers overrides", () => {
-      const state = createMinimalState({
-        settings: {
-          overrides: {
-            copilot: {
-              mcpServers: { valid: { type: "stdio", command: "node" } },
-              customSetting: "value",
-              anotherSetting: 123,
-            },
-          },
-        },
-      });
-
-      const result = copilotPlugin.validate(state);
-
-      const overrideWarning = result.warnings.find((w) =>
-        w.message.includes("only supports")
-      );
-      expect(overrideWarning).toBeDefined();
-      expect(overrideWarning?.message).toContain("mcpServers");
-      expect(overrideWarning?.message).toContain("customSetting");
-      expect(overrideWarning?.message).toContain("anotherSetting");
-    });
-
-    it("no warning when only mcpServers override is present", () => {
-      const state = createMinimalState({
-        settings: {
-          overrides: {
-            copilot: {
-              mcpServers: { server: { type: "stdio", command: "node" } },
-            },
-          },
-        },
-      });
-
-      const result = copilotPlugin.validate(state);
-
-      const overrideWarning = result.warnings.find((w) =>
-        w.message.includes("only supports")
-      );
-      expect(overrideWarning).toBeUndefined();
     });
   });
 });

@@ -40,7 +40,6 @@ export interface UnifiedState {
   settings: {
     permissions?: Permissions;
     mcpServers?: Record<string, McpServer>;
-    overrides?: Partial<Record<ToolId, Record<string, unknown>>>;
   } | null;
   agents: string | null;
   rules: MarkdownFile<RuleFrontmatter>[];

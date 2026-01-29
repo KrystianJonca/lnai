@@ -353,25 +353,30 @@ describe("cursorPlugin", () => {
         expect(customConfig?.target).toBe("../../.ai/.cursor/custom/config.md");
       });
 
-      it("does not create symlink if target file already exists", async () => {
-        // Create override file
-        const overrideDir = path.join(tempDir, ".ai", ".cursor", "custom");
+      it("replaces generated file with override symlink when paths match", async () => {
+        // Create override file that matches a generated file path
+        const overrideDir = path.join(tempDir, ".ai", ".cursor");
         await fs.mkdir(overrideDir, { recursive: true });
-        await fs.writeFile(path.join(overrideDir, "existing.md"), "# Override");
+        await fs.writeFile(
+          path.join(overrideDir, "mcp.json"),
+          '{"custom": true}'
+        );
 
-        // Create existing file at target location
-        const targetDir = path.join(tempDir, ".cursor", "custom");
-        await fs.mkdir(targetDir, { recursive: true });
-        await fs.writeFile(path.join(targetDir, "existing.md"), "# Existing");
-
-        const state = createMinimalState();
+        const state = createMinimalState({
+          settings: {
+            mcpServers: {
+              db: { command: "npx", args: ["-y", "@example/db"] },
+            },
+          },
+        });
 
         const files = await cursorPlugin.export(state, tempDir);
 
-        const existingFile = files.find(
-          (f) => f.path === ".cursor/custom/existing.md"
-        );
-        expect(existingFile).toBeUndefined();
+        // Should have the override symlink, not the generated file
+        const mcpJson = files.find((f) => f.path === ".cursor/mcp.json");
+        expect(mcpJson).toBeDefined();
+        expect(mcpJson?.type).toBe("symlink");
+        expect(mcpJson?.target).toBe("../.ai/.cursor/mcp.json");
       });
 
       it("handles nested override directories", async () => {
@@ -399,180 +404,6 @@ describe("cursorPlugin", () => {
       });
     });
 
-    describe("JSON overrides", () => {
-      it("deep merges mcpServers from state.settings.overrides.cursor into mcp.json", async () => {
-        const state = createMinimalState({
-          settings: {
-            mcpServers: {
-              db: { command: "npx", args: ["-y", "@example/db"] },
-            },
-            overrides: {
-              cursor: {
-                mcpServers: {
-                  custom: { command: "node", args: ["server.js"] },
-                },
-              },
-            },
-          },
-        });
-
-        const files = await cursorPlugin.export(state, tempDir);
-
-        const mcpJson = files.find((f) => f.path === ".cursor/mcp.json");
-        expect(mcpJson).toBeDefined();
-        const content = mcpJson?.content as {
-          mcpServers: Record<string, unknown>;
-        };
-        // Original transformed server should exist
-        expect(content.mcpServers["db"]).toBeDefined();
-        // Override server should be merged in
-        expect(content.mcpServers["custom"]).toEqual({
-          command: "node",
-          args: ["server.js"],
-        });
-      });
-
-      it("deep merges permissions from state.settings.overrides.cursor into cli.json", async () => {
-        const state = createMinimalState({
-          settings: {
-            permissions: {
-              allow: ["Bash(git:*)"],
-            },
-            overrides: {
-              cursor: {
-                permissions: {
-                  deny: ["Read(secrets/*)"],
-                },
-              },
-            },
-          },
-        });
-
-        const files = await cursorPlugin.export(state, tempDir);
-
-        const cliJson = files.find((f) => f.path === ".cursor/cli.json");
-        expect(cliJson).toBeDefined();
-        const content = cliJson?.content as {
-          permissions: { allow: string[]; deny: string[] };
-        };
-        // Original transformed permission should exist
-        expect(content.permissions.allow).toContain("Shell(git)");
-        // Override permission should be merged in
-        expect(content.permissions.deny).toContain("Read(secrets/*)");
-      });
-
-      it("adds custom fields to cli.json from overrides", async () => {
-        const state = createMinimalState({
-          settings: {
-            permissions: {
-              allow: ["Bash(git:*)"],
-            },
-            overrides: {
-              cursor: {
-                customSetting: true,
-                theme: "dark",
-              },
-            },
-          },
-        });
-
-        const files = await cursorPlugin.export(state, tempDir);
-
-        const cliJson = files.find((f) => f.path === ".cursor/cli.json");
-        expect(cliJson).toBeDefined();
-        const content = cliJson?.content as Record<string, unknown>;
-        expect(content["customSetting"]).toBe(true);
-        expect(content["theme"]).toBe("dark");
-        expect(content["permissions"]).toBeDefined();
-      });
-
-      it("creates cli.json from overrides even without base permissions", async () => {
-        const state = createMinimalState({
-          settings: {
-            overrides: {
-              cursor: {
-                customSetting: true,
-              },
-            },
-          },
-        });
-
-        const files = await cursorPlugin.export(state, tempDir);
-
-        const cliJson = files.find((f) => f.path === ".cursor/cli.json");
-        expect(cliJson).toBeDefined();
-        const content = cliJson?.content as Record<string, unknown>;
-        expect(content["customSetting"]).toBe(true);
-      });
-
-      it("creates cli.json from permissions override even without base permissions", async () => {
-        const state = createMinimalState({
-          settings: {
-            overrides: {
-              cursor: {
-                permissions: {
-                  allow: ["Shell(git)"],
-                },
-              },
-            },
-          },
-        });
-
-        const files = await cursorPlugin.export(state, tempDir);
-
-        const cliJson = files.find((f) => f.path === ".cursor/cli.json");
-        expect(cliJson).toBeDefined();
-        const content = cliJson?.content as {
-          permissions: { allow: string[] };
-        };
-        expect(content.permissions.allow).toContain("Shell(git)");
-      });
-
-      it("does not include overrides from other tools", async () => {
-        const state = createMinimalState({
-          settings: {
-            overrides: {
-              cursor: { customSetting: true },
-              claudeCode: { model: "opus" },
-              opencode: { theme: "dark" },
-            },
-          },
-        });
-
-        const files = await cursorPlugin.export(state, tempDir);
-
-        const cliJson = files.find((f) => f.path === ".cursor/cli.json");
-        expect(cliJson).toBeDefined();
-        const content = cliJson?.content as Record<string, unknown>;
-        expect(content["customSetting"]).toBe(true);
-        expect(content["model"]).toBeUndefined();
-        expect(content["theme"]).toBeUndefined();
-      });
-
-      it("does not add mcpServers key to cli.json", async () => {
-        const state = createMinimalState({
-          settings: {
-            permissions: {
-              allow: ["Bash(git:*)"],
-            },
-            overrides: {
-              cursor: {
-                mcpServers: { custom: { command: "node" } },
-                customSetting: true,
-              },
-            },
-          },
-        });
-
-        const files = await cursorPlugin.export(state, tempDir);
-
-        const cliJson = files.find((f) => f.path === ".cursor/cli.json");
-        expect(cliJson).toBeDefined();
-        const content = cliJson?.content as Record<string, unknown>;
-        expect(content["customSetting"]).toBe(true);
-        expect(content["mcpServers"]).toBeUndefined();
-      });
-    });
   });
 
   describe("validate", () => {

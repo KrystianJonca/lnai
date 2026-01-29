@@ -195,36 +195,6 @@ describe("settingsSchema", () => {
 
     expect(result.success).toBe(false);
   });
-
-  it("validates settings with overrides", () => {
-    const result = settingsSchema.safeParse({
-      permissions: { allow: ["Bash(git:*)"] },
-      overrides: {
-        claudeCode: { model: "opus", customSetting: true },
-        opencode: { theme: "dark" },
-      },
-    });
-
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.overrides?.claudeCode?.["model"]).toBe("opus");
-      expect(result.data.overrides?.opencode?.["theme"]).toBe("dark");
-    }
-  });
-
-  it("validates settings with partial overrides", () => {
-    const result = settingsSchema.safeParse({
-      overrides: {
-        claudeCode: { model: "sonnet" },
-      },
-    });
-
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.overrides?.claudeCode?.["model"]).toBe("sonnet");
-      expect(result.data.overrides?.opencode).toBeUndefined();
-    }
-  });
 });
 
 describe("configSchema", () => {

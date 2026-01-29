@@ -142,16 +142,4 @@ Place Cursor-specific files in `.ai/.cursor/` to have them symlinked directly:
 └── custom-config.json → .cursor/custom-config.json
 ```
 
-You can also use `overrides.cursor` in `.ai/settings.json` to deep-merge additional settings into the generated files:
-
-```json
-{
-  "overrides": {
-    "cursor": {
-      "mcpServers": {
-        "custom-server": { "command": "custom", "args": [] }
-      }
-    }
-  }
-}
-```
+When an override file exists at the same path as a generated file (e.g., `mcp.json`), the override takes priority.

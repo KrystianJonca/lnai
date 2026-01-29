@@ -4,10 +4,7 @@ import type {
   UnifiedState,
   ValidationResult,
 } from "../../types/index";
-import {
-  deepMergeConfigs,
-  getOverrideOutputFiles,
-} from "../../utils/overrides";
+import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
 import {
   transformMcpToOpenCode,
@@ -64,43 +61,32 @@ export const opencodePlugin: Plugin = {
       });
     }
 
-    const baseConfig: Record<string, unknown> = {
+    const config: Record<string, unknown> = {
       $schema: "https://opencode.ai/config.json",
     };
     if (state.rules.length > 0) {
-      baseConfig["instructions"] = [`${outputDir}/rules/*.md`];
+      config["instructions"] = [`${outputDir}/rules/*.md`];
     }
 
     const mcp = transformMcpToOpenCode(state.settings?.mcpServers);
     if (mcp) {
-      baseConfig["mcp"] = mcp;
+      config["mcp"] = mcp;
     }
 
     const permission = transformPermissionsToOpenCode(
       state.settings?.permissions
     );
     if (permission) {
-      baseConfig["permission"] = permission;
-    }
-
-    let finalConfig = baseConfig;
-    if (state.settings?.overrides?.opencode) {
-      finalConfig = deepMergeConfigs(
-        baseConfig,
-        state.settings.overrides.opencode
-      );
+      config["permission"] = permission;
     }
 
     files.push({
       path: "opencode.json",
       type: "json",
-      content: finalConfig,
+      content: config,
     });
 
-    const overrideFiles = await getOverrideOutputFiles(rootDir, "opencode");
-    files.push(...overrideFiles);
-
-    return files;
+    return applyFileOverrides(files, rootDir, "opencode");
   },
 
   validate(state: UnifiedState): ValidationResult {

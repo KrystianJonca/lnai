@@ -71,12 +71,6 @@ Contains shared configuration that applies to all tools.
       "command": "npx",
       "args": ["-y", "@anthropic/mcp-server-memory"]
     }
-  },
-  "overrides": {
-    "claudeCode": { "model": "opus" },
-    "opencode": { "theme": "dark" },
-    "cursor": { "customSetting": true },
-    "copilot": { "mcpServers": { "extra": { "type": "stdio", "command": "node" } } }
   }
 }
 ```

@@ -187,20 +187,15 @@ describe("parseUnifiedConfig", () => {
     expect(state.agents).toBeNull();
   });
 
-  it("parses config with JSON overrides", async () => {
+  it("parses config with permissions", async () => {
     await copyFixture("valid/with-overrides", tempDir);
 
     const state = await parseUnifiedConfig(tempDir);
 
-    // Settings should be parsed with overrides
+    // Settings should be parsed
     expect(state.settings?.permissions?.allow).toContain("Bash(git:*)");
     expect(state.config.tools?.claudeCode?.enabled).toBe(true);
     expect(state.config.tools?.opencode?.enabled).toBe(true);
-
-    // Verify JSON overrides are parsed
-    expect(state.settings?.overrides?.claudeCode).toBeDefined();
-    expect(state.settings?.overrides?.claudeCode?.["model"]).toBe("opus");
-    expect(state.settings?.overrides?.opencode?.["theme"]).toBe("dark");
   });
 
   it("handles empty rules directory", async () => {

@@ -189,51 +189,6 @@ describe("opencodePlugin", () => {
       expect(files.find((f) => f.path === "opencode.json")).toBeDefined();
     });
 
-    describe("JSON overrides", () => {
-      it("deep merges settings from state.settings.overrides.opencode", async () => {
-        const state = createMinimalState({
-          settings: {
-            permissions: { allow: ["Bash(git:*)"] },
-            overrides: {
-              opencode: {
-                theme: "dark",
-                experimental: { feature1: true },
-              },
-            },
-          },
-        });
-
-        const files = await opencodePlugin.export(state, tempDir);
-
-        const config = files.find((f) => f.path === "opencode.json");
-        expect(config).toBeDefined();
-        const content = config?.content as Record<string, unknown>;
-        expect(content["theme"]).toBe("dark");
-        expect(content["experimental"]).toEqual({ feature1: true });
-        expect(content["$schema"]).toBe("https://opencode.ai/config.json");
-      });
-
-      it("does not include overrides from other tools", async () => {
-        const state = createMinimalState({
-          settings: {
-            permissions: { allow: ["Bash(git:*)"] },
-            overrides: {
-              claudeCode: { model: "opus" },
-              opencode: { theme: "dark" },
-            },
-          },
-        });
-
-        const files = await opencodePlugin.export(state, tempDir);
-
-        const config = files.find((f) => f.path === "opencode.json");
-        expect(config).toBeDefined();
-        const content = config?.content as Record<string, unknown>;
-        expect(content["theme"]).toBe("dark");
-        expect(content["model"]).toBeUndefined();
-      });
-    });
-
     describe("file symlinks", () => {
       it("creates symlinks for other override files", async () => {
         // Create override directory with files
@@ -256,25 +211,22 @@ describe("opencodePlugin", () => {
         expect(customConfig?.target).toBe("../../.ai/.opencode/custom/config.md");
       });
 
-      it("does not create symlink if target file already exists", async () => {
-        // Create override file
+      it("includes override symlinks for files in override directory", async () => {
+        // Create override directory with a file
         const overrideDir = path.join(tempDir, ".ai", ".opencode", "custom");
         await fs.mkdir(overrideDir, { recursive: true });
-        await fs.writeFile(path.join(overrideDir, "existing.md"), "# Override");
-
-        // Create existing file at target location
-        const targetDir = path.join(tempDir, ".opencode", "custom");
-        await fs.mkdir(targetDir, { recursive: true });
-        await fs.writeFile(path.join(targetDir, "existing.md"), "# Existing");
+        await fs.writeFile(path.join(overrideDir, "config.md"), "# Config");
 
         const state = createMinimalState();
 
         const files = await opencodePlugin.export(state, tempDir);
 
-        const existingFile = files.find(
-          (f) => f.path === ".opencode/custom/existing.md"
+        const overrideFile = files.find(
+          (f) => f.path === ".opencode/custom/config.md"
         );
-        expect(existingFile).toBeUndefined();
+        expect(overrideFile).toBeDefined();
+        expect(overrideFile?.type).toBe("symlink");
+        expect(overrideFile?.target).toBe("../../.ai/.opencode/custom/config.md");
       });
 
       it("handles nested override directories", async () => {

@@ -4,8 +4,9 @@ import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { cleanupTempDir, createTempDir } from "../__tests__/utils";
+import type { OutputFile } from "../types/index";
 import {
-  deepMergeConfigs,
+  applyFileOverrides,
   fileExists,
   getOverrideOutputFiles,
   parseJsonFile,
@@ -103,74 +104,6 @@ describe("overrides utilities", () => {
     });
   });
 
-  describe("deepMergeConfigs", () => {
-    it("merges simple objects", () => {
-      const base = { a: 1, b: 2 };
-      const override = { b: 3, c: 4 };
-
-      const result = deepMergeConfigs(base, override);
-
-      expect(result).toEqual({ a: 1, b: 3, c: 4 });
-    });
-
-    it("deep merges nested objects", () => {
-      const base = { nested: { a: 1, b: 2 } };
-      const override = { nested: { b: 3, c: 4 } };
-
-      const result = deepMergeConfigs(base, override);
-
-      expect(result).toEqual({ nested: { a: 1, b: 3, c: 4 } });
-    });
-
-    it("concatenates arrays and deduplicates", () => {
-      const base = { items: [1, 2, 3] };
-      const override = { items: [3, 4, 5] };
-
-      const result = deepMergeConfigs(base, override);
-
-      expect(result).toEqual({ items: [1, 2, 3, 4, 5] });
-    });
-
-    it("deduplicates string arrays", () => {
-      const base = { permissions: ["Bash(git:*)", "Read(.env)"] };
-      const override = { permissions: ["Bash(git:*)", "Bash(npm:*)"] };
-
-      const result = deepMergeConfigs(base, override);
-
-      expect(result).toEqual({
-        permissions: ["Bash(git:*)", "Read(.env)", "Bash(npm:*)"],
-      });
-    });
-
-    it("does not modify original objects", () => {
-      const base = { a: 1 };
-      const override = { b: 2 };
-
-      deepMergeConfigs(base, override);
-
-      expect(base).toEqual({ a: 1 });
-      expect(override).toEqual({ b: 2 });
-    });
-
-    it("handles empty base object", () => {
-      const base = {};
-      const override = { a: 1 };
-
-      const result = deepMergeConfigs(base, override);
-
-      expect(result).toEqual({ a: 1 });
-    });
-
-    it("handles empty override object", () => {
-      const base = { a: 1 };
-      const override = {};
-
-      const result = deepMergeConfigs(base, override);
-
-      expect(result).toEqual({ a: 1 });
-    });
-  });
-
   describe("fileExists", () => {
     it("returns true for existing file", async () => {
       const filePath = path.join(tempDir, "exists.txt");
@@ -230,25 +163,100 @@ describe("overrides utilities", () => {
       });
     });
 
-    it("skips files that already exist at target location", async () => {
-      const overrideDir = path.join(tempDir, ".ai", ".claude");
-      await fs.mkdir(overrideDir, { recursive: true });
-      await fs.writeFile(path.join(overrideDir, "existing.json"), "{}");
-
-      // Create the target file so it should be skipped
-      const targetDir = path.join(tempDir, ".claude");
-      await fs.mkdir(targetDir, { recursive: true });
-      await fs.writeFile(path.join(targetDir, "existing.json"), "{}");
-
-      const result = await getOverrideOutputFiles(tempDir, "claudeCode");
-
-      expect(result).toHaveLength(0);
-    });
-
     it("returns empty array when no override files exist", async () => {
       const result = await getOverrideOutputFiles(tempDir, "claudeCode");
 
       expect(result).toEqual([]);
+    });
+  });
+
+  describe("applyFileOverrides", () => {
+    it("returns generated files when no overrides exist", async () => {
+      const files: OutputFile[] = [
+        { path: ".claude/settings.json", type: "json", content: {} },
+        { path: ".claude/CLAUDE.md", type: "symlink", target: "../.ai/AGENTS.md" },
+      ];
+
+      const result = await applyFileOverrides(files, tempDir, "claudeCode");
+
+      expect(result).toEqual(files);
+    });
+
+    it("replaces generated file with override symlink when paths match", async () => {
+      // Create override file
+      const overrideDir = path.join(tempDir, ".ai", ".claude");
+      await fs.mkdir(overrideDir, { recursive: true });
+      await fs.writeFile(
+        path.join(overrideDir, "settings.json"),
+        '{"custom": true}'
+      );
+
+      const files: OutputFile[] = [
+        { path: ".claude/settings.json", type: "json", content: {} },
+        { path: ".claude/CLAUDE.md", type: "symlink", target: "../.ai/AGENTS.md" },
+      ];
+
+      const result = await applyFileOverrides(files, tempDir, "claudeCode");
+
+      expect(result).toHaveLength(2);
+      // CLAUDE.md should remain unchanged
+      expect(result.find((f) => f.path === ".claude/CLAUDE.md")).toEqual({
+        path: ".claude/CLAUDE.md",
+        type: "symlink",
+        target: "../.ai/AGENTS.md",
+      });
+      // settings.json should be replaced with override symlink
+      expect(result.find((f) => f.path === ".claude/settings.json")).toEqual({
+        path: ".claude/settings.json",
+        type: "symlink",
+        target: "../.ai/.claude/settings.json",
+      });
+    });
+
+    it("keeps generated files that have no matching override", async () => {
+      // Create override file for a different file
+      const overrideDir = path.join(tempDir, ".ai", ".claude");
+      await fs.mkdir(overrideDir, { recursive: true });
+      await fs.writeFile(path.join(overrideDir, "custom.json"), "{}");
+
+      const files: OutputFile[] = [
+        { path: ".claude/settings.json", type: "json", content: {} },
+      ];
+
+      const result = await applyFileOverrides(files, tempDir, "claudeCode");
+
+      expect(result).toHaveLength(2);
+      // Original file should be kept
+      expect(result.find((f) => f.path === ".claude/settings.json")).toEqual({
+        path: ".claude/settings.json",
+        type: "json",
+        content: {},
+      });
+      // Override file should be added
+      expect(result.find((f) => f.path === ".claude/custom.json")).toEqual({
+        path: ".claude/custom.json",
+        type: "symlink",
+        target: "../.ai/.claude/custom.json",
+      });
+    });
+
+    it("handles nested override files correctly", async () => {
+      const nestedDir = path.join(tempDir, ".ai", ".claude", "commands");
+      await fs.mkdir(nestedDir, { recursive: true });
+      await fs.writeFile(path.join(nestedDir, "deploy.md"), "# Deploy");
+
+      const files: OutputFile[] = [
+        { path: ".claude/settings.json", type: "json", content: {} },
+      ];
+
+      const result = await applyFileOverrides(files, tempDir, "claudeCode");
+
+      expect(result).toHaveLength(2);
+      expect(result.find((f) => f.path === ".claude/commands/deploy.md")).toEqual({
+        path: ".claude/commands/deploy.md",
+        type: "symlink",
+        target: "../../.ai/.claude/commands/deploy.md",
+      });
     });
   });
 });

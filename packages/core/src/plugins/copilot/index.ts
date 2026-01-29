@@ -4,10 +4,7 @@ import type {
   UnifiedState,
   ValidationResult,
 } from "../../types/index";
-import {
-  deepMergeConfigs,
-  getOverrideOutputFiles,
-} from "../../utils/overrides";
+import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
 import {
   serializeCopilotInstruction,
@@ -76,35 +73,18 @@ export const copilotPlugin: Plugin = {
       });
     }
 
-    // Generate .vscode/mcp.json if MCP servers exist or copilot overrides have mcpServers
+    // Generate .vscode/mcp.json if MCP servers exist
     const mcpConfig = transformMcpToCopilot(state.settings?.mcpServers);
-    const copilotOverrides = state.settings?.overrides?.copilot;
-    const hasMcpOverrides = copilotOverrides?.["mcpServers"] !== undefined;
 
-    if (mcpConfig || hasMcpOverrides) {
-      let mcpContent: Record<string, unknown> = mcpConfig
-        ? { inputs: mcpConfig.inputs, servers: mcpConfig.servers }
-        : { inputs: [], servers: {} };
-
-      if (copilotOverrides?.["mcpServers"]) {
-        // Override servers are passed through as-is (already in Copilot format)
-        mcpContent = deepMergeConfigs(mcpContent, {
-          servers: copilotOverrides["mcpServers"],
-        });
-      }
-
+    if (mcpConfig) {
       files.push({
         path: ".vscode/mcp.json",
         type: "json",
-        content: mcpContent,
+        content: { inputs: mcpConfig.inputs, servers: mcpConfig.servers },
       });
     }
 
-    // Handle override files from .ai/.copilot/
-    const overrideFiles = await getOverrideOutputFiles(rootDir, "copilot");
-    files.push(...overrideFiles);
-
-    return files;
+    return applyFileOverrides(files, rootDir, "copilot");
   },
 
   validate(state: UnifiedState): ValidationResult {
@@ -151,20 +131,6 @@ export const copilotPlugin: Plugin = {
             message: `MCP server "${name}" has no command or type - it will be skipped`,
           });
         }
-      }
-    }
-
-    // Check for non-mcpServers overrides (only mcpServers is supported for Copilot)
-    const copilotOverrides = state.settings?.overrides?.copilot;
-    if (copilotOverrides) {
-      const unsupportedKeys = Object.keys(copilotOverrides).filter(
-        (key) => key !== "mcpServers"
-      );
-      if (unsupportedKeys.length > 0) {
-        warnings.push({
-          path: ["settings", "overrides", "copilot"],
-          message: `GitHub Copilot only supports "mcpServers" overrides - the following will be ignored: ${unsupportedKeys.join(", ")}`,
-        });
       }
     }
 

@@ -146,8 +146,6 @@ LNAI will display warnings when unsupported features are configured.
 
 ## Overrides
 
-### File Overrides
-
 Place Copilot-specific files in `.ai/.copilot/` to have them symlinked to `.github/`:
 
 ```text
@@ -156,25 +154,4 @@ Place Copilot-specific files in `.ai/.copilot/` to have them symlinked to `.gith
     └── custom.yml → .github/workflows/custom.yml
 ```
 
-### JSON Overrides
-
-Use `overrides.copilot` in `.ai/settings.json` to add Copilot-specific MCP servers.
-
-**Note:** Only `mcpServers` is supported for Copilot JSON overrides. Other settings will be ignored with a warning.
-
-```json
-{
-  "mcpServers": {
-    "shared-server": { "command": "npx", "args": ["-y", "@example/shared"] }
-  },
-  "overrides": {
-    "copilot": {
-      "mcpServers": {
-        "copilot-only": { "type": "stdio", "command": "node", "args": ["server.js"] }
-      }
-    }
-  }
-}
-```
-
-Override servers should be in Copilot's native format (with explicit `type: "stdio"` for stdio servers).
+When an override file exists at the same path as a generated file, the override takes priority.

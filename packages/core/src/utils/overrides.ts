@@ -1,8 +1,6 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
-import deepmerge from "deepmerge";
-
 import type { ToolId } from "../constants";
 import { OVERRIDE_DIRS, TOOL_OUTPUT_DIRS, UNIFIED_DIR } from "../constants";
 import type { OutputFile } from "../types/index";
@@ -64,18 +62,6 @@ export async function parseJsonFile(
   return JSON.parse(content) as Record<string, unknown>;
 }
 
-/**
- * Deep merge two config objects. Arrays are concatenated and deduplicated.
- */
-export function deepMergeConfigs<T extends Record<string, unknown>>(
-  base: T,
-  override: Record<string, unknown>
-): T {
-  return deepmerge(base, override, {
-    arrayMerge: (target, source) => [...new Set([...target, ...source])],
-  }) as T;
-}
-
 export async function fileExists(filePath: string): Promise<boolean> {
   try {
     await fs.access(filePath);
@@ -87,8 +73,7 @@ export async function fileExists(filePath: string): Promise<boolean> {
 
 /**
  * Get OutputFile entries for tool-specific override files.
- * Creates symlinks from the tool's output directory to the .ai override directory,
- * skipping files that already exist at the target location.
+ * Creates symlinks from the tool's output directory to the .ai override directory.
  */
 export async function getOverrideOutputFiles(
   rootDir: string,
@@ -99,10 +84,6 @@ export async function getOverrideOutputFiles(
   const result: OutputFile[] = [];
 
   for (const overrideFile of overrideFiles) {
-    const targetPath = path.join(rootDir, outputDir, overrideFile.relativePath);
-    if (await fileExists(targetPath)) {
-      continue;
-    }
     const symlinkPath = `${outputDir}/${overrideFile.relativePath}`;
     const symlinkDir = path.dirname(symlinkPath);
     const sourcePath = `${UNIFIED_DIR}/${OVERRIDE_DIRS[toolId]}/${overrideFile.relativePath}`;
@@ -114,4 +95,41 @@ export async function getOverrideOutputFiles(
   }
 
   return result;
+}
+
+/**
+ * Apply file-based overrides to generated output files.
+ * When a file override exists at the same path as a generated file,
+ * the override takes priority (replaces the generated file with a symlink).
+ */
+export async function applyFileOverrides(
+  files: OutputFile[],
+  rootDir: string,
+  toolId: ToolId
+): Promise<OutputFile[]> {
+  const outputDir = TOOL_OUTPUT_DIRS[toolId];
+  const overrideFiles = await scanOverrideDirectory(rootDir, toolId);
+
+  // Create set of override paths for quick lookup
+  const overridePaths = new Set<string>();
+  const overrideOutputFiles: OutputFile[] = [];
+
+  for (const overrideFile of overrideFiles) {
+    const outputPath = `${outputDir}/${overrideFile.relativePath}`;
+    overridePaths.add(outputPath);
+
+    const symlinkDir = path.dirname(outputPath);
+    const sourcePath = `${UNIFIED_DIR}/${OVERRIDE_DIRS[toolId]}/${overrideFile.relativePath}`;
+
+    overrideOutputFiles.push({
+      path: outputPath,
+      type: "symlink",
+      target: path.relative(symlinkDir, sourcePath),
+    });
+  }
+
+  // Filter out generated files that have overrides
+  const filteredFiles = files.filter((file) => !overridePaths.has(file.path));
+
+  return [...filteredFiles, ...overrideOutputFiles];
 }

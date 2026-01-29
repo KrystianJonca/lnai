@@ -1,90 +1,11 @@
 ---
 title: Overrides
-description: Reference for tool-specific overrides
+description: Reference for tool-specific file overrides
 ---
 
 # Overrides
 
-Overrides let you customize tool-specific settings while maintaining a unified configuration.
-
-## JSON Overrides
-
-Define in `settings.json` under the `overrides` key:
-
-```json
-{
-  "permissions": { ... },
-  "mcpServers": { ... },
-  "overrides": {
-    "claudeCode": {
-      "model": "opus"
-    },
-    "opencode": {
-      "theme": "dark"
-    },
-    "cursor": {
-      "customSetting": true
-    },
-    "copilot": {
-      "mcpServers": { "extra": { "type": "stdio", "command": "node" } }
-    }
-  }
-}
-```
-
-Values are deep-merged into the generated configuration.
-
-### Merge Behavior
-
-- **Objects**: Recursively merged
-- **Arrays**: Concatenated and deduplicated
-- **Primitives**: Override wins
-
-### Common Overrides
-
-**Claude Code:**
-
-```json
-{
-  "overrides": {
-    "claudeCode": {
-      "model": "opus",
-      "customInstructions": "Additional context..."
-    }
-  }
-}
-```
-
-**OpenCode:**
-
-```json
-{
-  "overrides": {
-    "opencode": {
-      "theme": "system",
-      "keybindings": "vim"
-    }
-  }
-}
-```
-
-**GitHub Copilot:**
-
-```json
-{
-  "overrides": {
-    "copilot": {
-      "mcpServers": {
-        "copilot-only": { "type": "stdio", "command": "node", "args": ["server.js"] }
-      }
-    }
-  }
-}
-```
-
-Note: Copilot MCP server overrides should be in Copilot's native format (with explicit `type: "stdio"` for stdio servers).
-
----
+File overrides let you provide tool-specific files that take priority over generated content.
 
 ## File Overrides
 
@@ -107,7 +28,44 @@ Files are symlinked to the tool's output directory:
 | `.ai/.cursor/<path>`   | `.cursor/<path>`   |
 | `.ai/.copilot/<path>`  | `.github/<path>`   |
 
+## Override Priority
+
+When a file override exists at the same path as a generated file, the override takes priority. The generated file is replaced with a symlink to the override.
+
 ### Example
+
+Given this structure:
+
+```text
+.ai/
+├── settings.json          # Shared settings
+└── .claude/
+    └── settings.json      # Claude-specific override
+```
+
+After `lnai sync`:
+
+```text
+.claude/
+├── CLAUDE.md          # symlink → ../.ai/AGENTS.md
+└── settings.json      # symlink → ../.ai/.claude/settings.json (override wins)
+```
+
+The generated `settings.json` is replaced by a symlink to the override file.
+
+## Common Use Cases
+
+### Custom Settings
+
+Override the generated settings file with custom configuration:
+
+```text
+.ai/.claude/settings.json
+```
+
+### Additional Commands
+
+Add tool-specific commands that aren't part of the unified config:
 
 ```text
 .ai/.claude/
@@ -115,14 +73,14 @@ Files are symlinked to the tool's output directory:
     └── deploy.md
 ```
 
-After `lnai sync`:
+### Tool-Specific Workflows
+
+Add GitHub Actions or other tool-specific files:
 
 ```text
-.claude/
-├── CLAUDE.md          # from unified config
-├── settings.json      # generated
-└── commands/
-    └── deploy.md      # symlink
+.ai/.copilot/
+└── workflows/
+    └── ci.yml
 ```
 
-Use JSON overrides for settings, file overrides for additional files like custom commands.
+After sync, this becomes `.github/workflows/ci.yml`.

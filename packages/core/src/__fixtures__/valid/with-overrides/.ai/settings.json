@@ -1,17 +1,5 @@
 {
   "permissions": {
     "allow": ["Bash(git:*)"]
-  },
-  "overrides": {
-    "claudeCode": {
-      "model": "opus",
-      "customSetting": true
-    },
-    "opencode": {
-      "theme": "dark",
-      "experimental": {
-        "feature1": true
-      }
-    }
   }
 }
