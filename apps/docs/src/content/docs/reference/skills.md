@@ -68,4 +68,10 @@ Each skill directory can contain additional files if needed.
 | Tool        | Output                                         |
 | ----------- | ---------------------------------------------- |
 | Claude Code | `.claude/skills/<name>/` (symlink per skill)   |
+| Cursor      | `.cursor/skills/<name>/` (symlink per skill)   |
+| Copilot     | `.github/skills/<name>/` (symlink per skill)   |
 | OpenCode    | `.opencode/skills/<name>/` (symlink per skill) |
+
+:::note
+All tools use symlinks to the original skill directories, preserving any additional files that may exist in the skill folder.
+:::

@@ -47,4 +47,4 @@ Settings are passed through directly in Claude format:
 }
 ```
 
-Any settings in `overrides.claudeCode` are deep-merged into the output.
+To override the generated settings, place a custom `settings.json` in `.ai/.claude/`.

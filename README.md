@@ -13,7 +13,7 @@
 
 # LNAI
 
-Unified AI configuration management CLI. Define your AI tool configurations once in `.ai/` and sync them to native formats for Claude Code, Cursor, OpenCode, and more.
+Unified AI configuration management CLI. Define your AI tool configurations once in `.ai/` and sync them to native formats for Claude Code, Cursor, OpenCode, GitHub Copilot, and more.
 
 ## Documentation
 

@@ -3,10 +3,14 @@ import {
   pluginRegistry,
   type ToolId,
   validateUnifiedState,
+  type ValidationErrorDetail,
+  type ValidationWarningDetail,
 } from "@lnai/core";
 import chalk from "chalk";
 import { Command } from "commander";
 import ora from "ora";
+
+import { printValidationItems } from "../utils/format";
 
 export const validateCommand = new Command("validate")
   .description("Validate .ai/ configuration")
@@ -23,11 +27,7 @@ export const validateCommand = new Command("validate")
       if (!unifiedResult.valid) {
         spinner.fail("Validation failed");
         console.log(chalk.red("\nUnified config errors:"));
-        for (const error of unifiedResult.errors) {
-          console.log(
-            chalk.red(`  - ${error.path.join(".")}: ${error.message}`)
-          );
-        }
+        printValidationItems(unifiedResult.errors, "red");
         process.exit(1);
       }
 
@@ -36,11 +36,11 @@ export const validateCommand = new Command("validate")
 
       const toolErrors: Array<{
         plugin: string;
-        errors: typeof unifiedResult.errors;
+        errors: ValidationErrorDetail[];
       }> = [];
       const toolWarnings: Array<{
         plugin: string;
-        warnings: typeof unifiedResult.errors;
+        warnings: ValidationWarningDetail[];
       }> = [];
       const toolSkipped: Array<{
         plugin: string;
@@ -72,11 +72,7 @@ export const validateCommand = new Command("validate")
         spinner.fail("Validation failed");
         for (const { plugin, errors } of toolErrors) {
           console.log(chalk.red(`\n${plugin} errors:`));
-          for (const error of errors) {
-            console.log(
-              chalk.red(`  - ${error.path.join(".")}: ${error.message}`)
-            );
-          }
+          printValidationItems(errors, "red");
         }
         process.exit(1);
       }
@@ -85,11 +81,7 @@ export const validateCommand = new Command("validate")
 
       for (const { plugin, warnings } of toolWarnings) {
         console.log(chalk.yellow(`\n${plugin} warnings:`));
-        for (const warning of warnings) {
-          console.log(
-            chalk.yellow(`  - ${warning.path.join(".")}: ${warning.message}`)
-          );
-        }
+        printValidationItems(warnings, "yellow");
       }
 
       for (const { plugin, skipped } of toolSkipped) {

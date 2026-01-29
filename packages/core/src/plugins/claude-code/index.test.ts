@@ -170,51 +170,6 @@ describe("claudeCodePlugin", () => {
       ).toBeDefined();
     });
 
-    describe("JSON overrides", () => {
-      it("deep merges settings from state.settings.overrides.claudeCode", async () => {
-        const state = createMinimalState({
-          settings: {
-            permissions: { allow: ["Bash(git:*)"] },
-            overrides: {
-              claudeCode: {
-                model: "opus",
-                customSetting: true,
-              },
-            },
-          },
-        });
-
-        const files = await claudeCodePlugin.export(state, tempDir);
-
-        const settings = files.find((f) => f.path === ".claude/settings.json");
-        expect(settings).toBeDefined();
-        const content = settings?.content as Record<string, unknown>;
-        expect(content["model"]).toBe("opus");
-        expect(content["customSetting"]).toBe(true);
-        expect(content["permissions"]).toEqual({ allow: ["Bash(git:*)"] });
-      });
-
-      it("does not include overrides from other tools", async () => {
-        const state = createMinimalState({
-          settings: {
-            permissions: { allow: ["Bash(git:*)"] },
-            overrides: {
-              claudeCode: { model: "opus" },
-              opencode: { theme: "dark" },
-            },
-          },
-        });
-
-        const files = await claudeCodePlugin.export(state, tempDir);
-
-        const settings = files.find((f) => f.path === ".claude/settings.json");
-        expect(settings).toBeDefined();
-        const content = settings?.content as Record<string, unknown>;
-        expect(content["model"]).toBe("opus");
-        expect(content["theme"]).toBeUndefined();
-      });
-    });
-
     describe("file symlinks", () => {
       it("creates symlinks for other override files", async () => {
         // Create override directory with files
@@ -237,25 +192,28 @@ describe("claudeCodePlugin", () => {
         expect(customCommand?.target).toBe("../../.ai/.claude/commands/custom.md");
       });
 
-      it("does not create symlink if target file already exists", async () => {
-        // Create override file
-        const overrideDir = path.join(tempDir, ".ai", ".claude", "commands");
+      it("replaces generated file with override symlink when paths match", async () => {
+        // Create override file that matches a generated file path
+        const overrideDir = path.join(tempDir, ".ai", ".claude");
         await fs.mkdir(overrideDir, { recursive: true });
-        await fs.writeFile(path.join(overrideDir, "existing.md"), "# Override");
+        await fs.writeFile(
+          path.join(overrideDir, "settings.json"),
+          '{"custom": true}'
+        );
 
-        // Create existing file at target location
-        const targetDir = path.join(tempDir, ".claude", "commands");
-        await fs.mkdir(targetDir, { recursive: true });
-        await fs.writeFile(path.join(targetDir, "existing.md"), "# Existing");
-
-        const state = createMinimalState();
+        const state = createMinimalState({
+          settings: {
+            permissions: { allow: ["Bash(git:*)"] },
+          },
+        });
 
         const files = await claudeCodePlugin.export(state, tempDir);
 
-        const existingFile = files.find(
-          (f) => f.path === ".claude/commands/existing.md"
-        );
-        expect(existingFile).toBeUndefined();
+        // Should have the override symlink, not the generated file
+        const settings = files.find((f) => f.path === ".claude/settings.json");
+        expect(settings).toBeDefined();
+        expect(settings?.type).toBe("symlink");
+        expect(settings?.target).toBe("../.ai/.claude/settings.json");
       });
 
       it("handles nested override directories", async () => {

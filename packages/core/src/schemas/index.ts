@@ -21,19 +21,12 @@ export const toolConfigSchema = z.object({
   versionControl: z.boolean().optional().default(false),
 });
 
-export const toolIdSchema = z.enum(["claudeCode", "opencode", "cursor"]);
+export const toolIdSchema = z.enum(["claudeCode", "opencode", "cursor", "copilot"]);
 
 /** Settings configuration (Claude format as source of truth) */
 export const settingsSchema = z.object({
   permissions: permissionsSchema.optional(),
   mcpServers: z.record(z.string(), mcpServerSchema).optional(),
-  overrides: z
-    .object({
-      claudeCode: z.record(z.string(), z.unknown()).optional(),
-      opencode: z.record(z.string(), z.unknown()).optional(),
-      cursor: z.record(z.string(), z.unknown()).optional(),
-    })
-    .optional(),
 });
 
 /** Main config.json structure. Uses partial object to allow partial tool configs. */
@@ -43,6 +36,7 @@ export const configSchema = z.object({
       claudeCode: toolConfigSchema,
       opencode: toolConfigSchema,
       cursor: toolConfigSchema,
+      copilot: toolConfigSchema,
     })
     .partial()
     .optional(),

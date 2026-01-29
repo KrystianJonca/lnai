@@ -1,13 +1,11 @@
 import { TOOL_OUTPUT_DIRS, UNIFIED_DIR } from "../../constants";
 import type {
   OutputFile,
+  Permissions,
   UnifiedState,
   ValidationResult,
 } from "../../types/index";
-import {
-  deepMergeConfigs,
-  getOverrideOutputFiles,
-} from "../../utils/overrides";
+import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
 import {
   serializeCursorRule,
@@ -31,12 +29,10 @@ export const cursorPlugin: Plugin = {
   name: "Cursor",
 
   async detect(_rootDir: string): Promise<boolean> {
-    // TODO: Implement in v0.2
     return false;
   },
 
   async import(_rootDir: string): Promise<Partial<UnifiedState> | null> {
-    // TODO: Implement in v0.2
     return null;
   },
 
@@ -80,55 +76,20 @@ export const cursorPlugin: Plugin = {
       });
     }
 
-    // Generate mcp.json if MCP servers exist or cursor overrides have mcpServers
+    // Generate mcp.json if MCP servers exist
     const mcpServers = transformMcpToCursor(state.settings?.mcpServers);
-    const cursorOverrides = state.settings?.overrides?.cursor;
-    const hasMcpOverrides = cursorOverrides?.["mcpServers"] !== undefined;
 
-    if (mcpServers || hasMcpOverrides) {
-      let mcpContent: Record<string, unknown> = mcpServers
-        ? { mcpServers }
-        : {};
-
-      if (cursorOverrides?.["mcpServers"]) {
-        mcpContent = deepMergeConfigs(mcpContent, {
-          mcpServers: cursorOverrides["mcpServers"],
-        });
-      }
-
+    if (mcpServers) {
       files.push({
         path: `${outputDir}/mcp.json`,
         type: "json",
-        content: mcpContent,
+        content: { mcpServers },
       });
     }
 
-    // Generate cli.json if permissions exist or cursor overrides have non-mcpServers keys
-    const permissionsResult = transformPermissionsToCursor(
-      state.settings?.permissions
-    );
-    const hasCliOverrides =
-      cursorOverrides !== undefined &&
-      Object.keys(cursorOverrides).some((key) => key !== "mcpServers");
-
-    if (permissionsResult.permissions || hasCliOverrides) {
-      let cliContent: Record<string, unknown> = permissionsResult.permissions
-        ? { permissions: permissionsResult.permissions }
-        : {};
-
-      if (cursorOverrides) {
-        // Extract all non-mcpServers keys for cli.json (permissions + custom fields)
-        const cliOverrides: Record<string, unknown> = {};
-        for (const [key, value] of Object.entries(cursorOverrides)) {
-          if (key !== "mcpServers") {
-            cliOverrides[key] = value;
-          }
-        }
-        if (Object.keys(cliOverrides).length > 0) {
-          cliContent = deepMergeConfigs(cliContent, cliOverrides);
-        }
-      }
-
+    // Generate cli.json if permissions exist
+    const cliContent = buildCliContent(state.settings?.permissions);
+    if (cliContent) {
       files.push({
         path: `${outputDir}/cli.json`,
         type: "json",
@@ -136,11 +97,7 @@ export const cursorPlugin: Plugin = {
       });
     }
 
-    // Handle override files from .ai/.cursor/
-    const overrideFiles = await getOverrideOutputFiles(rootDir, "cursor");
-    files.push(...overrideFiles);
-
-    return files;
+    return applyFileOverrides(files, rootDir, "cursor");
   },
 
   validate(state: UnifiedState): ValidationResult {
@@ -183,3 +140,19 @@ export const cursorPlugin: Plugin = {
     return { valid: true, errors: [], warnings, skipped: [] };
   },
 };
+
+/**
+ * Build CLI config content from permissions.
+ * Returns undefined if there's no content to generate.
+ */
+function buildCliContent(
+  permissions: Permissions | undefined
+): Record<string, unknown> | undefined {
+  const permissionsResult = transformPermissionsToCursor(permissions);
+
+  if (!permissionsResult.permissions) {
+    return undefined;
+  }
+
+  return { permissions: permissionsResult.permissions };
+}

@@ -58,4 +58,4 @@ opencode.json          # Generated (at project root)
 | `env: {}`                 | `environment: {}`                 |
 | `${VAR}`                  | `{env:VAR}`                       |
 
-Any settings in `overrides.opencode` are deep-merged into the output.
+Place OpenCode-specific files in `.ai/.opencode/` to have them symlinked to `.opencode/`.

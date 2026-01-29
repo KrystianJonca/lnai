@@ -1,14 +1,13 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
+import { setupTempDirFixture } from "../__tests__/setup";
 import {
-  cleanupTempDir,
   createFullConfig,
   createInvalidConfig,
   createMinimalConfig,
-  createTempDir,
 } from "../__tests__/utils";
 
-// Mock ora and chalk
+// Mock ora and chalk to avoid spinner output in tests
 vi.mock("ora", () => ({
   default: () => ({
     start: () => ({ succeed: vi.fn(), fail: vi.fn() }),
@@ -35,25 +34,13 @@ import {
 } from "@lnai/core";
 
 describe("validate command logic", () => {
-  let tempDir: string;
-  let originalCwd: string;
-
-  beforeEach(async () => {
-    tempDir = await createTempDir();
-    originalCwd = process.cwd();
-    process.chdir(tempDir);
-  });
-
-  afterEach(async () => {
-    process.chdir(originalCwd);
-    await cleanupTempDir(tempDir);
-  });
+  const { getTempDir } = setupTempDirFixture();
 
   describe("parseUnifiedConfig", () => {
     it("parses minimal configuration successfully", async () => {
-      await createMinimalConfig(tempDir);
+      await createMinimalConfig(getTempDir());
 
-      const state = await parseUnifiedConfig(tempDir);
+      const state = await parseUnifiedConfig(getTempDir());
 
       expect(state.config).toBeDefined();
       expect(state.config.tools).toBeDefined();
@@ -61,9 +48,9 @@ describe("validate command logic", () => {
     });
 
     it("parses full configuration with settings and agents", async () => {
-      await createFullConfig(tempDir);
+      await createFullConfig(getTempDir());
 
-      const state = await parseUnifiedConfig(tempDir);
+      const state = await parseUnifiedConfig(getTempDir());
 
       expect(state.config).toBeDefined();
       expect(state.settings).toBeDefined();
@@ -72,21 +59,21 @@ describe("validate command logic", () => {
     });
 
     it("throws error for missing .ai/ directory", async () => {
-      await expect(parseUnifiedConfig(tempDir)).rejects.toThrow();
+      await expect(parseUnifiedConfig(getTempDir())).rejects.toThrow();
     });
 
     it("throws error for invalid JSON", async () => {
-      await createInvalidConfig(tempDir);
+      await createInvalidConfig(getTempDir());
 
-      await expect(parseUnifiedConfig(tempDir)).rejects.toThrow();
+      await expect(parseUnifiedConfig(getTempDir())).rejects.toThrow();
     });
   });
 
   describe("validateUnifiedState", () => {
     it("validates minimal configuration as valid", async () => {
-      await createMinimalConfig(tempDir);
+      await createMinimalConfig(getTempDir());
 
-      const state = await parseUnifiedConfig(tempDir);
+      const state = await parseUnifiedConfig(getTempDir());
       const result = validateUnifiedState(state);
 
       expect(result.valid).toBe(true);
@@ -94,9 +81,9 @@ describe("validate command logic", () => {
     });
 
     it("validates full configuration as valid", async () => {
-      await createFullConfig(tempDir);
+      await createFullConfig(getTempDir());
 
-      const state = await parseUnifiedConfig(tempDir);
+      const state = await parseUnifiedConfig(getTempDir());
       const result = validateUnifiedState(state);
 
       expect(result.valid).toBe(true);
@@ -106,9 +93,9 @@ describe("validate command logic", () => {
 
   describe("plugin validation", () => {
     it("validates configuration for all registered plugins", async () => {
-      await createMinimalConfig(tempDir);
+      await createMinimalConfig(getTempDir());
 
-      const state = await parseUnifiedConfig(tempDir);
+      const state = await parseUnifiedConfig(getTempDir());
       const tools = pluginRegistry.getIds();
 
       for (const toolId of tools) {
@@ -122,9 +109,9 @@ describe("validate command logic", () => {
     });
 
     it("reports skipped features for claudeCode plugin", async () => {
-      await createMinimalConfig(tempDir);
+      await createMinimalConfig(getTempDir());
 
-      const state = await parseUnifiedConfig(tempDir);
+      const state = await parseUnifiedConfig(getTempDir());
       const plugin = pluginRegistry.get("claudeCode");
 
       if (plugin) {
@@ -137,9 +124,9 @@ describe("validate command logic", () => {
 
   describe("--tools flag logic", () => {
     it("can filter to specific tools for validation", async () => {
-      await createMinimalConfig(tempDir);
+      await createMinimalConfig(getTempDir());
 
-      const state = await parseUnifiedConfig(tempDir);
+      const state = await parseUnifiedConfig(getTempDir());
 
       // Test filtering to only claudeCode
       const claudePlugin = pluginRegistry.get("claudeCode");
@@ -150,7 +137,7 @@ describe("validate command logic", () => {
     });
 
     it("handles unknown tool IDs gracefully", async () => {
-      await createMinimalConfig(tempDir);
+      await createMinimalConfig(getTempDir());
 
       const unknownPlugin = pluginRegistry.get(
         "unknownTool" as Parameters<typeof pluginRegistry.get>[0]

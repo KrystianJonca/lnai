@@ -1,6 +1,6 @@
 {
   "name": "@lnai/core",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Core library for LNAI - unified AI config management",
   "type": "module",
   "license": "MIT",
@@ -21,6 +21,8 @@
     "claude",
     "cursor",
     "opencode",
+    "copilot",
+    "github-copilot",
     "cli",
     "ai-tools"
   ],
@@ -44,7 +46,6 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "deepmerge": "^4.3.1",
     "gray-matter": "^4.0.3",
     "zod": "^4.3.6"
   },
