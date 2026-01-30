@@ -6,6 +6,15 @@
   <a href="https://www.npmjs.com/package/lnai">
     <img alt="npm version" src="https://img.shields.io/npm/v/lnai">
   </a>
+  <a href="https://www.npmjs.com/package/lnai">
+    <img alt="npm downloads" src="https://img.shields.io/npm/dm/lnai">
+  </a>
+  <a href="https://github.com/KrystianJonca/lnai/actions/workflows/ci.yml">
+    <img alt="build status" src="https://img.shields.io/github/actions/workflow/status/KrystianJonca/lnai/ci.yml?branch=main">
+  </a>
+  <a href="https://github.com/KrystianJonca/lnai/blob/main/LICENSE">
+    <img alt="license" src="https://img.shields.io/github/license/KrystianJonca/lnai">
+  </a>
   <a href="https://github.com/KrystianJonca/lnai/stargazers">
     <img alt="GitHub stars" src="https://img.shields.io/github/stars/KrystianJonca/lnai?style=social">
   </a>
@@ -13,47 +22,36 @@
 
 # LNAI
 
-Unified AI configuration management CLI. Define your AI tool configurations once in `.ai/` and sync them to native formats for Claude Code, Cursor, OpenCode, GitHub Copilot, and more.
+Stop maintaining separate config files for every AI coding tool. Define once in `.ai/`, sync everywhere.
 
-## Documentation
+## Why LNAI?
 
-See the [documentation](https://lnai.sh) for detailed guides.
+- **One source of truth** — Write your project rules, MCP servers, and permissions once
+- **Works with your tools** — Syncs to native formats each tool actually reads
+- **Stay in sync** — Update `.ai/` and run `lnai sync` to propagate changes instantly
 
-## Installation
+## Supported Tools
 
-```bash
-npm install -g lnai
-```
+| Tool | Config Generated |
+|------|------------------|
+| Claude Code | `.claude/` |
+| Cursor | `.cursor/` |
+| GitHub Copilot | `.github/copilot-instructions.md` |
+| OpenCode | `.opencode/` |
 
 ## Quick Start
 
 ```bash
-# Initialize a new .ai/ configuration
-lnai init
+npm install -g lnai
 
-# Validate your configuration
-lnai validate
-
-# Sync to native tool configs
-lnai sync
+lnai init      # Create .ai/ configuration
+lnai validate  # Check for errors
+lnai sync      # Export to native tool configs
 ```
 
-## Commands
+## Documentation
 
-- `lnai init` - Create a new `.ai/` configuration directory
-- `lnai validate` - Validate your `.ai/` configuration
-- `lnai sync` - Export `.ai/` to native tool configs
-
-## Configuration Structure
-
-```
-.ai/
-├── config.json      # Tool settings and enabled tools
-├── settings.json    # Permissions and MCP servers
-├── AGENTS.md        # Project instructions
-├── rules/           # Path-based rules
-└── skills/          # Custom commands
-```
+Full guides and configuration reference at [lnai.sh](https://lnai.sh)
 
 ## License
 
