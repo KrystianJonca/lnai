@@ -17,6 +17,7 @@ export interface InitOptions {
   tools?: ToolId[];
   minimal?: boolean;
   force?: boolean;
+  versionControl?: Record<ToolId, boolean>;
 }
 
 export interface InitResult {
@@ -26,11 +27,12 @@ export interface InitResult {
 export async function initUnifiedConfig(
   options: InitOptions
 ): Promise<InitResult> {
-  const { rootDir, tools, minimal = false, force = false } = options;
+  const { rootDir, tools, minimal = false, force = false, versionControl } =
+    options;
   const aiDir = path.join(rootDir, UNIFIED_DIR);
   const created: string[] = [];
 
-  const config = generateDefaultConfig(tools);
+  const config = generateDefaultConfig(tools, versionControl);
 
   const exists = await hasUnifiedConfig(rootDir);
   if (exists && !force) {
@@ -80,7 +82,10 @@ export async function hasUnifiedConfig(rootDir: string): Promise<boolean> {
   }
 }
 
-export function generateDefaultConfig(tools?: ToolId[]): Config {
+export function generateDefaultConfig(
+  tools?: ToolId[],
+  versionControl?: Record<ToolId, boolean>
+): Config {
   if (tools) {
     const validation = validateToolIds(tools);
     if (!validation.valid) {
@@ -99,7 +104,7 @@ export function generateDefaultConfig(tools?: ToolId[]): Config {
   for (const toolId of TOOL_IDS) {
     toolsConfig[toolId] = {
       enabled: enabledTools.includes(toolId),
-      versionControl: false,
+      versionControl: versionControl?.[toolId] ?? false,
     };
   }
 

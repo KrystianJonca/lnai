@@ -26,7 +26,12 @@ vi.mock("chalk", () => ({
 }));
 
 // Import after mocking
-import { hasUnifiedConfig, initUnifiedConfig, UNIFIED_DIR } from "@lnai/core";
+import {
+  hasUnifiedConfig,
+  initUnifiedConfig,
+  type ToolId,
+  UNIFIED_DIR,
+} from "@lnai/core";
 
 describe("init command logic", () => {
   const { getTempDir } = setupTempDirFixture();
@@ -110,7 +115,10 @@ describe("init command logic", () => {
       await fs.writeFile(configPath, '{"modified": true}');
 
       // Remove and re-init (simulating --force)
-      await fs.rm(path.join(getTempDir(), ".ai"), { recursive: true, force: true });
+      await fs.rm(path.join(getTempDir(), ".ai"), {
+        recursive: true,
+        force: true,
+      });
       await initUnifiedConfig({ rootDir: getTempDir() });
 
       const content = await fs.readFile(configPath, "utf-8");
@@ -118,6 +126,68 @@ describe("init command logic", () => {
 
       expect(config.tools).toBeDefined();
       expect(config.modified).toBeUndefined();
+    });
+  });
+
+  describe("versionControl option", () => {
+    it("sets versionControl to false by default", async () => {
+      await initUnifiedConfig({ rootDir: getTempDir() });
+
+      const configPath = path.join(getTempDir(), ".ai", "config.json");
+      const content = await fs.readFile(configPath, "utf-8");
+      const config = JSON.parse(content);
+
+      expect(config.tools.claudeCode.versionControl).toBe(false);
+      expect(config.tools.opencode.versionControl).toBe(false);
+      expect(config.tools.cursor.versionControl).toBe(false);
+      expect(config.tools.copilot.versionControl).toBe(false);
+    });
+
+    it("respects per-tool versionControl settings", async () => {
+      const versionControl: Record<ToolId, boolean> = {
+        claudeCode: true,
+        opencode: false,
+        cursor: true,
+        copilot: false,
+      };
+
+      await initUnifiedConfig({
+        rootDir: getTempDir(),
+        versionControl,
+      });
+
+      const configPath = path.join(getTempDir(), ".ai", "config.json");
+      const content = await fs.readFile(configPath, "utf-8");
+      const config = JSON.parse(content);
+
+      expect(config.tools.claudeCode.versionControl).toBe(true);
+      expect(config.tools.opencode.versionControl).toBe(false);
+      expect(config.tools.cursor.versionControl).toBe(true);
+      expect(config.tools.copilot.versionControl).toBe(false);
+    });
+
+    it("applies versionControl with specific tools", async () => {
+      const versionControl: Record<ToolId, boolean> = {
+        claudeCode: true,
+        opencode: false,
+        cursor: false,
+        copilot: false,
+      };
+
+      await initUnifiedConfig({
+        rootDir: getTempDir(),
+        tools: ["claudeCode"],
+        versionControl,
+      });
+
+      const configPath = path.join(getTempDir(), ".ai", "config.json");
+      const content = await fs.readFile(configPath, "utf-8");
+      const config = JSON.parse(content);
+
+      expect(config.tools.claudeCode.enabled).toBe(true);
+      expect(config.tools.claudeCode.versionControl).toBe(true);
+      expect(config.tools.opencode.enabled).toBe(false);
+      expect(config.tools.opencode.versionControl).toBe(false);
     });
   });
 });
