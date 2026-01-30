@@ -47,6 +47,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
+    "@inquirer/prompts": "^7.0.0",
     "@lnai/core": "workspace:*",
     "chalk": "^5.6.2",
     "commander": "^14.0.2",

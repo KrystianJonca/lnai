@@ -21,8 +21,11 @@ Initialize a new `.ai/` configuration directory.
 lnai init [options]
 ```
 
+When run interactively (in a terminal), `lnai init` prompts you to select which tools to configure and how to handle version control. Use `-y` to skip prompts and use defaults.
+
 | Option                   | Description                                 |
 | ------------------------ | ------------------------------------------- |
+| `-y, --yes`              | Skip prompts and use defaults               |
 | `--force`                | Overwrite existing .ai/ directory           |
 | `--minimal`              | Create only config.json (no subdirectories) |
 | `-t, --tools <tools...>` | Enable only specific tools                  |
@@ -30,7 +33,8 @@ lnai init [options]
 ### Examples
 
 ```bash
-lnai init                        # Create full .ai/ structure
+lnai init                        # Interactive mode (prompts for tools)
+lnai init -y                     # Non-interactive, use defaults
 lnai init --minimal              # Create only config.json
 lnai init --tools claudeCode     # Enable only Claude Code
 lnai init --force                # Overwrite existing config
