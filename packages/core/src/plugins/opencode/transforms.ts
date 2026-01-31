@@ -34,7 +34,6 @@ export function transformMcpToOpenCode(
   const result: Record<string, OpenCodeMcpServer> = {};
 
   for (const [name, server] of Object.entries(servers)) {
-
     if (server.type === "http" || server.type === "sse") {
       const openCodeServer: OpenCodeMcpServer = {
         type: "remote",

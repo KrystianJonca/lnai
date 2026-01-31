@@ -133,9 +133,7 @@ describe("cursorPlugin", () => {
 
       const files = await cursorPlugin.export(state, tempDir);
 
-      const deploySkill = files.find(
-        (f) => f.path === ".cursor/skills/deploy"
-      );
+      const deploySkill = files.find((f) => f.path === ".cursor/skills/deploy");
       const testSkill = files.find((f) => f.path === ".cursor/skills/test");
 
       expect(deploySkill).toBeDefined();
@@ -197,7 +195,9 @@ describe("cursorPlugin", () => {
         expect(mcpJson).toBeDefined();
         expect(mcpJson?.type).toBe("json");
 
-        const content = mcpJson?.content as { mcpServers: Record<string, unknown> };
+        const content = mcpJson?.content as {
+          mcpServers: Record<string, unknown>;
+        };
         expect(content.mcpServers).toBeDefined();
         expect(content.mcpServers["db"]).toBeDefined();
       });
@@ -400,10 +400,11 @@ describe("cursorPlugin", () => {
         );
         expect(nestedFile).toBeDefined();
         expect(nestedFile?.type).toBe("symlink");
-        expect(nestedFile?.target).toBe("../../../.ai/.cursor/deep/nested/file.md");
+        expect(nestedFile?.target).toBe(
+          "../../../.ai/.cursor/deep/nested/file.md"
+        );
       });
     });
-
   });
 
   describe("validate", () => {
@@ -463,9 +464,7 @@ describe("cursorPlugin", () => {
       const result = cursorPlugin.validate(state);
 
       expect(result.warnings.length).toBeGreaterThanOrEqual(1);
-      const askWarning = result.warnings.find((w) =>
-        w.message.includes("ask")
-      );
+      const askWarning = result.warnings.find((w) => w.message.includes("ask"));
       expect(askWarning).toBeDefined();
       expect(askWarning?.message).toContain("allow");
     });
@@ -482,9 +481,7 @@ describe("cursorPlugin", () => {
 
       const result = cursorPlugin.validate(state);
 
-      const askWarning = result.warnings.find((w) =>
-        w.message.includes("ask")
-      );
+      const askWarning = result.warnings.find((w) => w.message.includes("ask"));
       expect(askWarning).toBeUndefined();
     });
   });

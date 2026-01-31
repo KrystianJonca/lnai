@@ -179,9 +179,7 @@ describe("copilotPlugin", () => {
 
       const files = await copilotPlugin.export(state, tempDir);
 
-      const deploySkill = files.find(
-        (f) => f.path === ".github/skills/deploy"
-      );
+      const deploySkill = files.find((f) => f.path === ".github/skills/deploy");
       const testSkill = files.find((f) => f.path === ".github/skills/test");
 
       expect(deploySkill).toBeDefined();
@@ -378,13 +376,17 @@ describe("copilotPlugin", () => {
         );
         expect(customConfig).toBeDefined();
         expect(customConfig?.type).toBe("symlink");
-        expect(customConfig?.target).toBe("../../.ai/.copilot/custom/config.md");
+        expect(customConfig?.target).toBe(
+          "../../.ai/.copilot/custom/config.md"
+        );
       });
 
       it("replaces generated file with override symlink when paths match", async () => {
         // Create override file that matches a generated file path
         const overrideDir = path.join(tempDir, ".ai", ".copilot");
-        await fs.mkdir(path.join(overrideDir, "instructions"), { recursive: true });
+        await fs.mkdir(path.join(overrideDir, "instructions"), {
+          recursive: true,
+        });
         await fs.writeFile(
           path.join(overrideDir, "instructions", "typescript.instructions.md"),
           "# Custom Instructions"
@@ -439,7 +441,6 @@ describe("copilotPlugin", () => {
         );
       });
     });
-
   });
 
   describe("validate", () => {

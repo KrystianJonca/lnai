@@ -30,7 +30,9 @@ describe("transformRuleToWindsurf", () => {
 
     const result = transformRuleToWindsurf(rule);
 
-    expect(result.content).toBe("# Testing Guidelines\n\nWrite comprehensive tests.");
+    expect(result.content).toBe(
+      "# Testing Guidelines\n\nWrite comprehensive tests."
+    );
   });
 });
 

@@ -11,9 +11,10 @@ export interface WindsurfRuleFrontmatter {
  * Transform LNAI rule to Windsurf rule format.
  * LNAI rules always have paths, but we use manual trigger mode.
  */
-export function transformRuleToWindsurf(
-  rule: MarkdownFile<RuleFrontmatter>
-): { frontmatter: WindsurfRuleFrontmatter; content: string } {
+export function transformRuleToWindsurf(rule: MarkdownFile<RuleFrontmatter>): {
+  frontmatter: WindsurfRuleFrontmatter;
+  content: string;
+} {
   const frontmatter: WindsurfRuleFrontmatter = {
     trigger: "manual",
   };
@@ -44,7 +45,9 @@ export function serializeWindsurfRule(
 
   if (frontmatter.description) {
     // Quote description to handle special YAML characters (colons, #, quotes, etc.)
-    const escaped = frontmatter.description.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    const escaped = frontmatter.description
+      .replace(/\\/g, "\\\\")
+      .replace(/"/g, '\\"');
     lines.push(`description: "${escaped}"`);
   }
 

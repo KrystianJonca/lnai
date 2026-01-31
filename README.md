@@ -32,13 +32,13 @@ Stop maintaining separate config files for every AI coding tool. Define once in 
 
 ## Supported Tools
 
-| Tool | Config Generated |
-|------|------------------|
-| Claude Code | `.claude/` |
-| Cursor | `.cursor/` |
+| Tool           | Config Generated                  |
+| -------------- | --------------------------------- |
+| Claude Code    | `.claude/`                        |
+| Cursor         | `.cursor/`                        |
 | GitHub Copilot | `.github/copilot-instructions.md` |
-| OpenCode | `.opencode/` |
-| Windsurf | `.windsurf/` |
+| OpenCode       | `.opencode/`                      |
+| Windsurf       | `.windsurf/`                      |
 
 ## Quick Start
 

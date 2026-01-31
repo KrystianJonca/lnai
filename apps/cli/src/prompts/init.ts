@@ -52,15 +52,21 @@ async function promptForVersionControl(
   const result = {} as Record<ToolId, boolean>;
 
   if (mode === "ignore-all") {
-    for (const tool of tools) {result[tool] = false;}
+    for (const tool of tools) {
+      result[tool] = false;
+    }
   } else if (mode === "version-all") {
-    for (const tool of tools) {result[tool] = true;}
+    for (const tool of tools) {
+      result[tool] = true;
+    }
   } else {
     const versionControlled = await checkbox({
       message: "Select tools to version control:",
       choices: tools.map((id) => ({ name: TOOL_DISPLAY_NAMES[id], value: id })),
     });
-    for (const tool of tools) {result[tool] = versionControlled.includes(tool);}
+    for (const tool of tools) {
+      result[tool] = versionControlled.includes(tool);
+    }
   }
 
   return result;

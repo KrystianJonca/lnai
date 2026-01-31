@@ -118,9 +118,7 @@ describe("windsurfPlugin", () => {
 
       const files = await windsurfPlugin.export(state, "/tmp");
 
-      const skillFile = files.find(
-        (f) => f.path === ".windsurf/skills/deploy"
-      );
+      const skillFile = files.find((f) => f.path === ".windsurf/skills/deploy");
       expect(skillFile).toBeDefined();
       expect(skillFile?.type).toBe("symlink");
       expect(skillFile?.target).toBe("../../.ai/skills/deploy");

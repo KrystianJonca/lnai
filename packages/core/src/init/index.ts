@@ -27,8 +27,13 @@ export interface InitResult {
 export async function initUnifiedConfig(
   options: InitOptions
 ): Promise<InitResult> {
-  const { rootDir, tools, minimal = false, force = false, versionControl } =
-    options;
+  const {
+    rootDir,
+    tools,
+    minimal = false,
+    force = false,
+    versionControl,
+  } = options;
   const aiDir = path.join(rootDir, UNIFIED_DIR);
   const created: string[] = [];
 

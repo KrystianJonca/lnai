@@ -149,7 +149,13 @@ describe("overrides utilities", () => {
     });
 
     it("creates symlink with correct relative path for nested file", async () => {
-      const nestedDir = path.join(tempDir, ".ai", ".claude", "commands", "deep");
+      const nestedDir = path.join(
+        tempDir,
+        ".ai",
+        ".claude",
+        "commands",
+        "deep"
+      );
       await fs.mkdir(nestedDir, { recursive: true });
       await fs.writeFile(path.join(nestedDir, "nested.md"), "# Nested");
 
@@ -174,7 +180,11 @@ describe("overrides utilities", () => {
     it("returns generated files when no overrides exist", async () => {
       const files: OutputFile[] = [
         { path: ".claude/settings.json", type: "json", content: {} },
-        { path: ".claude/CLAUDE.md", type: "symlink", target: "../.ai/AGENTS.md" },
+        {
+          path: ".claude/CLAUDE.md",
+          type: "symlink",
+          target: "../.ai/AGENTS.md",
+        },
       ];
 
       const result = await applyFileOverrides(files, tempDir, "claudeCode");
@@ -193,7 +203,11 @@ describe("overrides utilities", () => {
 
       const files: OutputFile[] = [
         { path: ".claude/settings.json", type: "json", content: {} },
-        { path: ".claude/CLAUDE.md", type: "symlink", target: "../.ai/AGENTS.md" },
+        {
+          path: ".claude/CLAUDE.md",
+          type: "symlink",
+          target: "../.ai/AGENTS.md",
+        },
       ];
 
       const result = await applyFileOverrides(files, tempDir, "claudeCode");
@@ -252,7 +266,9 @@ describe("overrides utilities", () => {
       const result = await applyFileOverrides(files, tempDir, "claudeCode");
 
       expect(result).toHaveLength(2);
-      expect(result.find((f) => f.path === ".claude/commands/deploy.md")).toEqual({
+      expect(
+        result.find((f) => f.path === ".claude/commands/deploy.md")
+      ).toEqual({
         path: ".claude/commands/deploy.md",
         type: "symlink",
         target: "../../.ai/.claude/commands/deploy.md",

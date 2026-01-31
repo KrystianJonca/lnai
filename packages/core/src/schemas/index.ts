@@ -21,7 +21,13 @@ export const toolConfigSchema = z.object({
   versionControl: z.boolean().optional().default(false),
 });
 
-export const toolIdSchema = z.enum(["claudeCode", "opencode", "cursor", "copilot", "windsurf"]);
+export const toolIdSchema = z.enum([
+  "claudeCode",
+  "opencode",
+  "cursor",
+  "copilot",
+  "windsurf",
+]);
 
 /** Settings configuration (Claude format as source of truth) */
 export const settingsSchema = z.object({

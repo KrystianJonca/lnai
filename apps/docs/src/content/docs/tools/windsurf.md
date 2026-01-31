@@ -19,23 +19,25 @@ AGENTS.md                    # Symlink → .ai/AGENTS.md (at project root)
 
 ## File Mapping
 
-| Source                | Output                       | Type        |
-| --------------------- | ---------------------------- | ----------- |
-| `.ai/AGENTS.md`       | `AGENTS.md`                  | Symlink     |
-| `.ai/rules/<name>.md` | `.windsurf/rules/<name>.md`  | Transformed |
-| `.ai/skills/<name>/`  | `.windsurf/skills/<name>/`   | Symlink     |
-| `.ai/.windsurf/<path>`| `.windsurf/<path>`           | Symlink     |
+| Source                 | Output                      | Type        |
+| ---------------------- | --------------------------- | ----------- |
+| `.ai/AGENTS.md`        | `AGENTS.md`                 | Symlink     |
+| `.ai/rules/<name>.md`  | `.windsurf/rules/<name>.md` | Transformed |
+| `.ai/skills/<name>/`   | `.windsurf/skills/<name>/`  | Symlink     |
+| `.ai/.windsurf/<path>` | `.windsurf/<path>`          | Symlink     |
 
 ## Rules Transformation
 
 Rules are transformed to Windsurf format with `trigger: manual` frontmatter:
 
 ```markdown
-<!-- Input: .ai/rules/typescript.md -->
----
+## <!-- Input: .ai/rules/typescript.md -->
+
 paths:
-  - "**/*.ts"
-  - "**/*.tsx"
+
+- "\*_/_.ts"
+- "\*_/_.tsx"
+
 ---
 
 # TypeScript Guidelines
@@ -44,20 +46,19 @@ Use strict TypeScript...
 ```
 
 ```markdown
-<!-- Output: .windsurf/rules/typescript.md -->
----
-trigger: manual
----
+## <!-- Output: .windsurf/rules/typescript.md -->
+
+## trigger: manual
 
 # TypeScript Guidelines
 
 Use strict TypeScript...
 ```
 
-| LNAI Field | Windsurf Field | Notes                                    |
-| ---------- | -------------- | ---------------------------------------- |
-| `paths`    | (not mapped)   | Windsurf uses trigger modes instead      |
-| —          | `trigger`      | Always set to `manual`                   |
+| LNAI Field | Windsurf Field | Notes                               |
+| ---------- | -------------- | ----------------------------------- |
+| `paths`    | (not mapped)   | Windsurf uses trigger modes instead |
+| —          | `trigger`      | Always set to `manual`              |
 
 **Note:** Rules are exported with `trigger: manual` and require explicit `@mention` to invoke in Windsurf. This ensures predictable behavior across tools.
 
@@ -65,12 +66,12 @@ Use strict TypeScript...
 
 Windsurf supports these trigger modes (only `manual` is used by LNAI):
 
-| Trigger          | Description                              |
-| ---------------- | ---------------------------------------- |
-| `manual`         | Requires explicit @mention to invoke     |
-| `always_on`      | Always active in conversations           |
-| `model_decision` | AI decides when to apply                 |
-| `glob`           | Triggered by file patterns               |
+| Trigger          | Description                          |
+| ---------------- | ------------------------------------ |
+| `manual`         | Requires explicit @mention to invoke |
+| `always_on`      | Always active in conversations       |
+| `model_decision` | AI decides when to apply             |
+| `glob`           | Triggered by file patterns           |
 
 ## Unsupported Features
 

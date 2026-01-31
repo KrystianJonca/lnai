@@ -208,7 +208,9 @@ describe("opencodePlugin", () => {
         );
         expect(customConfig).toBeDefined();
         expect(customConfig?.type).toBe("symlink");
-        expect(customConfig?.target).toBe("../../.ai/.opencode/custom/config.md");
+        expect(customConfig?.target).toBe(
+          "../../.ai/.opencode/custom/config.md"
+        );
       });
 
       it("includes override symlinks for files in override directory", async () => {
@@ -226,7 +228,9 @@ describe("opencodePlugin", () => {
         );
         expect(overrideFile).toBeDefined();
         expect(overrideFile?.type).toBe("symlink");
-        expect(overrideFile?.target).toBe("../../.ai/.opencode/custom/config.md");
+        expect(overrideFile?.target).toBe(
+          "../../.ai/.opencode/custom/config.md"
+        );
       });
 
       it("handles nested override directories", async () => {
@@ -250,7 +254,9 @@ describe("opencodePlugin", () => {
         );
         expect(nestedFile).toBeDefined();
         expect(nestedFile?.type).toBe("symlink");
-        expect(nestedFile?.target).toBe("../../../.ai/.opencode/deep/nested/file.md");
+        expect(nestedFile?.target).toBe(
+          "../../../.ai/.opencode/deep/nested/file.md"
+        );
       });
     });
   });

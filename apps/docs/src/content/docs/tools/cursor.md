@@ -87,11 +87,11 @@ Permissions are exported to `.cursor/cli.json` with transformations:
 }
 ```
 
-| LNAI             | Cursor          | Notes                             |
-| ---------------- | --------------- | --------------------------------- |
-| `Bash()`         | `Shell()`       | Tool name changed                 |
-| `git:*`          | `git`           | Pattern simplified to command     |
-| `permissions.ask`| `permissions.allow` | ⚠️ Cursor has no "ask" level |
+| LNAI              | Cursor              | Notes                         |
+| ----------------- | ------------------- | ----------------------------- |
+| `Bash()`          | `Shell()`           | Tool name changed             |
+| `git:*`           | `git`               | Pattern simplified to command |
+| `permissions.ask` | `permissions.allow` | ⚠️ Cursor has no "ask" level  |
 
 **Warning:** Cursor does not support the "ask" permission level. Rules in `permissions.ask` are automatically mapped to `permissions.allow`. LNAI will display a warning when this occurs.
 
@@ -100,11 +100,13 @@ Permissions are exported to `.cursor/cli.json` with transformations:
 Rules are transformed from `.md` to `.mdc` format with YAML frontmatter:
 
 ```markdown
-<!-- Input: .ai/rules/typescript.md -->
----
+## <!-- Input: .ai/rules/typescript.md -->
+
 paths:
-  - "**/*.ts"
-  - "**/*.tsx"
+
+- "\*_/_.ts"
+- "\*_/_.tsx"
+
 ---
 
 # TypeScript Guidelines
@@ -113,13 +115,15 @@ Use strict TypeScript...
 ```
 
 ```markdown
-<!-- Output: .cursor/rules/typescript.mdc -->
----
+## <!-- Output: .cursor/rules/typescript.mdc -->
+
 description: "TypeScript Guidelines"
 globs:
-  - "**/*.ts"
-  - "**/*.tsx"
-alwaysApply: false
+
+- "\*_/_.ts"
+- "\*_/_.tsx"
+  alwaysApply: false
+
 ---
 
 # TypeScript Guidelines
@@ -127,11 +131,11 @@ alwaysApply: false
 Use strict TypeScript...
 ```
 
-| LNAI Field    | Cursor Field  | Notes                                    |
-| ------------- | ------------- | ---------------------------------------- |
-| `paths`       | `globs`       | Renamed                                  |
-| (first H1)    | `description` | Extracted from content                   |
-| (empty paths) | `alwaysApply: true` | Rules without paths always apply   |
+| LNAI Field    | Cursor Field        | Notes                            |
+| ------------- | ------------------- | -------------------------------- |
+| `paths`       | `globs`             | Renamed                          |
+| (first H1)    | `description`       | Extracted from content           |
+| (empty paths) | `alwaysApply: true` | Rules without paths always apply |
 
 ## Overrides
 

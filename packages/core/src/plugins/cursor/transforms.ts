@@ -18,9 +18,10 @@ export interface CursorRuleFrontmatter {
  * LNAI: { paths: ["**\/*.ts"] }
  * Cursor: { description: "...", globs: ["**\/*.ts"], alwaysApply: false }
  */
-export function transformRuleToCursor(
-  rule: MarkdownFile<RuleFrontmatter>
-): { frontmatter: CursorRuleFrontmatter; content: string } {
+export function transformRuleToCursor(rule: MarkdownFile<RuleFrontmatter>): {
+  frontmatter: CursorRuleFrontmatter;
+  content: string;
+} {
   const description = deriveDescription(rule.path, rule.content);
   const globs = rule.frontmatter.paths || [];
   const alwaysApply = globs.length === 0;

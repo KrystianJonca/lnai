@@ -1,4 +1,4 @@
-import { afterEach,beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock @inquirer/prompts before importing
 vi.mock("@inquirer/prompts", () => ({

@@ -16,9 +16,10 @@ export interface CopilotRuleFrontmatter {
  * LNAI: { paths: ["**\/*.ts", "**\/*.tsx"] }
  * Copilot: { applyTo: "**\/*.ts,**\/*.tsx", description: "..." }
  */
-export function transformRuleToCopilot(
-  rule: MarkdownFile<RuleFrontmatter>
-): { frontmatter: CopilotRuleFrontmatter; content: string } {
+export function transformRuleToCopilot(rule: MarkdownFile<RuleFrontmatter>): {
+  frontmatter: CopilotRuleFrontmatter;
+  content: string;
+} {
   const description = deriveDescription(rule.path, rule.content);
   const paths = rule.frontmatter.paths || [];
 

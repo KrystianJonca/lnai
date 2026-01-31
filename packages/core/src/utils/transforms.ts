@@ -77,7 +77,5 @@ export function deriveDescription(filename: string, content: string): string {
   }
 
   const baseName = filename.replace(/\.md$/, "");
-  return baseName
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return baseName.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }

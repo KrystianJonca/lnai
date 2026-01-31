@@ -125,7 +125,9 @@ describe("serializeCopilotInstruction", () => {
 
     const result = serializeCopilotInstruction(frontmatter, content);
 
-    expect(result).toContain('description: "Rules with \\"quotes\\" and stuff"');
+    expect(result).toContain(
+      'description: "Rules with \\"quotes\\" and stuff"'
+    );
   });
 
   it("produces correctly formatted output structure", () => {

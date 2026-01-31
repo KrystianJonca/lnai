@@ -85,8 +85,14 @@ export const initCommand = new Command("init")
 // --- Helper functions ---
 
 function shouldRunInteractive(options: InitCommandOptions): boolean {
-  if (options.yes) {return false;}
-  if (options.tools?.length) {return false;}
-  if (!isInteractiveEnvironment()) {return false;}
+  if (options.yes) {
+    return false;
+  }
+  if (options.tools?.length) {
+    return false;
+  }
+  if (!isInteractiveEnvironment()) {
+    return false;
+  }
   return true;
 }

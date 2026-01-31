@@ -1,6 +1,12 @@
 export const UNIFIED_DIR = ".ai";
 
-export const TOOL_IDS = ["claudeCode", "opencode", "cursor", "copilot", "windsurf"] as const;
+export const TOOL_IDS = [
+  "claudeCode",
+  "opencode",
+  "cursor",
+  "copilot",
+  "windsurf",
+] as const;
 
 export type ToolId = (typeof TOOL_IDS)[number];
 

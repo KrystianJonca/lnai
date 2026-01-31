@@ -21,13 +21,13 @@ LNAI exports unified configuration to GitHub Copilot's native formats, including
 
 ## File Mapping
 
-| Source                | Output                                         | Type        |
-| --------------------- | ---------------------------------------------- | ----------- |
-| `.ai/AGENTS.md`       | `.github/copilot-instructions.md`              | Symlink     |
-| `.ai/rules/<name>.md` | `.github/instructions/<name>.instructions.md`  | Transformed |
-| `.ai/skills/<name>/`  | `.github/skills/<name>/`                       | Symlink     |
-| `.ai/settings.json`   | `.vscode/mcp.json`                             | Generated   |
-| `.ai/.copilot/<path>` | `.github/<path>`                               | Symlink     |
+| Source                | Output                                        | Type        |
+| --------------------- | --------------------------------------------- | ----------- |
+| `.ai/AGENTS.md`       | `.github/copilot-instructions.md`             | Symlink     |
+| `.ai/rules/<name>.md` | `.github/instructions/<name>.instructions.md` | Transformed |
+| `.ai/skills/<name>/`  | `.github/skills/<name>/`                      | Symlink     |
+| `.ai/settings.json`   | `.vscode/mcp.json`                            | Generated   |
+| `.ai/.copilot/<path>` | `.github/<path>`                              | Symlink     |
 
 ## Generated mcp.json
 
@@ -61,10 +61,10 @@ MCP servers are exported to `.vscode/mcp.json` with transformations:
 
 ### Stdio Servers
 
-| LNAI             | Copilot                  |
-| ---------------- | ------------------------ |
-| `${VAR}`         | `${env:VAR}`             |
-| Stdio implicit   | `type: "stdio"` explicit |
+| LNAI           | Copilot                  |
+| -------------- | ------------------------ |
+| `${VAR}`       | `${env:VAR}`             |
+| Stdio implicit | `type: "stdio"` explicit |
 
 ### HTTP/SSE Servers
 
@@ -105,11 +105,13 @@ MCP servers are exported to `.vscode/mcp.json` with transformations:
 Rules are transformed from `.md` to `.instructions.md` format with YAML frontmatter:
 
 ```markdown
-<!-- Input: .ai/rules/typescript.md -->
----
+## <!-- Input: .ai/rules/typescript.md -->
+
 paths:
-  - "**/*.ts"
-  - "**/*.tsx"
+
+- "\*_/_.ts"
+- "\*_/_.tsx"
+
 ---
 
 # TypeScript Guidelines
@@ -118,10 +120,11 @@ Use strict TypeScript...
 ```
 
 ```markdown
-<!-- Output: .github/instructions/typescript.instructions.md -->
----
-applyTo: "**/*.ts,**/*.tsx"
+## <!-- Output: .github/instructions/typescript.instructions.md -->
+
+applyTo: "**/\*.ts,**/\*.tsx"
 description: "TypeScript Guidelines"
+
 ---
 
 # TypeScript Guidelines
@@ -129,18 +132,18 @@ description: "TypeScript Guidelines"
 Use strict TypeScript...
 ```
 
-| LNAI Field    | Copilot Field | Notes                           |
-| ------------- | ------------- | ------------------------------- |
-| `paths`       | `applyTo`     | Joined with comma               |
-| (first H1)    | `description` | Extracted from content          |
-| (empty paths) | (no applyTo)  | Rule applies globally           |
+| LNAI Field    | Copilot Field | Notes                  |
+| ------------- | ------------- | ---------------------- |
+| `paths`       | `applyTo`     | Joined with comma      |
+| (first H1)    | `description` | Extracted from content |
+| (empty paths) | (no applyTo)  | Rule applies globally  |
 
 ## Unsupported Features
 
-| Feature            | Status     | Notes                                              |
-| ------------------ | ---------- | -------------------------------------------------- |
-| Permissions        | ⚠️ Ignored | Copilot does not support permissions               |
-| Non-MCP overrides  | ⚠️ Ignored | Only `mcpServers` is supported in JSON overrides   |
+| Feature           | Status     | Notes                                            |
+| ----------------- | ---------- | ------------------------------------------------ |
+| Permissions       | ⚠️ Ignored | Copilot does not support permissions             |
+| Non-MCP overrides | ⚠️ Ignored | Only `mcpServers` is supported in JSON overrides |
 
 LNAI will display warnings when unsupported features are configured.
 
