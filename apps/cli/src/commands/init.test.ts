@@ -149,6 +149,7 @@ describe("init command logic", () => {
         opencode: false,
         cursor: true,
         copilot: false,
+        windsurf: false,
       };
 
       await initUnifiedConfig({
@@ -172,6 +173,7 @@ describe("init command logic", () => {
         opencode: false,
         cursor: false,
         copilot: false,
+        windsurf: false,
       };
 
       await initUnifiedConfig({

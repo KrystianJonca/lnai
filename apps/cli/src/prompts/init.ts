@@ -23,6 +23,7 @@ const TOOL_DISPLAY_NAMES: Record<ToolId, string> = {
   opencode: "Opencode (.opencode/)",
   cursor: "Cursor (.cursor/)",
   copilot: "Copilot (.github/)",
+  windsurf: "Windsurf (.windsurf/)",
 };
 
 async function promptForTools(): Promise<ToolId[]> {
