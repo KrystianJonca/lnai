@@ -3,6 +3,7 @@
     "claudeCode": { "enabled": true },
     "opencode": { "enabled": true },
     "cursor": { "enabled": true },
-    "copilot": { "enabled": true }
+    "copilot": { "enabled": true },
+    "windsurf": { "enabled": true }
   }
 }

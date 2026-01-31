@@ -15,6 +15,7 @@ Modern developers use multiple AI coding assistants:
 - OpenCode
 - Cursor
 - GitHub Copilot
+- Windsurf
 - And more...
 
 Each tool has its own configuration format, leading to:
@@ -37,8 +38,8 @@ LNAI provides a single source of truth in the `.ai/` directory that exports to n
 ├── .claude/  (overrides)              ├── rules/*.mdc
 ├── .cursor/  (overrides)              ├── mcp.json
 ├── .opencode/ (overrides)             └── cli.json
-└── .copilot/ (overrides)        →    .opencode/
-                                       ├── AGENTS.md
+├── .copilot/ (overrides)        →    .opencode/
+├── .windsurf/ (overrides)             ├── AGENTS.md
                                        ├── rules/
                                        └── skills/
                                   →    opencode.json
@@ -47,6 +48,8 @@ LNAI provides a single source of truth in the `.ai/` directory that exports to n
                                        ├── instructions/*.instructions.md
                                        └── skills/
                                   →    .vscode/mcp.json
+                                  →    .windsurf/
+                                       └── rules/
 ```
 
 ## Releases

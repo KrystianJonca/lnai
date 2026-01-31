@@ -167,9 +167,8 @@ export async function updateGitignore(
   content = content.replace(markerRegex, "");
   content = content.trimEnd();
 
-  const newSection = ["", marker, ...paths.map((p) => p), endMarker, ""].join(
-    "\n"
-  );
+  const uniquePaths = [...new Set(paths)];
+  const newSection = ["", marker, ...uniquePaths, endMarker, ""].join("\n");
 
   content = content + newSection;
 

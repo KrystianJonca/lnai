@@ -319,6 +319,23 @@ describe("updateGitignore", () => {
     expect(content).toContain(".claude/");
   });
 
+  it("deduplicates paths", async () => {
+    await updateGitignore(tempDir, [".claude/", ".claude/", "opencode.json"]);
+
+    const content = await fs.readFile(
+      path.join(tempDir, ".gitignore"),
+      "utf-8"
+    );
+
+    const lnaiSection = content
+      .split("# lnai-generated")[1]
+      ?.split("# end lnai-generated")[0];
+
+    expect(lnaiSection).toBeDefined();
+    expect(lnaiSection?.match(/\.claude\//g)?.length).toBe(1);
+    expect(lnaiSection?.match(/opencode\.json/g)?.length).toBe(1);
+  });
+
   it("replaces existing lnai-generated section", async () => {
     // Create .gitignore with existing lnai section
     await fs.writeFile(
