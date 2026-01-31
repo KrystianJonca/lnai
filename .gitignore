@@ -51,4 +51,7 @@ AGENTS.md
 .github/instructions/typescript.instructions.md
 .github/skills/deploy
 .vscode/mcp.json
+.windsurf/rules/code-organization.md
+.windsurf/rules/typescript.md
+.windsurf/skills/deploy
 # end lnai-generated
