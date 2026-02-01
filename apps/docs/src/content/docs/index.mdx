@@ -28,8 +28,8 @@ import { Card, CardGrid } from "@astrojs/starlight/components";
     Define your AI tool settings once in `.ai/` and sync to all supported tools.
   </Card>
   <Card title="Multiple Tools" icon="puzzle">
-    Support for Claude Code, Cursor, Gemini CLI, OpenCode, Windsurf, and GitHub
-    Copilot.
+    Support for Claude Code, Codex, Cursor, Gemini CLI, OpenCode, Windsurf, and
+    GitHub Copilot.
   </Card>
   <Card title="Type-Safe" icon="approve-check">
     Full TypeScript support with Zod schema validation.
@@ -55,6 +55,10 @@ lnai sync
 claudeCode:
   + .claude/CLAUDE.md
   + .claude/settings.json
+
+codex:
+  + .codex/config.toml
+  + .codex/skills/
 
 cursor:
   + AGENTS.md

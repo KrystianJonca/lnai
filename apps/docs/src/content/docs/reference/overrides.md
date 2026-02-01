@@ -14,8 +14,11 @@ Place files in tool-specific directories within `.ai/`:
 ```text
 .ai/
 ├── .claude/       # Claude Code file overrides
-├── .opencode/     # OpenCode file overrides
+├── .codex/        # Codex file overrides
 ├── .cursor/       # Cursor file overrides
+├── .gemini/       # Gemini CLI file overrides
+├── .opencode/     # OpenCode file overrides
+├── .windsurf/     # Windsurf file overrides
 └── .copilot/      # GitHub Copilot file overrides
 ```
 
@@ -26,6 +29,9 @@ Files are symlinked to the tool's output directory:
 | `.ai/.claude/<path>`   | `.claude/<path>`   |
 | `.ai/.opencode/<path>` | `.opencode/<path>` |
 | `.ai/.cursor/<path>`   | `.cursor/<path>`   |
+| `.ai/.codex/<path>`    | `.codex/<path>`    |
+| `.ai/.gemini/<path>`   | `.gemini/<path>`   |
+| `.ai/.windsurf/<path>` | `.windsurf/<path>` |
 | `.ai/.copilot/<path>`  | `.github/<path>`   |
 
 ## Override Priority

@@ -101,6 +101,9 @@ lnai validate --tools claudeCode # Validate only for Claude Code
 | Identifier   | Tool           |
 | ------------ | -------------- |
 | `claudeCode` | Claude Code    |
-| `opencode`   | OpenCode       |
+| `codex`      | Codex          |
 | `cursor`     | Cursor         |
+| `gemini`     | Gemini CLI     |
 | `copilot`    | GitHub Copilot |
+| `opencode`   | OpenCode       |
+| `windsurf`   | Windsurf       |

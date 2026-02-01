@@ -12,6 +12,8 @@ LNAI is a CLI tool that syncs a unified `.ai/` configuration to native formats f
 Modern developers use multiple AI coding assistants:
 
 - Claude Code
+- Codex
+- Gemini CLI
 - OpenCode
 - Cursor
 - GitHub Copilot
@@ -29,27 +31,29 @@ Each tool has its own configuration format, leading to:
 LNAI provides a single source of truth in the `.ai/` directory that exports to native formats:
 
 ```text
-.ai/                              →    .claude/
-├── config.json                        ├── CLAUDE.md
-├── settings.json                      ├── settings.json
-├── AGENTS.md                          ├── rules/
-├── rules/*.md                         └── skills/
-├── skills/<name>/SKILL.md       →    .cursor/
-├── .claude/  (overrides)              ├── rules/*.mdc
-├── .cursor/  (overrides)              ├── mcp.json
-├── .opencode/ (overrides)             └── cli.json
-├── .copilot/ (overrides)        →    AGENTS.md (root)
-├── .windsurf/ (overrides)       →    .opencode/
-                                       ├── rules/
-                                       └── skills/
-                                  →    opencode.json
-                                  →    .github/
-                                       ├── copilot-instructions.md
-                                       ├── instructions/*.instructions.md
-                                       └── skills/
-                                  →    .vscode/mcp.json
-                                  →    .windsurf/
-                                       └── rules/
+.ai/
+├── config.json
+├── settings.json
+├── AGENTS.md
+├── rules/*.md
+├── skills/<name>/SKILL.md
+├── .claude/   (overrides)
+├── .codex/    (overrides)
+├── .cursor/   (overrides)
+├── .gemini/   (overrides)
+├── .opencode/ (overrides)
+├── .copilot/  (overrides)
+└── .windsurf/ (overrides)
+
+Outputs:
+- AGENTS.md (root)
+- .claude/ (CLAUDE.md, settings.json, rules/, skills/)
+- .codex/ (config.toml, skills/)
+- .cursor/ (rules/*.mdc, mcp.json, cli.json)
+- .gemini/ (GEMINI.md, settings.json, skills/) + <dir>/GEMINI.md
+- .opencode/ (rules/, skills/) + opencode.json
+- .github/ (copilot-instructions.md, instructions/, skills/)
+- .windsurf/ (rules/, skills/)
 ```
 
 ## Releases
