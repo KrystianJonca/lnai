@@ -74,8 +74,8 @@ project root (`.`) are skipped and reported as warnings.
 ### Permissions
 
 Codex permissions rules are not generated from LNAI permissions. If your
-`.ai/settings.json` contains a `permissions` block, LNAI will display a warning
-but continue syncing other configuration.
+`.ai/settings.json` contains a `permissions` block, LNAI will display a "skipped"
+notice but continue syncing other configuration.
 
 ## Overrides
 
