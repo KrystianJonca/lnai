@@ -1,8 +1,10 @@
 import { UNIFIED_DIR } from "../../constants";
 import type {
   OutputFile,
+  SkippedFeatureDetail,
   UnifiedState,
   ValidationResult,
+  ValidationWarningDetail,
 } from "../../types/index";
 import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
@@ -88,7 +90,8 @@ export const copilotPlugin: Plugin = {
   },
 
   validate(state: UnifiedState): ValidationResult {
-    const warnings: { path: string[]; message: string }[] = [];
+    const warnings: ValidationWarningDetail[] = [];
+    const skipped: SkippedFeatureDetail[] = [];
 
     if (!state.agents) {
       warnings.push({
@@ -107,10 +110,9 @@ export const copilotPlugin: Plugin = {
         (permissions.deny && permissions.deny.length > 0));
 
     if (hasPermissions) {
-      warnings.push({
-        path: ["settings", "permissions"],
-        message:
-          "GitHub Copilot does not support permissions - they will be ignored",
+      skipped.push({
+        feature: "permissions",
+        reason: "GitHub Copilot does not support declarative permissions",
       });
     }
 
@@ -134,6 +136,6 @@ export const copilotPlugin: Plugin = {
       }
     }
 
-    return { valid: true, errors: [], warnings, skipped: [] };
+    return { valid: true, errors: [], warnings, skipped };
   },
 };

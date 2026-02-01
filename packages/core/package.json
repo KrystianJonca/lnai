@@ -1,6 +1,6 @@
 {
   "name": "@lnai/core",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Core library for LNAI - unified AI config management",
   "type": "module",
   "license": "MIT",
@@ -20,6 +20,8 @@
     "configuration",
     "claude",
     "cursor",
+    "gemini",
+    "antigravity",
     "opencode",
     "copilot",
     "github-copilot",

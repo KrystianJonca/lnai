@@ -5,12 +5,17 @@ import type {
   RuleFrontmatter,
 } from "../../types/index";
 import { deriveDescription, transformEnvVars } from "../../utils/transforms";
+import type {
+  CursorMcpServer,
+  CursorRuleFrontmatter,
+  TransformPermissionsResult,
+} from "./types";
 
-export interface CursorRuleFrontmatter {
-  description: string;
-  globs: string[];
-  alwaysApply: boolean;
-}
+export type {
+  CursorPermissions,
+  CursorRuleFrontmatter,
+  TransformPermissionsResult,
+} from "./types";
 
 /**
  * Transform LNAI rule to Cursor rule format.
@@ -61,15 +66,6 @@ export function serializeCursorRule(
   return lines.join("\n");
 }
 
-/** Cursor-specific MCP server output format */
-interface CursorMcpServer {
-  command?: string;
-  args?: string[];
-  env?: Record<string, string>;
-  url?: string;
-  headers?: Record<string, string>;
-}
-
 /**
  * Transform MCP servers from LNAI format to Cursor format.
  *
@@ -112,16 +108,6 @@ export function transformMcpToCursor(
   }
 
   return Object.keys(result).length > 0 ? result : undefined;
-}
-
-export interface CursorPermissions {
-  allow: string[];
-  deny: string[];
-}
-
-export interface TransformPermissionsResult {
-  permissions: CursorPermissions | undefined;
-  hasAskPermissions: boolean;
 }
 
 /**

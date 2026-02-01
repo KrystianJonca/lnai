@@ -4,11 +4,15 @@ import type {
   RuleFrontmatter,
 } from "../../types/index";
 import { deriveDescription, transformEnvVars } from "../../utils/transforms";
+import type {
+  CopilotMcpConfig,
+  CopilotMcpRemoteServer,
+  CopilotMcpServer,
+  CopilotMcpStdioServer,
+  CopilotRuleFrontmatter,
+} from "./types";
 
-export interface CopilotRuleFrontmatter {
-  applyTo?: string;
-  description: string;
-}
+export type { CopilotMcpConfig, CopilotRuleFrontmatter } from "./types";
 
 /**
  * Transform LNAI rule to Copilot instruction format.
@@ -57,30 +61,6 @@ export function serializeCopilotInstruction(
   lines.push(content);
 
   return lines.join("\n");
-}
-
-/** Copilot MCP server format - stdio server */
-interface CopilotMcpStdioServer {
-  type: "stdio";
-  command: string;
-  args?: string[];
-  env?: Record<string, string>;
-}
-
-/** Copilot MCP server format - remote server (HTTP/SSE) */
-interface CopilotMcpRemoteServer {
-  url: string;
-  requestInit?: {
-    headers?: Record<string, string>;
-  };
-}
-
-type CopilotMcpServer = CopilotMcpStdioServer | CopilotMcpRemoteServer;
-
-/** Copilot MCP configuration format */
-export interface CopilotMcpConfig {
-  inputs: unknown[];
-  servers: Record<string, CopilotMcpServer>;
 }
 
 /**

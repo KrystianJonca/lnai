@@ -36,6 +36,7 @@ Stop maintaining separate config files for every AI coding tool. Define once in 
 | -------------- | --------------------------------- |
 | Claude Code    | `.claude/`                        |
 | Cursor         | `.cursor/`                        |
+| Gemini CLI     | `.gemini/`                        |
 | GitHub Copilot | `.github/copilot-instructions.md` |
 | OpenCode       | `.opencode/`                      |
 | Windsurf       | `.windsurf/`                      |

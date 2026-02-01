@@ -4,6 +4,7 @@
     "opencode": { "enabled": true },
     "cursor": { "enabled": true },
     "copilot": { "enabled": true },
-    "windsurf": { "enabled": true }
+    "windsurf": { "enabled": true },
+    "gemini": { "enabled": true }
   }
 }

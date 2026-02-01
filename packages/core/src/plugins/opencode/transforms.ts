@@ -3,20 +3,9 @@ import {
   parsePermissionRule as parseRule,
   transformEnvVars,
 } from "../../utils/transforms";
+import type { OpenCodeMcpServer, OpenCodePermission } from "./types";
 
-/** OpenCode-specific MCP server output format */
-interface OpenCodeMcpServer {
-  type: "local" | "remote";
-  command?: string[];
-  url?: string;
-  environment?: Record<string, string>;
-  headers?: Record<string, string>;
-}
-
-type OpenCodePermission = Record<
-  string,
-  Record<string, "allow" | "ask" | "deny">
->;
+export type { OpenCodeMcpServer, OpenCodePermission } from "./types";
 
 /**
  * Transform MCP servers from LNAI format to OpenCode format.

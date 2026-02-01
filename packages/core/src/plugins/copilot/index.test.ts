@@ -486,14 +486,14 @@ describe("copilotPlugin", () => {
 
       const result = copilotPlugin.validate(state);
 
-      const permWarning = result.warnings.find((w) =>
-        w.message.includes("permissions")
+      const permSkipped = result.skipped.find(
+        (s) => s.feature === "permissions"
       );
-      expect(permWarning).toBeDefined();
-      expect(permWarning?.message).toContain("does not support permissions");
+      expect(permSkipped).toBeDefined();
+      expect(permSkipped?.reason).toContain("does not support");
     });
 
-    it("no warning when permissions are empty", () => {
+    it("no skipped when permissions are empty", () => {
       const state = createMinimalState({
         settings: {
           permissions: {},
@@ -502,10 +502,10 @@ describe("copilotPlugin", () => {
 
       const result = copilotPlugin.validate(state);
 
-      const permWarning = result.warnings.find((w) =>
-        w.message.includes("permissions")
+      const permSkipped = result.skipped.find(
+        (s) => s.feature === "permissions"
       );
-      expect(permWarning).toBeUndefined();
+      expect(permSkipped).toBeUndefined();
     });
 
     it("returns warning for MCP servers without command or type", () => {

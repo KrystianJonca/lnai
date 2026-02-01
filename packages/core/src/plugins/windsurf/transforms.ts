@@ -1,11 +1,7 @@
 import type { MarkdownFile, RuleFrontmatter } from "../../types/index";
+import type { WindsurfRuleFrontmatter } from "./types";
 
-/** Windsurf rule frontmatter with trigger mode */
-export interface WindsurfRuleFrontmatter {
-  trigger: "manual" | "always_on" | "model_decision" | "glob";
-  globs?: string[];
-  description?: string;
-}
+export type { WindsurfRuleFrontmatter } from "./types";
 
 /**
  * Transform LNAI rule to Windsurf rule format.
