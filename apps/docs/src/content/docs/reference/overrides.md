@@ -27,10 +27,10 @@ Files are symlinked to the tool's output directory:
 | Source                 | Target             |
 | ---------------------- | ------------------ |
 | `.ai/.claude/<path>`   | `.claude/<path>`   |
-| `.ai/.opencode/<path>` | `.opencode/<path>` |
-| `.ai/.cursor/<path>`   | `.cursor/<path>`   |
 | `.ai/.codex/<path>`    | `.codex/<path>`    |
+| `.ai/.cursor/<path>`   | `.cursor/<path>`   |
 | `.ai/.gemini/<path>`   | `.gemini/<path>`   |
+| `.ai/.opencode/<path>` | `.opencode/<path>` |
 | `.ai/.windsurf/<path>` | `.windsurf/<path>` |
 | `.ai/.copilot/<path>`  | `.github/<path>`   |
 
