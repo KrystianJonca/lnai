@@ -15,7 +15,7 @@ import {
  * OpenCode plugin for exporting to opencode.json format
  *
  * Output structure:
- * - .opencode/AGENTS.md (symlink -> ../.ai/AGENTS.md)
+ * - AGENTS.md (symlink -> .ai/AGENTS.md) [at project root]
  * - .opencode/rules/ (symlink -> ../.ai/rules)
  * - .opencode/skills/<name>/ (symlink -> ../../.ai/skills/<name>)
  * - opencode.json (generated config merged with .ai/.opencode/opencode.json)
@@ -39,9 +39,9 @@ export const opencodePlugin: Plugin = {
 
     if (state.agents) {
       files.push({
-        path: `${outputDir}/AGENTS.md`,
+        path: "AGENTS.md",
         type: "symlink",
-        target: `../${UNIFIED_DIR}/AGENTS.md`,
+        target: `${UNIFIED_DIR}/AGENTS.md`,
       });
     }
 
@@ -94,7 +94,7 @@ export const opencodePlugin: Plugin = {
     if (!state.agents) {
       warnings.push({
         path: ["AGENTS.md"],
-        message: "No AGENTS.md found - .opencode/AGENTS.md will not be created",
+        message: "No AGENTS.md found - root AGENTS.md will not be created",
       });
     }
     return { valid: true, errors: [], warnings, skipped: [] };
