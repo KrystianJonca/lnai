@@ -150,6 +150,7 @@ describe("init command logic", () => {
         cursor: true,
         copilot: false,
         windsurf: false,
+        gemini: false,
       };
 
       await initUnifiedConfig({
@@ -174,6 +175,7 @@ describe("init command logic", () => {
         cursor: false,
         copilot: false,
         windsurf: false,
+        gemini: false,
       };
 
       await initUnifiedConfig({

@@ -24,6 +24,7 @@ const TOOL_DISPLAY_NAMES: Record<ToolId, string> = {
   cursor: "Cursor (.cursor/)",
   copilot: "Copilot (.github/)",
   windsurf: "Windsurf (.windsurf/)",
+  gemini: "Gemini CLI (.gemini/)",
 };
 
 async function promptForTools(): Promise<ToolId[]> {
