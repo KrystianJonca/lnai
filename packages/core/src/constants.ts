@@ -7,6 +7,7 @@ export const TOOL_IDS = [
   "copilot",
   "windsurf",
   "gemini",
+  "codex",
 ] as const;
 
 export type ToolId = (typeof TOOL_IDS)[number];
@@ -30,6 +31,7 @@ export const TOOL_OUTPUT_DIRS: Record<ToolId, string> = {
   copilot: ".github",
   windsurf: ".windsurf",
   gemini: ".gemini",
+  codex: ".codex",
 };
 
 /** Tool-specific override directories within .ai/ */
@@ -40,4 +42,5 @@ export const OVERRIDE_DIRS: Record<ToolId, string> = {
   copilot: ".copilot",
   windsurf: ".windsurf",
   gemini: ".gemini",
+  codex: ".codex",
 };

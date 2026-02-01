@@ -150,6 +150,12 @@ describe("toolIdSchema", () => {
     expect(result.success).toBe(true);
   });
 
+  it("accepts codex", () => {
+    const result = toolIdSchema.safeParse("codex");
+
+    expect(result.success).toBe(true);
+  });
+
   it("rejects unknown tool", () => {
     const result = toolIdSchema.safeParse("unknownTool");
 

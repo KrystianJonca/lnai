@@ -7,8 +7,9 @@ import type {
   ValidationWarningDetail,
 } from "../../types/index";
 import { applyFileOverrides } from "../../utils/overrides";
+import { groupRulesByDirectory } from "../../utils/rules";
 import type { Plugin } from "../types";
-import { groupRulesByDirectory, transformMcpToGemini } from "./transforms";
+import { transformMcpToGemini } from "./transforms";
 
 /**
  * Gemini CLI / Antigravity plugin for exporting to .gemini/ format
