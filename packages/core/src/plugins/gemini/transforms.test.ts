@@ -27,6 +27,9 @@ describe("transformMcpToGemini", () => {
         env: { KEY: "VALUE" },
       },
       server2: {
+        command: undefined,
+        args: undefined,
+        env: undefined,
         httpUrl: "http://localhost:3000",
       },
     };
@@ -45,6 +48,8 @@ describe("transformMcpToGemini", () => {
     const expected = {
       server1: {
         command: "node",
+        args: undefined,
+        env: undefined,
         httpUrl: "http://localhost:3000",
       },
     };
