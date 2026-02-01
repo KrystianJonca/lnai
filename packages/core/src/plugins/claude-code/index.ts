@@ -3,6 +3,7 @@ import type {
   OutputFile,
   UnifiedState,
   ValidationResult,
+  ValidationWarningDetail,
 } from "../../types/index";
 import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
@@ -77,7 +78,7 @@ export const claudeCodePlugin: Plugin = {
   },
 
   validate(state: UnifiedState): ValidationResult {
-    const warnings: { path: string[]; message: string }[] = [];
+    const warnings: ValidationWarningDetail[] = [];
     if (!state.agents) {
       warnings.push({
         path: ["AGENTS.md"],

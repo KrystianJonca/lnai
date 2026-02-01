@@ -260,7 +260,7 @@ describe("geminiPlugin", () => {
       );
     });
 
-    it("returns warning when permissions are configured", () => {
+    it("returns skipped when permissions are configured", () => {
       const state = createMinimalState({
         settings: {
           permissions: {
@@ -272,9 +272,11 @@ describe("geminiPlugin", () => {
       const result = geminiPlugin.validate(state);
 
       expect(result.valid).toBe(true);
-      expect(
-        result.warnings.some((w) => w.message.includes("permissions"))
-      ).toBe(true);
+      const permSkipped = result.skipped.find(
+        (s) => s.feature === "permissions"
+      );
+      expect(permSkipped).toBeDefined();
+      expect(permSkipped?.reason).toContain("does not support");
     });
 
     it("returns warning when rules exist", () => {

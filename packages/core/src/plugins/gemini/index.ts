@@ -1,8 +1,10 @@
 import { TOOL_OUTPUT_DIRS, UNIFIED_DIR } from "../../constants";
 import type {
   OutputFile,
+  SkippedFeatureDetail,
   UnifiedState,
   ValidationResult,
+  ValidationWarningDetail,
 } from "../../types/index";
 import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
@@ -68,7 +70,8 @@ export const geminiPlugin: Plugin = {
   },
 
   validate(state: UnifiedState): ValidationResult {
-    const warnings: { path: string[]; message: string }[] = [];
+    const warnings: ValidationWarningDetail[] = [];
+    const skipped: SkippedFeatureDetail[] = [];
 
     if (!state.agents) {
       warnings.push({
@@ -78,11 +81,18 @@ export const geminiPlugin: Plugin = {
     }
 
     if (state.settings?.permissions) {
-      warnings.push({
-        path: ["settings", "permissions"],
-        message:
-          "Gemini CLI does not support pre-configured permissions in settings.json. Permissions must be granted interactively.",
-      });
+      const hasPermissions =
+        (state.settings.permissions.allow?.length ?? 0) > 0 ||
+        (state.settings.permissions.ask?.length ?? 0) > 0 ||
+        (state.settings.permissions.deny?.length ?? 0) > 0;
+
+      if (hasPermissions) {
+        skipped.push({
+          feature: "permissions",
+          reason:
+            "Gemini CLI does not support declarative permissions - permissions must be granted interactively",
+        });
+      }
     }
 
     if (state.rules.length > 0) {
@@ -93,6 +103,6 @@ export const geminiPlugin: Plugin = {
       });
     }
 
-    return { valid: true, errors: [], warnings, skipped: [] };
+    return { valid: true, errors: [], warnings, skipped };
   },
 };
