@@ -53,4 +53,10 @@ opencode.json
 .windsurf/rules/code-organization.md
 .windsurf/rules/typescript.md
 .windsurf/skills/deploy
+.gemini/GEMINI.md
+GEMINI.md
+src/GEMINI.md
+packages/GEMINI.md
+.gemini/skills/deploy
+.gemini/settings.json
 # end lnai-generated

@@ -27,6 +27,7 @@ export const toolIdSchema = z.enum([
   "cursor",
   "copilot",
   "windsurf",
+  "gemini",
 ]);
 
 /** Settings configuration (Claude format as source of truth) */
@@ -44,6 +45,7 @@ export const configSchema = z.object({
       cursor: toolConfigSchema,
       copilot: toolConfigSchema,
       windsurf: toolConfigSchema,
+      gemini: toolConfigSchema,
     })
     .partial()
     .optional(),

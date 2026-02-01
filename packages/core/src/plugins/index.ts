@@ -1,6 +1,7 @@
 import { claudeCodePlugin } from "./claude-code/index";
 import { copilotPlugin } from "./copilot/index";
 import { cursorPlugin } from "./cursor/index";
+import { geminiPlugin } from "./gemini/index";
 import { opencodePlugin } from "./opencode/index";
 import { pluginRegistry } from "./registry";
 import { windsurfPlugin } from "./windsurf/index";
@@ -9,6 +10,7 @@ export {
   claudeCodePlugin,
   copilotPlugin,
   cursorPlugin,
+  geminiPlugin,
   opencodePlugin,
   pluginRegistry,
   windsurfPlugin,
@@ -20,3 +22,4 @@ pluginRegistry.register(copilotPlugin);
 pluginRegistry.register(cursorPlugin);
 pluginRegistry.register(opencodePlugin);
 pluginRegistry.register(windsurfPlugin);
+pluginRegistry.register(geminiPlugin);
