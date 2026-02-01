@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getDirFromGlob } from "./utils";
+import { getDirFromGlob } from "../../utils/rules";
 
 describe("getDirFromGlob", () => {
   it("should extract directory from glob pattern", () => {

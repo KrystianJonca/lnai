@@ -65,6 +65,7 @@ export {
 // Plugins
 export {
   claudeCodePlugin,
+  codexPlugin,
   opencodePlugin,
   type Plugin,
   pluginRegistry,

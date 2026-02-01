@@ -35,6 +35,7 @@ Stop maintaining separate config files for every AI coding tool. Define once in 
 | Tool           | Config Generated                  |
 | -------------- | --------------------------------- |
 | Claude Code    | `.claude/`                        |
+| Codex          | `.codex/`                         |
 | Cursor         | `.cursor/`                        |
 | Gemini CLI     | `.gemini/`                        |
 | GitHub Copilot | `.github/copilot-instructions.md` |

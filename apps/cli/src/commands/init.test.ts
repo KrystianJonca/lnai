@@ -151,6 +151,7 @@ describe("init command logic", () => {
         copilot: false,
         windsurf: false,
         gemini: false,
+        codex: false,
       };
 
       await initUnifiedConfig({
@@ -176,6 +177,7 @@ describe("init command logic", () => {
         copilot: false,
         windsurf: false,
         gemini: false,
+        codex: false,
       };
 
       await initUnifiedConfig({

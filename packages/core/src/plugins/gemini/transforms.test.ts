@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import type { MarkdownFile, RuleFrontmatter } from "../../types";
-import { groupRulesByDirectory, transformMcpToGemini } from "./transforms";
+import { groupRulesByDirectory } from "../../utils/rules";
+import { transformMcpToGemini } from "./transforms";
 
 describe("transformMcpToGemini", () => {
   it("should return undefined if no mcpServers", () => {

@@ -35,6 +35,18 @@ Controls which tools are enabled and their sync behavior.
     "copilot": {
       "enabled": true,
       "versionControl": false
+    },
+    "windsurf": {
+      "enabled": true,
+      "versionControl": false
+    },
+    "gemini": {
+      "enabled": true,
+      "versionControl": false
+    },
+    "codex": {
+      "enabled": true,
+      "versionControl": false
     }
   }
 }

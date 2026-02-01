@@ -5,6 +5,7 @@
     "cursor": { "enabled": true },
     "copilot": { "enabled": true },
     "windsurf": { "enabled": true },
-    "gemini": { "enabled": true }
+    "gemini": { "enabled": true },
+    "codex": { "enabled": true }
   }
 }
