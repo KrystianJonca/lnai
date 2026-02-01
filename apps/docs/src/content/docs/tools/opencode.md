@@ -22,10 +22,10 @@ opencode.json          # Generated (at project root)
 
 ## File Mapping
 
-| Source                 | Output                       | Type        |
-| ---------------------- | ---------------------------- | ----------- |
-| `.ai/AGENTS.md`        | `AGENTS.md` (project root)   | Symlink     |
-| `.ai/rules/`           | `.opencode/rules/`           | Symlink     |
+| Source                 | Output                     | Type        |
+| ---------------------- | -------------------------- | ----------- |
+| `.ai/AGENTS.md`        | `AGENTS.md` (project root) | Symlink     |
+| `.ai/rules/`           | `.opencode/rules/`         | Symlink     |
 | `.ai/skills/<name>/`   | `.opencode/skills/<name>/` | Symlink     |
 | `.ai/settings.json`    | `opencode.json`            | Transformed |
 | `.ai/.opencode/<path>` | `.opencode/<path>`         | Symlink     |
