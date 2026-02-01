@@ -16,18 +16,5 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-memory"]
     }
-  },
-  "overrides": {
-    "claudeCode": {
-      "model": "opus"
-    },
-    "opencode": {
-      "theme": "catpuccin"
-    },
-    "cursor": {
-      "editor": {
-        "vimMode": true
-      }
-    }
   }
 }
