@@ -1,11 +1,13 @@
 ---
-title: Gemini CLI
-description: How LNAI exports configuration to Gemini CLI (Antigravity)
+title: Gemini CLI / Antigravity
+description: How LNAI exports configuration to Gemini CLI and Antigravity
 ---
 
-# Gemini CLI
+# Gemini CLI / Antigravity
 
-LNAI exports unified configuration to Gemini CLI's native `.gemini/` format, transforming settings and rules as needed.
+[Gemini CLI](https://github.com/google-gemini/gemini-cli) is Google's AI-powered command-line tool. Antigravity is Google's VS Code fork with Gemini integration. Both tools share the same `.gemini/` configuration format.
+
+LNAI exports unified configuration to the native `.gemini/` format, transforming settings and rules as needed.
 
 ## Output Structure
 
