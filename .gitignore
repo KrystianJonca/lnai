@@ -36,11 +36,10 @@ pnpm-debug.log*
 .claude/rules
 .claude/skills/deploy
 .claude/settings.json
-.opencode/AGENTS.md
+AGENTS.md
 .opencode/rules
 .opencode/skills/deploy
 opencode.json
-AGENTS.md
 .cursor/rules/code-organization.mdc
 .cursor/rules/typescript.mdc
 .cursor/skills/deploy

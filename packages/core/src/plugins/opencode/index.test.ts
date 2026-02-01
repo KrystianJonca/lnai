@@ -30,15 +30,15 @@ describe("opencodePlugin", () => {
       await cleanupTempDir(tempDir);
     });
 
-    it("creates AGENTS.md symlink when agents exists", async () => {
+    it("creates AGENTS.md symlink at project root when agents exists", async () => {
       const state = createMinimalState({ agents: "# Instructions" });
 
       const files = await opencodePlugin.export(state, tempDir);
 
-      const agentsMd = files.find((f) => f.path === ".opencode/AGENTS.md");
+      const agentsMd = files.find((f) => f.path === "AGENTS.md");
       expect(agentsMd).toBeDefined();
       expect(agentsMd?.type).toBe("symlink");
-      expect(agentsMd?.target).toBe("../.ai/AGENTS.md");
+      expect(agentsMd?.target).toBe(".ai/AGENTS.md");
     });
 
     it("skips AGENTS.md symlink when no agents", async () => {
@@ -46,7 +46,7 @@ describe("opencodePlugin", () => {
 
       const files = await opencodePlugin.export(state, tempDir);
 
-      const agentsMd = files.find((f) => f.path === ".opencode/AGENTS.md");
+      const agentsMd = files.find((f) => f.path === "AGENTS.md");
       expect(agentsMd).toBeUndefined();
     });
 
@@ -180,8 +180,8 @@ describe("opencodePlugin", () => {
 
       const files = await opencodePlugin.export(state, tempDir);
 
-      // Should have AGENTS.md, rules, skills, and opencode.json
-      expect(files.find((f) => f.path === ".opencode/AGENTS.md")).toBeDefined();
+      // Should have AGENTS.md at root, rules, skills, and opencode.json
+      expect(files.find((f) => f.path === "AGENTS.md")).toBeDefined();
       expect(files.find((f) => f.path === ".opencode/rules")).toBeDefined();
       expect(
         files.find((f) => f.path === ".opencode/skills/deploy")

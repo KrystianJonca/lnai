@@ -10,8 +10,9 @@ LNAI exports unified configuration to OpenCode's native format, transforming set
 ## Output Structure
 
 ```text
+AGENTS.md              # Symlink → .ai/AGENTS.md (at project root)
+
 .opencode/
-├── AGENTS.md          # Symlink → ../.ai/AGENTS.md
 ├── rules/             # Symlink → ../.ai/rules/
 ├── skills/<name>/     # Symlinks → ../../.ai/skills/<name>/
 └── <overrides>        # Symlinks from .ai/.opencode/
@@ -23,7 +24,7 @@ opencode.json          # Generated (at project root)
 
 | Source                 | Output                     | Type        |
 | ---------------------- | -------------------------- | ----------- |
-| `.ai/AGENTS.md`        | `.opencode/AGENTS.md`      | Symlink     |
+| `.ai/AGENTS.md`        | `AGENTS.md` (project root) | Symlink     |
 | `.ai/rules/`           | `.opencode/rules/`         | Symlink     |
 | `.ai/skills/<name>/`   | `.opencode/skills/<name>/` | Symlink     |
 | `.ai/settings.json`    | `opencode.json`            | Transformed |

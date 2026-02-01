@@ -60,4 +60,4 @@ This is a TypeScript monorepo using pnpm workspaces.
 | Claude Code | `.claude/CLAUDE.md` (symlink)             |
 | Cursor      | `AGENTS.md` at project root (symlink)     |
 | Copilot     | `.github/copilot-instructions.md` (symlink) |
-| OpenCode    | `.opencode/AGENTS.md` (symlink)           |
+| OpenCode    | `AGENTS.md` at project root (symlink)     |

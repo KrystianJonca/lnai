@@ -38,8 +38,8 @@ LNAI provides a single source of truth in the `.ai/` directory that exports to n
 ├── .claude/  (overrides)              ├── rules/*.mdc
 ├── .cursor/  (overrides)              ├── mcp.json
 ├── .opencode/ (overrides)             └── cli.json
-├── .copilot/ (overrides)        →    .opencode/
-├── .windsurf/ (overrides)             ├── AGENTS.md
+├── .copilot/ (overrides)        →    AGENTS.md (root)
+├── .windsurf/ (overrides)       →    .opencode/
                                        ├── rules/
                                        └── skills/
                                   →    opencode.json
