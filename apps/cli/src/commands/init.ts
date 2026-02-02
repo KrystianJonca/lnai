@@ -5,6 +5,7 @@ import ora from "ora";
 
 import { isInteractiveEnvironment, runInitPrompts } from "../prompts/init";
 import { printGitHubPromo } from "../utils/format";
+import { validateToolIds } from "../utils/validation";
 
 interface InitCommandOptions {
   force?: boolean;
@@ -22,7 +23,7 @@ export const initCommand = new Command("init")
   .action(async (options: InitCommandOptions) => {
     const rootDir = process.cwd();
 
-    let tools: ToolId[] | undefined = options.tools as ToolId[] | undefined;
+    let tools: ToolId[] | undefined = validateToolIds(options.tools);
     let versionControl: Record<ToolId, boolean> | undefined;
 
     if (shouldRunInteractive(options)) {
@@ -31,12 +32,16 @@ export const initCommand = new Command("init")
         tools = answers.tools;
         versionControl = answers.versionControl;
       } catch (error) {
-        if (
+        // Check for user interruption (Ctrl+C)
+        const isUserAbort =
           error instanceof Error &&
-          error.message.includes("User force closed")
-        ) {
+          (error.name === "ExitPromptError" ||
+            error.message.includes("User force closed") ||
+            (error as { code?: string }).code === "ERR_USE_AFTER_CLOSE");
+
+        if (isUserAbort) {
           console.log(chalk.gray("\nAborted."));
-          process.exit(0);
+          process.exit(130); // Standard exit code for SIGINT
         }
         throw error;
       }

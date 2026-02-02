@@ -67,7 +67,13 @@ async function writeSingleFile(
   const dirPath = path.dirname(fullPath);
 
   if (file.type === "symlink") {
-    const target = file.target!;
+    if (!file.target) {
+      throw new WriteError(
+        `Symlink file missing target: ${file.path}`,
+        file.path
+      );
+    }
+    const target = file.target;
     const existingTarget = await getSymlinkTarget(fullPath);
 
     if (existingTarget === target) {
@@ -109,6 +115,11 @@ async function writeSingleFile(
 
   if (!dryRun) {
     await ensureDir(dirPath);
+    // Remove existing symlink if present to avoid writing through it
+    const existingSymlink = await getSymlinkTarget(fullPath);
+    if (existingSymlink !== null) {
+      await removeIfExists(fullPath);
+    }
     await fs.writeFile(fullPath, content, "utf-8");
   }
 
@@ -146,6 +157,7 @@ export async function writeFiles(
 /**
  * Update .gitignore with paths that should not be version controlled.
  * Manages a dedicated "lnai-generated" section to avoid conflicts with user entries.
+ * Merges new paths with existing ones to support partial syncs (e.g., syncing one tool).
  */
 export async function updateGitignore(
   rootDir: string,
@@ -163,11 +175,22 @@ export async function updateGitignore(
   const marker = "# lnai-generated";
   const endMarker = "# end lnai-generated";
 
+  // Extract existing paths from the lnai-generated section
+  const extractRegex = new RegExp(`${marker}\\n([\\s\\S]*?)${endMarker}`);
+  const match = extractRegex.exec(content);
+  const existingSection = match?.[1] ?? "";
+  const existingPaths = existingSection
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("#"));
+
+  // Remove old section
   const markerRegex = new RegExp(`${marker}[\\s\\S]*?${endMarker}\\n?`, "g");
   content = content.replace(markerRegex, "");
   content = content.trimEnd();
 
-  const uniquePaths = [...new Set(paths)];
+  // Merge existing and new paths
+  const uniquePaths = [...new Set([...existingPaths, ...paths])].sort();
   const newSection = ["", marker, ...uniquePaths, endMarker, ""].join("\n");
 
   content = content + newSection;

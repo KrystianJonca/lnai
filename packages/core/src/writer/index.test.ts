@@ -271,6 +271,69 @@ describe("writeFiles", () => {
     const newTarget = await fs.readlink(linkPath);
     expect(newTarget).toBe("new-target");
   });
+
+  it("replaces existing symlink when writing non-symlink file", async () => {
+    // Create a target directory and file that the symlink points to
+    const targetDir = path.join(tempDir, ".ai", ".cursor");
+    await fs.mkdir(targetDir, { recursive: true });
+    const targetFile = path.join(targetDir, "mcp.json");
+    await fs.writeFile(targetFile, '{"old": "content"}', "utf-8");
+
+    // Create symlink at output path pointing to target
+    // Symlink is at .cursor/mcp.json, target is at .ai/.cursor/mcp.json
+    // Relative path from .cursor/ to .ai/.cursor/ is ../.ai/.cursor/
+    const outputDir = path.join(tempDir, ".cursor");
+    await fs.mkdir(outputDir, { recursive: true });
+    const symlinkPath = path.join(outputDir, "mcp.json");
+    await fs.symlink("../.ai/.cursor/mcp.json", symlinkPath);
+
+    // Verify symlink exists and resolves correctly
+    const statBefore = await fs.lstat(symlinkPath);
+    expect(statBefore.isSymbolicLink()).toBe(true);
+    const resolvedContent = await fs.readFile(symlinkPath, "utf-8");
+    expect(resolvedContent).toBe('{"old": "content"}');
+
+    // Write a non-symlink (JSON) file to the same path
+    const files: OutputFile[] = [
+      {
+        path: ".cursor/mcp.json",
+        type: "json",
+        content: { new: "generated content" },
+      },
+    ];
+
+    const results = await writeFiles(files, { rootDir: tempDir });
+
+    expect(results).toHaveLength(1);
+    expect(results[0]?.action).toBe("update");
+
+    // Verify the symlink was replaced with a regular file
+    const statAfter = await fs.lstat(symlinkPath);
+    expect(statAfter.isSymbolicLink()).toBe(false);
+    expect(statAfter.isFile()).toBe(true);
+
+    // Verify the content is the new generated content
+    const content = await fs.readFile(symlinkPath, "utf-8");
+    expect(JSON.parse(content)).toEqual({ new: "generated content" });
+
+    // Verify the original target file was NOT modified
+    const targetContent = await fs.readFile(targetFile, "utf-8");
+    expect(targetContent).toBe('{"old": "content"}');
+  });
+
+  it("throws WriteError when symlink file has no target", async () => {
+    const files: OutputFile[] = [
+      {
+        path: "link",
+        type: "symlink",
+        // Intentionally missing target
+      },
+    ];
+
+    await expect(writeFiles(files, { rootDir: tempDir })).rejects.toThrow(
+      "Failed to write file: link"
+    );
+  });
 });
 
 describe("updateGitignore", () => {
@@ -336,7 +399,7 @@ describe("updateGitignore", () => {
     expect(lnaiSection?.match(/opencode\.json/g)?.length).toBe(1);
   });
 
-  it("replaces existing lnai-generated section", async () => {
+  it("merges with existing lnai-generated section", async () => {
     // Create .gitignore with existing lnai section
     await fs.writeFile(
       path.join(tempDir, ".gitignore"),
@@ -358,7 +421,8 @@ describe("updateGitignore", () => {
     expect(content).toContain("node_modules/");
     expect(content).toContain(".env");
     expect(content).toContain(".new-claude/");
-    expect(content).not.toContain(".old-claude/");
+    // Should preserve existing paths (merge behavior for partial syncs)
+    expect(content).toContain(".old-claude/");
     // Should only have one lnai section
     expect(content.split("# lnai-generated").length).toBe(2);
   });

@@ -34,7 +34,13 @@ export const TOOL_OUTPUT_DIRS: Record<ToolId, string> = {
   codex: ".codex",
 };
 
-/** Tool-specific override directories within .ai/ */
+/**
+ * Tool-specific override directories within .ai/
+ *
+ * Note: Copilot uses .copilot for overrides (not .github) to avoid
+ * conflicts with other GitHub files in the .github directory (workflows,
+ * issue templates, etc.). This keeps LNAI overrides clearly namespaced.
+ */
 export const OVERRIDE_DIRS: Record<ToolId, string> = {
   claudeCode: ".claude",
   opencode: ".opencode",

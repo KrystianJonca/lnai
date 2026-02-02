@@ -1,24 +1,40 @@
-import { runSyncPipeline, type ToolId } from "@lnai/core";
+import {
+  FileNotFoundError,
+  InvalidToolError,
+  ParseError,
+  PluginError,
+  runSyncPipeline,
+  WriteError,
+} from "@lnai/core";
 import chalk from "chalk";
 import { Command } from "commander";
 import ora from "ora";
 
 import { printGitHubPromo, printValidationItems } from "../utils/format";
+import { validateToolIds } from "../utils/validation";
 
 export const syncCommand = new Command("sync")
   .description("Export .ai/ to native configs")
   .option("--dry-run", "Preview without writing")
   .option("-t, --tools <tools...>", "Filter to specific tools")
-  .option("-v, --verbose", "Detailed output")
   .action(async (options) => {
+    let tools;
+    try {
+      tools = validateToolIds(options.tools);
+    } catch (error) {
+      if (error instanceof InvalidToolError) {
+        console.error(chalk.red(error.message));
+        process.exit(1);
+      }
+      throw error;
+    }
     const spinner = ora("Syncing configuration...").start();
 
     try {
       const results = await runSyncPipeline({
         rootDir: process.cwd(),
         dryRun: options.dryRun,
-        tools: options.tools as ToolId[] | undefined,
-        verbose: options.verbose,
+        tools,
       });
 
       spinner.succeed("Sync complete");
@@ -48,6 +64,14 @@ export const syncCommand = new Command("sync")
         }
       }
 
+      // Display validation errors for synced tools
+      for (const result of results) {
+        if (result.validation.errors.length > 0) {
+          console.log(chalk.red(`\n${result.tool} errors:`));
+          printValidationItems(result.validation.errors, "red");
+        }
+      }
+
       // Display validation warnings for synced tools
       for (const result of results) {
         if (result.validation.warnings.length > 0) {
@@ -59,9 +83,27 @@ export const syncCommand = new Command("sync")
       printGitHubPromo();
     } catch (error) {
       spinner.fail("Sync failed");
-      console.error(
-        chalk.red(error instanceof Error ? error.message : String(error))
-      );
+
+      if (error instanceof ParseError) {
+        console.error(
+          chalk.red(`Parse error in ${error.filePath}: ${error.message}`)
+        );
+      } else if (error instanceof WriteError) {
+        console.error(
+          chalk.red(`Failed to write ${error.filePath}: ${error.message}`)
+        );
+      } else if (error instanceof FileNotFoundError) {
+        console.error(chalk.red(`File not found: ${error.filePath}`));
+      } else if (error instanceof PluginError) {
+        console.error(
+          chalk.red(`Plugin error (${error.pluginId}): ${error.message}`)
+        );
+      } else {
+        console.error(
+          chalk.red(error instanceof Error ? error.message : String(error))
+        );
+      }
+
       process.exit(1);
     }
   });

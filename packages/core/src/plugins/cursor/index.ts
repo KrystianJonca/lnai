@@ -6,6 +6,7 @@ import type {
   ValidationResult,
   ValidationWarningDetail,
 } from "../../types/index";
+import { validateMcpServers } from "../../utils/mcp";
 import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
 import {
@@ -124,19 +125,12 @@ export const cursorPlugin: Plugin = {
     }
 
     // Check for invalid MCP servers that will be skipped
-    const mcpServers = state.settings?.mcpServers;
-    if (mcpServers) {
-      for (const [name, server] of Object.entries(mcpServers)) {
-        const isRemote = server.type === "http" || server.type === "sse";
-        const hasCommand = !!server.command;
-        if (!isRemote && !hasCommand) {
-          warnings.push({
-            path: ["settings", "mcpServers", name],
-            message: `MCP server "${name}" has no command or type - it will be skipped`,
-          });
-        }
-      }
-    }
+    warnings.push(
+      ...validateMcpServers(state.settings?.mcpServers, [
+        "settings",
+        "mcpServers",
+      ])
+    );
 
     return { valid: true, errors: [], warnings, skipped: [] };
   },

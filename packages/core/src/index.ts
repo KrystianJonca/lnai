@@ -11,6 +11,7 @@ export {
 // Errors
 export {
   FileNotFoundError,
+  InvalidToolError,
   LnaiError,
   ParseError,
   PluginError,

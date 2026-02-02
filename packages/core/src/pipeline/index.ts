@@ -16,8 +16,6 @@ export interface SyncOptions {
   tools?: ToolId[];
   /** Preview changes without writing files */
   dryRun?: boolean;
-  /** Enable verbose output */
-  verbose?: boolean;
 }
 
 function getToolsToSync(

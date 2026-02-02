@@ -68,3 +68,16 @@ export class PluginError extends LnaiError {
     }
   }
 }
+
+export class InvalidToolError extends LnaiError {
+  public readonly invalidTools: string[];
+
+  constructor(invalidTools: string[], validTools: string[]) {
+    super(
+      `Invalid tool(s): ${invalidTools.join(", ")}. Valid tools: ${validTools.join(", ")}`,
+      "INVALID_TOOL"
+    );
+    this.name = "InvalidToolError";
+    this.invalidTools = invalidTools;
+  }
+}

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   FileNotFoundError,
+  InvalidToolError,
   LnaiError,
   ParseError,
   PluginError,
@@ -153,6 +154,38 @@ describe("PluginError", () => {
   });
 });
 
+describe("InvalidToolError", () => {
+  it("has invalidTools property and formatted message", () => {
+    const error = new InvalidToolError(
+      ["badTool", "anotherBad"],
+      ["claudeCode", "cursor", "copilot"]
+    );
+
+    expect(error.invalidTools).toEqual(["badTool", "anotherBad"]);
+    expect(error.code).toBe("INVALID_TOOL");
+    expect(error.name).toBe("InvalidToolError");
+    expect(error.message).toBe(
+      "Invalid tool(s): badTool, anotherBad. Valid tools: claudeCode, cursor, copilot"
+    );
+  });
+
+  it("handles single invalid tool", () => {
+    const error = new InvalidToolError(["badTool"], ["claudeCode"]);
+
+    expect(error.invalidTools).toEqual(["badTool"]);
+    expect(error.message).toBe(
+      "Invalid tool(s): badTool. Valid tools: claudeCode"
+    );
+  });
+
+  it("extends LnaiError", () => {
+    const error = new InvalidToolError(["bad"], ["good"]);
+
+    expect(error).toBeInstanceOf(LnaiError);
+    expect(error).toBeInstanceOf(InvalidToolError);
+  });
+});
+
 describe("Error inheritance chain", () => {
   it("all custom errors extend LnaiError", () => {
     const errors = [
@@ -161,6 +194,7 @@ describe("Error inheritance chain", () => {
       new FileNotFoundError("", ""),
       new WriteError("", ""),
       new PluginError("", ""),
+      new InvalidToolError([], []),
     ];
 
     for (const error of errors) {

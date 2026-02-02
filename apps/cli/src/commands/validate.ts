@@ -1,7 +1,7 @@
 import {
+  InvalidToolError,
   parseUnifiedConfig,
   pluginRegistry,
-  type ToolId,
   validateUnifiedState,
   type ValidationErrorDetail,
   type ValidationWarningDetail,
@@ -11,11 +11,23 @@ import { Command } from "commander";
 import ora from "ora";
 
 import { printValidationItems } from "../utils/format";
+import { validateToolIds } from "../utils/validation";
 
 export const validateCommand = new Command("validate")
   .description("Validate .ai/ configuration")
   .option("-t, --tools <tools...>", "Filter to specific tools")
   .action(async (options) => {
+    let validatedTools;
+    try {
+      validatedTools = validateToolIds(options.tools);
+    } catch (error) {
+      if (error instanceof InvalidToolError) {
+        console.error(chalk.red(error.message));
+        process.exit(1);
+      }
+      throw error;
+    }
+
     const spinner = ora("Validating configuration...").start();
 
     try {
@@ -31,8 +43,7 @@ export const validateCommand = new Command("validate")
         process.exit(1);
       }
 
-      const tools =
-        (options.tools as ToolId[] | undefined) ?? pluginRegistry.getIds();
+      const tools = validatedTools ?? pluginRegistry.getIds();
 
       const toolErrors: Array<{
         plugin: string;
@@ -50,6 +61,9 @@ export const validateCommand = new Command("validate")
       for (const toolId of tools) {
         const plugin = pluginRegistry.get(toolId);
         if (!plugin) {
+          console.log(
+            chalk.yellow(`\nWarning: Unknown tool "${toolId}" - skipping`)
+          );
           continue;
         }
 

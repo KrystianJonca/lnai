@@ -5,6 +5,7 @@ import type {
   ValidationResult,
   ValidationWarningDetail,
 } from "../../types/index";
+import { validateMcpServers } from "../../utils/mcp";
 import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
 import {
@@ -92,12 +93,22 @@ export const opencodePlugin: Plugin = {
 
   validate(state: UnifiedState): ValidationResult {
     const warnings: ValidationWarningDetail[] = [];
+
     if (!state.agents) {
       warnings.push({
         path: ["AGENTS.md"],
         message: "No AGENTS.md found - root AGENTS.md will not be created",
       });
     }
+
+    // Validate MCP servers
+    warnings.push(
+      ...validateMcpServers(state.settings?.mcpServers, [
+        "settings",
+        "mcpServers",
+      ])
+    );
+
     return { valid: true, errors: [], warnings, skipped: [] };
   },
 };
