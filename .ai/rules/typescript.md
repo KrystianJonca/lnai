@@ -1,7 +1,7 @@
 ---
 paths:
-  - "src/**/*.ts"
   - "packages/**/*.ts"
+  - "apps/**/*.ts"
 ---
 
 # TypeScript Coding Standards

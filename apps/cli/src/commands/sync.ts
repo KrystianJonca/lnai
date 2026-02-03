@@ -17,6 +17,7 @@ export const syncCommand = new Command("sync")
   .description("Export .ai/ to native configs")
   .option("--dry-run", "Preview without writing")
   .option("-t, --tools <tools...>", "Filter to specific tools")
+  .option("--skip-cleanup", "Skip deletion of orphaned files")
   .action(async (options) => {
     let tools;
     try {
@@ -34,6 +35,7 @@ export const syncCommand = new Command("sync")
       const results = await runSyncPipeline({
         rootDir: process.cwd(),
         dryRun: options.dryRun,
+        skipCleanup: options.skipCleanup,
         tools,
       });
 
