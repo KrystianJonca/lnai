@@ -25,7 +25,7 @@
 Stop maintaining separate config files for every AI coding tool. Define once in `.ai/`, sync everywhere.
 
 <p align="center">
-  <video src="https://github.com/KrystianJonca/lnai/raw/main/demo.mp4" autoplay loop muted playsinline width="700"></video>
+  <img src="https://raw.githubusercontent.com/KrystianJonca/lnai/main/demo.gif" alt="LNAI Demo" width="700">
 </p>
 
 ## Why LNAI?
