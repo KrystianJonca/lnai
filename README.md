@@ -29,6 +29,7 @@ Stop maintaining separate config files for every AI coding tool. Define once in 
 - **One source of truth** — Write your project rules, MCP servers, and permissions once
 - **Works with your tools** — Syncs to native formats each tool actually reads
 - **Stay in sync** — Update `.ai/` and run `lnai sync` to propagate changes instantly
+- **Automatic cleanup** — Orphaned files are removed when configs change
 
 ## Supported Tools
 

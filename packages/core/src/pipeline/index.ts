@@ -1,8 +1,15 @@
+import { computeFilesToDelete, deleteFiles } from "../cleanup/index";
 import type { ToolId } from "../constants";
 import { ValidationError } from "../errors";
+import {
+  createEmptyManifest,
+  readManifest,
+  updateToolManifest,
+  writeManifest,
+} from "../manifest/index";
 import { parseUnifiedConfig } from "../parser/index";
 import { pluginRegistry } from "../plugins/index";
-import type { SyncResult } from "../types/index";
+import type { ChangeResult, SyncResult } from "../types/index";
 import { validateToolIds, validateUnifiedState } from "../validator/index";
 import { updateGitignore, writeFiles } from "../writer/index";
 
@@ -16,6 +23,8 @@ export interface SyncOptions {
   tools?: ToolId[];
   /** Preview changes without writing files */
   dryRun?: boolean;
+  /** Skip cleanup of orphaned files */
+  skipCleanup?: boolean;
 }
 
 function getToolsToSync(
@@ -53,7 +62,12 @@ function getToolsToSync(
 export async function runSyncPipeline(
   options: SyncOptions
 ): Promise<SyncResult[]> {
-  const { rootDir, dryRun = false, tools: requestedTools } = options;
+  const {
+    rootDir,
+    dryRun = false,
+    skipCleanup = false,
+    tools: requestedTools,
+  } = options;
 
   if (requestedTools && requestedTools.length > 0) {
     const toolValidation = validateToolIds(requestedTools);
@@ -87,6 +101,9 @@ export async function runSyncPipeline(
     return [];
   }
 
+  // Load existing manifest for cleanup tracking
+  let manifest = (await readManifest(rootDir)) ?? createEmptyManifest();
+
   const results: SyncResult[] = [];
   const pathsToIgnore: string[] = [];
 
@@ -98,7 +115,22 @@ export async function runSyncPipeline(
 
     const validation = plugin.validate(state);
     const outputFiles = await plugin.export(state, rootDir);
-    const changes = await writeFiles(outputFiles, { rootDir, dryRun });
+
+    // Compute and perform deletions for orphaned files
+    let deleteChanges: ChangeResult[] = [];
+    if (!skipCleanup && manifest.tools[toolId]) {
+      const toDelete = computeFilesToDelete(
+        manifest.tools[toolId].files,
+        outputFiles
+      );
+      deleteChanges = await deleteFiles(toDelete, rootDir, dryRun);
+    }
+
+    // Write new/updated files
+    const writeChanges = await writeFiles(outputFiles, { rootDir, dryRun });
+
+    // Combine delete and write changes
+    const changes = [...deleteChanges, ...writeChanges];
 
     results.push({
       tool: toolId,
@@ -106,10 +138,20 @@ export async function runSyncPipeline(
       validation,
     });
 
+    // Update manifest for this tool (only if not dry-run)
+    if (!dryRun) {
+      manifest = updateToolManifest(manifest, toolId, outputFiles);
+    }
+
     const toolConfig = state.config.tools?.[toolId];
     if (!toolConfig?.versionControl) {
       pathsToIgnore.push(...outputFiles.map((f) => f.path));
     }
+  }
+
+  // Write updated manifest (only if not dry-run)
+  if (!dryRun) {
+    await writeManifest(rootDir, manifest);
   }
 
   if (pathsToIgnore.length > 0 && !dryRun) {

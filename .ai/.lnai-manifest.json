@@ -1,0 +1,274 @@
+{
+  "version": 1,
+  "tools": {
+    "claudeCode": {
+      "version": 1,
+      "tool": "claudeCode",
+      "generatedAt": "2026-02-03T08:35:40.422Z",
+      "files": [
+        {
+          "path": ".claude/CLAUDE.md",
+          "type": "symlink",
+          "target": "../.ai/AGENTS.md"
+        },
+        {
+          "path": ".claude/rules",
+          "type": "symlink",
+          "target": "../.ai/rules"
+        },
+        {
+          "path": ".claude/skills/add-tool-plugin",
+          "type": "symlink",
+          "target": "../../.ai/skills/add-tool-plugin"
+        },
+        {
+          "path": ".claude/skills/update-tool-plugin",
+          "type": "symlink",
+          "target": "../../.ai/skills/update-tool-plugin"
+        },
+        {
+          "path": ".claude/settings.json",
+          "type": "json",
+          "hash": "77eda6c7f6bd3141153676016911c0c5a1ae0b08cd4f4c5302cb4ba6bd58da35"
+        }
+      ]
+    },
+    "opencode": {
+      "version": 1,
+      "tool": "opencode",
+      "generatedAt": "2026-02-03T08:35:40.428Z",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "type": "symlink",
+          "target": ".ai/AGENTS.md"
+        },
+        {
+          "path": ".opencode/rules",
+          "type": "symlink",
+          "target": "../.ai/rules"
+        },
+        {
+          "path": ".opencode/skills/add-tool-plugin",
+          "type": "symlink",
+          "target": "../../.ai/skills/add-tool-plugin"
+        },
+        {
+          "path": ".opencode/skills/update-tool-plugin",
+          "type": "symlink",
+          "target": "../../.ai/skills/update-tool-plugin"
+        },
+        {
+          "path": "opencode.json",
+          "type": "json",
+          "hash": "fb124b2fa5c4ab8556766e0dcd9c637f9175084834363a5e6969971f5a77b866"
+        }
+      ]
+    },
+    "cursor": {
+      "version": 1,
+      "tool": "cursor",
+      "generatedAt": "2026-02-03T08:35:40.430Z",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "type": "symlink",
+          "target": ".ai/AGENTS.md"
+        },
+        {
+          "path": ".cursor/rules/code-organization.mdc",
+          "type": "text",
+          "hash": "aa23d4490e7434e82fbcfa571a499cd9e88f21264256c7ea72a2dbd124341221"
+        },
+        {
+          "path": ".cursor/rules/testing.mdc",
+          "type": "text",
+          "hash": "608de6fa871cd9d697f0c0eb858e0c463dc3cf3b80d5609d77d42b23ad0513bb"
+        },
+        {
+          "path": ".cursor/rules/typescript.mdc",
+          "type": "text",
+          "hash": "d1d0e4bb5640d307374d825272c0c7b95bd134f4c35067f478f3e6fd47b9a3e7"
+        },
+        {
+          "path": ".cursor/skills/add-tool-plugin",
+          "type": "symlink",
+          "target": "../../.ai/skills/add-tool-plugin"
+        },
+        {
+          "path": ".cursor/skills/update-tool-plugin",
+          "type": "symlink",
+          "target": "../../.ai/skills/update-tool-plugin"
+        },
+        {
+          "path": ".cursor/mcp.json",
+          "type": "json",
+          "hash": "3856695f9129f8f1a8af9ec05b38088202c3ae8245f3d603d0b4731c6b03867f"
+        },
+        {
+          "path": ".cursor/cli.json",
+          "type": "json",
+          "hash": "14e18f5ab4526778d69dcbe97d74e5be8af1b291a048f00941799ea651ae7eef"
+        }
+      ]
+    },
+    "copilot": {
+      "version": 1,
+      "tool": "copilot",
+      "generatedAt": "2026-02-03T08:35:40.432Z",
+      "files": [
+        {
+          "path": ".github/copilot-instructions.md",
+          "type": "symlink",
+          "target": "../.ai/AGENTS.md"
+        },
+        {
+          "path": ".github/instructions/code-organization.instructions.md",
+          "type": "text",
+          "hash": "a8ebe89f75dcc76e0d38b69979aaa0957a32b2d853ff0ce689fe21cfefe952a7"
+        },
+        {
+          "path": ".github/instructions/testing.instructions.md",
+          "type": "text",
+          "hash": "88c193f5b0798e2601eb9f7907927becc93eea282bbca48ed744b4509a317f45"
+        },
+        {
+          "path": ".github/instructions/typescript.instructions.md",
+          "type": "text",
+          "hash": "1e408c7d8daa90a17b5c38acc60145f078e4a85890d975162009d9b598d1f8bd"
+        },
+        {
+          "path": ".github/skills/add-tool-plugin",
+          "type": "symlink",
+          "target": "../../.ai/skills/add-tool-plugin"
+        },
+        {
+          "path": ".github/skills/update-tool-plugin",
+          "type": "symlink",
+          "target": "../../.ai/skills/update-tool-plugin"
+        },
+        {
+          "path": ".vscode/mcp.json",
+          "type": "json",
+          "hash": "3dd885a1536f7261b3420e4afa81780b84eb21aa5434b16ef27581055b3ce39b"
+        }
+      ]
+    },
+    "windsurf": {
+      "version": 1,
+      "tool": "windsurf",
+      "generatedAt": "2026-02-03T08:35:40.433Z",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "type": "symlink",
+          "target": ".ai/AGENTS.md"
+        },
+        {
+          "path": ".windsurf/rules/code-organization.md",
+          "type": "text",
+          "hash": "8cd1c752a0af56bcebd621878d17f6519a371caea7cefc3314242d4ee8cda00a"
+        },
+        {
+          "path": ".windsurf/rules/testing.md",
+          "type": "text",
+          "hash": "31b623bb260511aaf2b1d56bcffb6dff7a0d53560985faf7b48a689538dd19e0"
+        },
+        {
+          "path": ".windsurf/rules/typescript.md",
+          "type": "text",
+          "hash": "50e9c7b9220f48073eb52fd21021cc1da59de48990d960cc6c93c17d3937e913"
+        },
+        {
+          "path": ".windsurf/skills/add-tool-plugin",
+          "type": "symlink",
+          "target": "../../.ai/skills/add-tool-plugin"
+        },
+        {
+          "path": ".windsurf/skills/update-tool-plugin",
+          "type": "symlink",
+          "target": "../../.ai/skills/update-tool-plugin"
+        }
+      ]
+    },
+    "gemini": {
+      "version": 1,
+      "tool": "gemini",
+      "generatedAt": "2026-02-03T08:35:40.435Z",
+      "files": [
+        {
+          "path": ".gemini/GEMINI.md",
+          "type": "symlink",
+          "target": "../.ai/AGENTS.md"
+        },
+        {
+          "path": "GEMINI.md",
+          "type": "text",
+          "hash": "7822b9698514719b8637b181f5bab7c20d0a65619f2295d41ce4347b31b6f4eb"
+        },
+        {
+          "path": "packages/GEMINI.md",
+          "type": "text",
+          "hash": "028a9f9f71e0ad307f258f6ec3c9851bb952bc0f93412cc44d22349ba42edd99"
+        },
+        {
+          "path": "apps/GEMINI.md",
+          "type": "text",
+          "hash": "028a9f9f71e0ad307f258f6ec3c9851bb952bc0f93412cc44d22349ba42edd99"
+        },
+        {
+          "path": ".gemini/skills/add-tool-plugin",
+          "type": "symlink",
+          "target": "../../.ai/skills/add-tool-plugin"
+        },
+        {
+          "path": ".gemini/skills/update-tool-plugin",
+          "type": "symlink",
+          "target": "../../.ai/skills/update-tool-plugin"
+        },
+        {
+          "path": ".gemini/settings.json",
+          "type": "json",
+          "hash": "9b627b725e62f31f425a9474bc8bb7d1aa9024f2fc7fb4abb19336f6dd3e373a"
+        }
+      ]
+    },
+    "codex": {
+      "version": 1,
+      "tool": "codex",
+      "generatedAt": "2026-02-03T08:35:40.436Z",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "type": "symlink",
+          "target": ".ai/AGENTS.md"
+        },
+        {
+          "path": "packages/AGENTS.md",
+          "type": "text",
+          "hash": "028a9f9f71e0ad307f258f6ec3c9851bb952bc0f93412cc44d22349ba42edd99"
+        },
+        {
+          "path": "apps/AGENTS.md",
+          "type": "text",
+          "hash": "028a9f9f71e0ad307f258f6ec3c9851bb952bc0f93412cc44d22349ba42edd99"
+        },
+        {
+          "path": ".codex/skills/add-tool-plugin",
+          "type": "symlink",
+          "target": "../../.ai/skills/add-tool-plugin"
+        },
+        {
+          "path": ".codex/skills/update-tool-plugin",
+          "type": "symlink",
+          "target": "../../.ai/skills/update-tool-plugin"
+        },
+        {
+          "path": ".codex/config.toml",
+          "type": "text",
+          "hash": "051f11b78556f8b6f74560bfe6271f208bc1cb4198d7ba2a3f5c94f8fac2bf7a"
+        }
+      ]
+    }
+  }
+}

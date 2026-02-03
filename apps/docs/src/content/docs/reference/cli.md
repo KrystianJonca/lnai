@@ -53,6 +53,7 @@ lnai sync [options]
 | Option                   | Description                           |
 | ------------------------ | ------------------------------------- |
 | `--dry-run`              | Preview changes without writing files |
+| `--skip-cleanup`         | Skip deletion of orphaned files       |
 | `-t, --tools <tools...>` | Filter to specific tools              |
 | `-v, --verbose`          | Show detailed output                  |
 

@@ -89,3 +89,25 @@ export interface SyncResult {
   changes: ChangeResult[];
   validation: ValidationResult;
 }
+
+/** Entry for a single file in the manifest */
+export interface ManifestEntry {
+  path: string;
+  type: "json" | "text" | "symlink";
+  hash?: string;
+  target?: string;
+}
+
+/** Manifest for a single tool's generated files */
+export interface ToolManifest {
+  version: 1;
+  tool: ToolId;
+  generatedAt: string;
+  files: ManifestEntry[];
+}
+
+/** Root manifest tracking all LNAI-generated files */
+export interface LnaiManifest {
+  version: 1;
+  tools: Partial<Record<ToolId, ToolManifest>>;
+}

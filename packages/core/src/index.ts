@@ -35,6 +35,8 @@ export {
 export type {
   ChangeResult,
   Config,
+  LnaiManifest,
+  ManifestEntry,
   MarkdownFile,
   MarkdownFrontmatter,
   McpServer,
@@ -47,6 +49,7 @@ export type {
   SkippedFeatureDetail,
   SyncResult,
   ToolConfig,
+  ToolManifest,
   UnifiedState,
   ValidationErrorDetail,
   ValidationResult,
@@ -82,6 +85,23 @@ export {
   writeFiles,
   type WriterOptions,
 } from "./writer/index";
+
+// Manifest
+export {
+  buildToolManifest,
+  createEmptyManifest,
+  MANIFEST_FILENAME,
+  readManifest,
+  updateToolManifest,
+  writeManifest,
+} from "./manifest/index";
+
+// Cleanup
+export {
+  cleanupEmptyParentDirs,
+  computeFilesToDelete,
+  deleteFiles,
+} from "./cleanup/index";
 
 // Init
 export {
