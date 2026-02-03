@@ -25,6 +25,9 @@ importers:
       lint-staged:
         specifier: ^16.2.7
         version: 16.2.7
+      lnai:
+        specifier: ^0.6.0
+        version: 0.6.0(@types/node@25.0.10)
       prettier:
         specifier: ^3.8.1
         version: 3.8.1
@@ -1268,6 +1271,12 @@ packages:
     resolution:
       {
         integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==,
+      }
+
+  "@lnai/core@0.6.0":
+    resolution:
+      {
+        integrity: sha512-2yxx3miVkYLPIgwdBN/DmZ0Mi0AeWyy2HQ4HPOHCZrrcTWelhveyUgecze8dExK2ICqOvRU55eaNxc9A9LNzYg==,
       }
 
   "@mdx-js/mdx@3.1.1":
@@ -3297,6 +3306,13 @@ packages:
         integrity: sha512-ME4Fb83LgEgwNw96RKNvKV4VTLuXfoKudAmm2lP8Kk87KaMK0/Xrx/aAkMWmT8mDb+3MlFDspfbCs7adjRxA2g==,
       }
     engines: { node: ">=20.0.0" }
+
+  lnai@0.6.0:
+    resolution:
+      {
+        integrity: sha512-Lrlw7yPbAKS4MPw1XOkFqPZVG5mcX0owLIeCa4rhceHzZ6m+T4xn39ttUCvKujX/Nc9kb/pAc6380HxJYrhD7A==,
+      }
+    hasBin: true
 
   load-tsconfig@0.2.5:
     resolution:
@@ -5806,6 +5822,11 @@ snapshots:
       "@jridgewell/resolve-uri": 3.1.2
       "@jridgewell/sourcemap-codec": 1.5.5
 
+  "@lnai/core@0.6.0":
+    dependencies:
+      gray-matter: 4.0.3
+      zod: 4.3.6
+
   "@mdx-js/mdx@3.1.1":
     dependencies:
       "@types/estree": 1.0.8
@@ -7160,6 +7181,16 @@ snapshots:
       log-update: 6.1.0
       rfdc: 1.4.1
       wrap-ansi: 9.0.2
+
+  lnai@0.6.0(@types/node@25.0.10):
+    dependencies:
+      "@inquirer/prompts": 7.10.1(@types/node@25.0.10)
+      "@lnai/core": 0.6.0
+      chalk: 5.6.2
+      commander: 14.0.2
+      ora: 9.1.0
+    transitivePeerDependencies:
+      - "@types/node"
 
   load-tsconfig@0.2.5: {}
 

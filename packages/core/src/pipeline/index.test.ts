@@ -5,7 +5,9 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { cleanupTempDir, copyFixture, createTempDir } from "../__tests__/utils";
 import type { ToolId } from "../constants";
+import { UNIFIED_DIR } from "../constants";
 import { ValidationError } from "../errors";
+import { MANIFEST_FILENAME, readManifest } from "../manifest/index";
 import { runSyncPipeline } from "./index";
 
 describe("runSyncPipeline", () => {
@@ -297,6 +299,164 @@ describe("runSyncPipeline", () => {
   describe("error handling", () => {
     it("throws when .ai directory is missing", async () => {
       await expect(runSyncPipeline({ rootDir: tempDir })).rejects.toThrow();
+    });
+  });
+
+  describe("manifest tracking", () => {
+    it("creates manifest after first sync", async () => {
+      await copyFixture("valid/full", tempDir);
+
+      await runSyncPipeline({ rootDir: tempDir, tools: ["claudeCode"] });
+
+      // Manifest should exist
+      const manifestPath = path.join(tempDir, UNIFIED_DIR, MANIFEST_FILENAME);
+      const stat = await fs.stat(manifestPath);
+      expect(stat.isFile()).toBe(true);
+
+      // Manifest should contain claudeCode entry
+      const manifest = await readManifest(tempDir);
+      expect(manifest?.tools.claudeCode).toBeDefined();
+      expect(manifest?.tools.claudeCode?.files.length).toBeGreaterThan(0);
+    });
+
+    it("does not update manifest during dry-run", async () => {
+      await copyFixture("valid/full", tempDir);
+
+      await runSyncPipeline({
+        rootDir: tempDir,
+        dryRun: true,
+        tools: ["claudeCode"],
+      });
+
+      // Manifest should not exist
+      const manifestPath = path.join(tempDir, UNIFIED_DIR, MANIFEST_FILENAME);
+      await expect(fs.access(manifestPath)).rejects.toThrow();
+    });
+
+    it("preserves other tools in manifest during partial sync", async () => {
+      await copyFixture("valid/full", tempDir);
+
+      // First sync claudeCode
+      await runSyncPipeline({ rootDir: tempDir, tools: ["claudeCode"] });
+
+      // Then sync cursor
+      await runSyncPipeline({ rootDir: tempDir, tools: ["cursor"] });
+
+      // Manifest should contain both tools
+      const manifest = await readManifest(tempDir);
+      expect(manifest?.tools.claudeCode).toBeDefined();
+      expect(manifest?.tools.cursor).toBeDefined();
+    });
+  });
+
+  describe("orphan cleanup", () => {
+    it("deletes orphaned files when config is removed", async () => {
+      await copyFixture("valid/full", tempDir);
+
+      // First sync with full config including skills
+      await runSyncPipeline({ rootDir: tempDir, tools: ["claudeCode"] });
+
+      // Verify skill symlink exists
+      const skillPath = path.join(tempDir, ".claude", "skills", "deploy");
+      const statBefore = await fs.lstat(skillPath);
+      expect(statBefore.isSymbolicLink()).toBe(true);
+
+      // Remove skill from .ai/skills/
+      const skillsDir = path.join(tempDir, UNIFIED_DIR, "skills");
+      await fs.rm(skillsDir, { recursive: true, force: true });
+
+      // Re-sync
+      const results = await runSyncPipeline({
+        rootDir: tempDir,
+        tools: ["claudeCode"],
+      });
+
+      // Should have delete action in changes
+      const deleteChanges = results[0]?.changes.filter(
+        (c) => c.action === "delete"
+      );
+      expect(deleteChanges?.length).toBeGreaterThan(0);
+      expect(deleteChanges?.some((c) => c.path.includes("skills/deploy"))).toBe(
+        true
+      );
+
+      // Skill symlink should be deleted
+      await expect(fs.lstat(skillPath)).rejects.toThrow();
+    });
+
+    it("shows delete actions in dry-run without deleting", async () => {
+      await copyFixture("valid/full", tempDir);
+
+      // First sync
+      await runSyncPipeline({ rootDir: tempDir, tools: ["claudeCode"] });
+
+      // Remove skill
+      const skillsDir = path.join(tempDir, UNIFIED_DIR, "skills");
+      await fs.rm(skillsDir, { recursive: true, force: true });
+
+      // Dry-run sync
+      const results = await runSyncPipeline({
+        rootDir: tempDir,
+        dryRun: true,
+        tools: ["claudeCode"],
+      });
+
+      // Should show delete action
+      const deleteChanges = results[0]?.changes.filter(
+        (c) => c.action === "delete"
+      );
+      expect(deleteChanges?.length).toBeGreaterThan(0);
+
+      // But skill symlink should still exist
+      const skillPath = path.join(tempDir, ".claude", "skills", "deploy");
+      const stat = await fs.lstat(skillPath);
+      expect(stat.isSymbolicLink()).toBe(true);
+    });
+
+    it("skips cleanup when --skip-cleanup is set", async () => {
+      await copyFixture("valid/full", tempDir);
+
+      // First sync
+      await runSyncPipeline({ rootDir: tempDir, tools: ["claudeCode"] });
+
+      // Remove skill
+      const skillsDir = path.join(tempDir, UNIFIED_DIR, "skills");
+      await fs.rm(skillsDir, { recursive: true, force: true });
+
+      // Sync with skipCleanup
+      const results = await runSyncPipeline({
+        rootDir: tempDir,
+        skipCleanup: true,
+        tools: ["claudeCode"],
+      });
+
+      // Should not have delete actions
+      const deleteChanges = results[0]?.changes.filter(
+        (c) => c.action === "delete"
+      );
+      expect(deleteChanges?.length ?? 0).toBe(0);
+
+      // Skill symlink should still exist
+      const skillPath = path.join(tempDir, ".claude", "skills", "deploy");
+      const stat = await fs.lstat(skillPath);
+      expect(stat.isSymbolicLink()).toBe(true);
+    });
+
+    it("handles first sync with no previous manifest gracefully", async () => {
+      await copyFixture("valid/minimal", tempDir);
+
+      // First sync should work without errors
+      const results = await runSyncPipeline({
+        rootDir: tempDir,
+        tools: ["claudeCode"],
+      });
+
+      expect(results).toHaveLength(1);
+      // No delete actions on first sync
+      const deleteChanges = results[0]?.changes.filter(
+        (c) => c.action === "delete"
+      );
+      expect(deleteChanges?.length ?? 0).toBe(0);
     });
   });
 });

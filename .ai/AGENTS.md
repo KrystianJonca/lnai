@@ -10,15 +10,15 @@ You are working on the LNAI project - a unified AI configuration management tool
 
 ## Supported Tools
 
-| Tool | Output Directory | Rules | Skills | MCP | Settings |
-|------|------------------|-------|--------|-----|----------|
-| Claude Code | `.claude/` | Yes | Yes | Yes | Yes |
-| OpenCode | `.opencode/` | Yes | No | Yes | Yes |
-| Cursor | `.cursor/` | Yes | No | No | Yes |
-| GitHub Copilot | `.github/` | Yes | No | No | Yes |
-| Windsurf | `.windsurf/` | Yes | No | No | Yes |
-| Gemini CLI | `.gemini/` | Yes | No | Yes | Yes |
-| Codex | `.codex/` | Yes | No | No | Yes |
+| Tool           | Output Directory | Rules | Skills | MCP | Settings |
+| -------------- | ---------------- | ----- | ------ | --- | -------- |
+| Claude Code    | `.claude/`       | Yes   | Yes    | Yes | Yes      |
+| OpenCode       | `.opencode/`     | Yes   | No     | Yes | Yes      |
+| Cursor         | `.cursor/`       | Yes   | No     | No  | Yes      |
+| GitHub Copilot | `.github/`       | Yes   | No     | No  | Yes      |
+| Windsurf       | `.windsurf/`     | Yes   | No     | No  | Yes      |
+| Gemini CLI     | `.gemini/`       | Yes   | No     | Yes | Yes      |
+| Codex          | `.codex/`        | Yes   | No     | No  | Yes      |
 
 ## Project Structure
 
@@ -41,7 +41,9 @@ lnai/
 ## Core Concepts
 
 ### UnifiedState
+
 The central data structure representing all configuration:
+
 - `agents` - AGENTS.md content
 - `rules` - Array of rule files with paths and content
 - `skills` - Array of skill definitions
@@ -49,12 +51,15 @@ The central data structure representing all configuration:
 - `config` - Tool enable/disable configuration
 
 ### OutputFile
+
 What plugins generate:
+
 - `path` - Output file path relative to project root
 - `type` - "symlink" | "json" | "text"
 - `content` or `target` - File content or symlink target
 
 ### Plugin Interface
+
 ```typescript
 interface Plugin {
   id: ToolId;
@@ -90,30 +95,34 @@ lnai init                    # Initialize .ai/ directory
 
 The project uses a hierarchy of custom errors:
 
-| Error Class | Code | Purpose |
-|------------|------|---------|
-| `LnaiError` | - | Base error class |
-| `ParseError` | PARSE_ERROR | Failed to parse config files |
-| `ValidationError` | VALIDATION_ERROR | Schema validation failures |
-| `FileNotFoundError` | FILE_NOT_FOUND | Required file missing |
-| `WriteError` | WRITE_ERROR | Failed to write output file |
-| `PluginError` | PLUGIN_ERROR | Plugin-specific errors |
+| Error Class         | Code             | Purpose                      |
+| ------------------- | ---------------- | ---------------------------- |
+| `LnaiError`         | -                | Base error class             |
+| `ParseError`        | PARSE_ERROR      | Failed to parse config files |
+| `ValidationError`   | VALIDATION_ERROR | Schema validation failures   |
+| `FileNotFoundError` | FILE_NOT_FOUND   | Required file missing        |
+| `WriteError`        | WRITE_ERROR      | Failed to write output file  |
+| `PluginError`       | PLUGIN_ERROR     | Plugin-specific errors       |
 
 ## TypeScript Patterns
 
 ### Zod-First Types
+
 Define schemas with Zod, infer TypeScript types:
+
 ```typescript
 const MySchema = z.object({ ... });
 type MyType = z.infer<typeof MySchema>;
 ```
 
 ### Naming Conventions
+
 - PascalCase for types and interfaces
 - camelCase for variables and functions
 - UPPER_SNAKE_CASE for constants
 
 ### Import Ordering
+
 1. Node built-ins (`node:fs`, `node:path`)
 2. External packages (`zod`, `commander`)
 3. Workspace packages (`@lnai/core`)
@@ -127,8 +136,8 @@ type MyType = z.infer<typeof MySchema>;
 
 ## Key Utilities
 
-| Function | Purpose |
-|----------|---------|
-| `applyFileOverrides()` | Apply user overrides from `.ai/.<tool>/` |
+| Function                  | Purpose                                               |
+| ------------------------- | ----------------------------------------------------- |
+| `applyFileOverrides()`    | Apply user overrides from `.ai/.<tool>/`              |
 | `groupRulesByDirectory()` | Group rules by their directory for tools that need it |
-| `parseUnifiedConfig()` | Parse and validate `.ai/` directory |
+| `parseUnifiedConfig()`    | Parse and validate `.ai/` directory                   |

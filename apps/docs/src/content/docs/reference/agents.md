@@ -55,9 +55,9 @@ This is a TypeScript monorepo using pnpm workspaces.
 
 ## Export Mapping
 
-| Tool        | Output File                               |
-| ----------- | ----------------------------------------- |
-| Claude Code | `.claude/CLAUDE.md` (symlink)             |
-| Cursor      | `AGENTS.md` at project root (symlink)     |
+| Tool        | Output File                                 |
+| ----------- | ------------------------------------------- |
+| Claude Code | `.claude/CLAUDE.md` (symlink)               |
+| Cursor      | `AGENTS.md` at project root (symlink)       |
 | Copilot     | `.github/copilot-instructions.md` (symlink) |
-| OpenCode    | `AGENTS.md` at project root (symlink)     |
+| OpenCode    | `AGENTS.md` at project root (symlink)       |

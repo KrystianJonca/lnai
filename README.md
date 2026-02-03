@@ -24,11 +24,16 @@
 
 Stop maintaining separate config files for every AI coding tool. Define once in `.ai/`, sync everywhere.
 
+<p align="center">
+  <video src="https://github.com/KrystianJonca/lnai/raw/main/demo.mp4" autoplay loop muted playsinline width="700"></video>
+</p>
+
 ## Why LNAI?
 
 - **One source of truth** — Write your project rules, MCP servers, and permissions once
 - **Works with your tools** — Syncs to native formats each tool actually reads
 - **Stay in sync** — Update `.ai/` and run `lnai sync` to propagate changes instantly
+- **Automatic cleanup** — Orphaned files are removed when configs change
 
 ## Supported Tools
 
