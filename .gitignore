@@ -22,6 +22,9 @@ coverage/
 .DS_Store
 Thumbs.db
 
+# Demo
+demo.tape
+
 # Environment
 .env
 .env.local
@@ -34,45 +37,43 @@ pnpm-debug.log*
 # lnai-generated
 .claude/CLAUDE.md
 .claude/rules
+.claude/settings.json
 .claude/skills/add-tool-plugin
 .claude/skills/update-tool-plugin
-.claude/settings.json
-AGENTS.md
-.opencode/rules
-.opencode/skills/add-tool-plugin
-.opencode/skills/update-tool-plugin
-opencode.json
+.codex/config.toml
+.codex/skills/add-tool-plugin
+.codex/skills/update-tool-plugin
+.cursor/cli.json
+.cursor/mcp.json
 .cursor/rules/code-organization.mdc
 .cursor/rules/testing.mdc
 .cursor/rules/typescript.mdc
 .cursor/skills/add-tool-plugin
 .cursor/skills/update-tool-plugin
-.cursor/mcp.json
-.cursor/cli.json
+.gemini/GEMINI.md
+.gemini/settings.json
+.gemini/skills/add-tool-plugin
+.gemini/skills/update-tool-plugin
 .github/copilot-instructions.md
 .github/instructions/code-organization.instructions.md
 .github/instructions/testing.instructions.md
 .github/instructions/typescript.instructions.md
 .github/skills/add-tool-plugin
 .github/skills/update-tool-plugin
+.opencode/rules
+.opencode/skills/add-tool-plugin
+.opencode/skills/update-tool-plugin
 .vscode/mcp.json
 .windsurf/rules/code-organization.md
 .windsurf/rules/testing.md
 .windsurf/rules/typescript.md
 .windsurf/skills/add-tool-plugin
 .windsurf/skills/update-tool-plugin
-.gemini/GEMINI.md
+AGENTS.md
 GEMINI.md
-packages/GEMINI.md
-apps/GEMINI.md
-src/GEMINI.md
-.gemini/skills/add-tool-plugin
-.gemini/skills/update-tool-plugin
-.gemini/settings.json
-packages/AGENTS.md
 apps/AGENTS.md
-src/AGENTS.md
-.codex/skills/add-tool-plugin
-.codex/skills/update-tool-plugin
-.codex/config.toml
+apps/GEMINI.md
+opencode.json
+packages/AGENTS.md
+packages/GEMINI.md
 # end lnai-generated
