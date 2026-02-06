@@ -24,6 +24,8 @@ export const CONFIG_DIRS = {
   subagents: "subagents",
 } as const;
 
+export const CROSS_TOOL_SKILLS_DIR = ".agents";
+
 export const TOOL_OUTPUT_DIRS: Record<ToolId, string> = {
   claudeCode: ".claude",
   opencode: ".opencode",

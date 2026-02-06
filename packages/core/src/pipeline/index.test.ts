@@ -274,6 +274,93 @@ describe("runSyncPipeline", () => {
       }
     });
 
+    it("does not ignore shared paths when any producing tool has versionControl: true", async () => {
+      const aiDir = path.join(tempDir, ".ai");
+      await fs.mkdir(aiDir, { recursive: true });
+
+      await fs.writeFile(
+        path.join(aiDir, "config.json"),
+        JSON.stringify({
+          tools: {
+            cursor: { enabled: true, versionControl: false },
+            copilot: { enabled: true, versionControl: true },
+          },
+        }),
+        "utf-8"
+      );
+
+      // Create AGENTS.md so both tools produce root AGENTS.md
+      await fs.writeFile(
+        path.join(aiDir, "AGENTS.md"),
+        "# Project Agent",
+        "utf-8"
+      );
+
+      // Add settings so cursor produces .cursor/cli.json (tool-unique path)
+      await fs.writeFile(
+        path.join(aiDir, "settings.json"),
+        JSON.stringify({ permissions: { allow: ["Bash(git:*)"] } }),
+        "utf-8"
+      );
+
+      await runSyncPipeline({
+        rootDir: tempDir,
+        tools: ["cursor", "copilot"],
+      });
+
+      const gitignorePath = path.join(tempDir, ".gitignore");
+      let gitignore: string;
+      try {
+        gitignore = await fs.readFile(gitignorePath, "utf-8");
+      } catch {
+        gitignore = "";
+      }
+
+      // AGENTS.md should NOT be ignored because copilot has versionControl: true
+      expect(gitignore).not.toMatch(/^AGENTS\.md$/m);
+
+      // .cursor/ paths SHOULD be ignored (unique to cursor which has versionControl: false)
+      expect(gitignore).toContain(".cursor/");
+
+      // .github/ paths should NOT be ignored (unique to copilot which has versionControl: true)
+      expect(gitignore).not.toMatch(/\.github\//);
+    });
+
+    it("ignores shared paths when all producing tools have versionControl: false", async () => {
+      const aiDir = path.join(tempDir, ".ai");
+      await fs.mkdir(aiDir, { recursive: true });
+
+      await fs.writeFile(
+        path.join(aiDir, "config.json"),
+        JSON.stringify({
+          tools: {
+            cursor: { enabled: true, versionControl: false },
+            copilot: { enabled: true, versionControl: false },
+          },
+        }),
+        "utf-8"
+      );
+
+      await fs.writeFile(
+        path.join(aiDir, "AGENTS.md"),
+        "# Project Agent",
+        "utf-8"
+      );
+
+      await runSyncPipeline({
+        rootDir: tempDir,
+        tools: ["cursor", "copilot"],
+      });
+
+      const gitignore = await fs.readFile(
+        path.join(tempDir, ".gitignore"),
+        "utf-8"
+      );
+
+      // AGENTS.md SHOULD be ignored because both tools have versionControl: false
+      expect(gitignore).toMatch(/^AGENTS\.md$/m);
+    });
+
     it("preserves managed entries during single-tool partial sync", async () => {
       await copyFixture("valid/full", tempDir);
 
