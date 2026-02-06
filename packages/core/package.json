@@ -1,6 +1,6 @@
 {
   "name": "@lnai/core",
-  "version": "0.6.6",
+  "version": "0.6.6.2",
   "description": "Core library for LNAI - unified AI config management",
   "type": "module",
   "license": "MIT",
