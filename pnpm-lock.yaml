@@ -26,8 +26,8 @@ importers:
         specifier: ^16.2.7
         version: 16.2.7
       lnai:
-        specifier: ^0.6.0
-        version: 0.6.0(@types/node@25.0.10)
+        specifier: ^0.6.5
+        version: 0.6.5(@types/node@25.0.10)
       prettier:
         specifier: ^3.8.1
         version: 3.8.1
@@ -1273,10 +1273,10 @@ packages:
         integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==,
       }
 
-  "@lnai/core@0.6.0":
+  "@lnai/core@0.6.5":
     resolution:
       {
-        integrity: sha512-2yxx3miVkYLPIgwdBN/DmZ0Mi0AeWyy2HQ4HPOHCZrrcTWelhveyUgecze8dExK2ICqOvRU55eaNxc9A9LNzYg==,
+        integrity: sha512-xcaU56A0DhrEVxBtdJnzkezFv7PIsxA1xJ4raKczcAi/q5LTe8gY1Zan0yFnsaLM/VKSmgSZ+tgSk13E3SRSAA==,
       }
 
   "@mdx-js/mdx@3.1.1":
@@ -3307,10 +3307,10 @@ packages:
       }
     engines: { node: ">=20.0.0" }
 
-  lnai@0.6.0:
+  lnai@0.6.5:
     resolution:
       {
-        integrity: sha512-Lrlw7yPbAKS4MPw1XOkFqPZVG5mcX0owLIeCa4rhceHzZ6m+T4xn39ttUCvKujX/Nc9kb/pAc6380HxJYrhD7A==,
+        integrity: sha512-W1y8ZcMhiETv1XZ85O6qpP08nQcF04puRkm4XVHJr15RwC8NNvFMY9BGXnhiZSuQkJ/VLGe6JQPK2sydo+qVRw==,
       }
     hasBin: true
 
@@ -5822,7 +5822,7 @@ snapshots:
       "@jridgewell/resolve-uri": 3.1.2
       "@jridgewell/sourcemap-codec": 1.5.5
 
-  "@lnai/core@0.6.0":
+  "@lnai/core@0.6.5":
     dependencies:
       gray-matter: 4.0.3
       zod: 4.3.6
@@ -7182,10 +7182,10 @@ snapshots:
       rfdc: 1.4.1
       wrap-ansi: 9.0.2
 
-  lnai@0.6.0(@types/node@25.0.10):
+  lnai@0.6.5(@types/node@25.0.10):
     dependencies:
       "@inquirer/prompts": 7.10.1(@types/node@25.0.10)
-      "@lnai/core": 0.6.0
+      "@lnai/core": 0.6.5
       chalk: 5.6.2
       commander: 14.0.2
       ora: 9.1.0

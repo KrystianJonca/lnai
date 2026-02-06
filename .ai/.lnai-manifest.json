@@ -4,7 +4,7 @@
     "claudeCode": {
       "version": 1,
       "tool": "claudeCode",
-      "generatedAt": "2026-02-03T08:35:40.422Z",
+      "generatedAt": "2026-02-06T19:13:23.216Z",
       "files": [
         {
           "path": ".claude/CLAUDE.md",
@@ -29,14 +29,14 @@
         {
           "path": ".claude/settings.json",
           "type": "json",
-          "hash": "77eda6c7f6bd3141153676016911c0c5a1ae0b08cd4f4c5302cb4ba6bd58da35"
+          "hash": "99152c797c6b274264b142dab22bc59dca881c4e27be746773663433f49c1ad2"
         }
       ]
     },
     "opencode": {
       "version": 1,
       "tool": "opencode",
-      "generatedAt": "2026-02-03T08:35:40.428Z",
+      "generatedAt": "2026-02-06T19:13:23.217Z",
       "files": [
         {
           "path": "AGENTS.md",
@@ -49,12 +49,12 @@
           "target": "../.ai/rules"
         },
         {
-          "path": ".opencode/skills/add-tool-plugin",
+          "path": ".agents/skills/add-tool-plugin",
           "type": "symlink",
           "target": "../../.ai/skills/add-tool-plugin"
         },
         {
-          "path": ".opencode/skills/update-tool-plugin",
+          "path": ".agents/skills/update-tool-plugin",
           "type": "symlink",
           "target": "../../.ai/skills/update-tool-plugin"
         },
@@ -68,7 +68,7 @@
     "cursor": {
       "version": 1,
       "tool": "cursor",
-      "generatedAt": "2026-02-03T08:35:40.430Z",
+      "generatedAt": "2026-02-06T19:13:23.219Z",
       "files": [
         {
           "path": "AGENTS.md",
@@ -115,12 +115,12 @@
     "copilot": {
       "version": 1,
       "tool": "copilot",
-      "generatedAt": "2026-02-03T08:35:40.432Z",
+      "generatedAt": "2026-02-06T19:13:23.220Z",
       "files": [
         {
-          "path": ".github/copilot-instructions.md",
+          "path": "AGENTS.md",
           "type": "symlink",
-          "target": "../.ai/AGENTS.md"
+          "target": ".ai/AGENTS.md"
         },
         {
           "path": ".github/instructions/code-organization.instructions.md",
@@ -157,7 +157,7 @@
     "windsurf": {
       "version": 1,
       "tool": "windsurf",
-      "generatedAt": "2026-02-03T08:35:40.433Z",
+      "generatedAt": "2026-02-06T19:13:23.221Z",
       "files": [
         {
           "path": "AGENTS.md",
@@ -194,12 +194,12 @@
     "gemini": {
       "version": 1,
       "tool": "gemini",
-      "generatedAt": "2026-02-03T08:35:40.435Z",
+      "generatedAt": "2026-02-06T19:13:23.222Z",
       "files": [
         {
-          "path": ".gemini/GEMINI.md",
+          "path": "AGENTS.md",
           "type": "symlink",
-          "target": "../.ai/AGENTS.md"
+          "target": ".ai/AGENTS.md"
         },
         {
           "path": "GEMINI.md",
@@ -229,14 +229,14 @@
         {
           "path": ".gemini/settings.json",
           "type": "json",
-          "hash": "9b627b725e62f31f425a9474bc8bb7d1aa9024f2fc7fb4abb19336f6dd3e373a"
+          "hash": "ac4b2d34b2a4fd51d7045b6d30922bad088b4410df7303578b5f6e2d7a3ef816"
         }
       ]
     },
     "codex": {
       "version": 1,
       "tool": "codex",
-      "generatedAt": "2026-02-03T08:35:40.436Z",
+      "generatedAt": "2026-02-06T19:13:23.223Z",
       "files": [
         {
           "path": "AGENTS.md",
@@ -254,12 +254,12 @@
           "hash": "028a9f9f71e0ad307f258f6ec3c9851bb952bc0f93412cc44d22349ba42edd99"
         },
         {
-          "path": ".codex/skills/add-tool-plugin",
+          "path": ".agents/skills/add-tool-plugin",
           "type": "symlink",
           "target": "../../.ai/skills/add-tool-plugin"
         },
         {
-          "path": ".codex/skills/update-tool-plugin",
+          "path": ".agents/skills/update-tool-plugin",
           "type": "symlink",
           "target": "../../.ai/skills/update-tool-plugin"
         },
