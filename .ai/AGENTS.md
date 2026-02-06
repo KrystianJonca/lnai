@@ -13,12 +13,12 @@ You are working on the LNAI project - a unified AI configuration management tool
 | Tool           | Output Directory | Rules | Skills | MCP | Settings |
 | -------------- | ---------------- | ----- | ------ | --- | -------- |
 | Claude Code    | `.claude/`       | Yes   | Yes    | Yes | Yes      |
-| OpenCode       | `.opencode/`     | Yes   | No     | Yes | Yes      |
-| Cursor         | `.cursor/`       | Yes   | No     | No  | Yes      |
-| GitHub Copilot | `.github/`       | Yes   | No     | No  | Yes      |
-| Windsurf       | `.windsurf/`     | Yes   | No     | No  | Yes      |
-| Gemini CLI     | `.gemini/`       | Yes   | No     | Yes | Yes      |
-| Codex          | `.codex/`        | Yes   | No     | No  | Yes      |
+| OpenCode       | `.opencode/`     | Yes   | Yes    | Yes | Yes      |
+| Cursor         | `.cursor/`       | Yes   | Yes    | Yes | Yes      |
+| GitHub Copilot | `.github/`       | Yes   | Yes    | Yes | Yes      |
+| Windsurf       | `.windsurf/`     | Yes   | Yes    | No  | No       |
+| Gemini CLI     | `.gemini/`       | Yes   | Yes    | Yes | Yes      |
+| Codex          | `.codex/`        | Yes   | Yes    | Yes | No       |
 
 ## Project Structure
 

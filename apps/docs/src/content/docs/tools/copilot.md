@@ -10,8 +10,9 @@ LNAI exports unified configuration to GitHub Copilot's native formats, including
 ## Output Structure
 
 ```text
+AGENTS.md                                       # Symlink → .ai/AGENTS.md (at project root)
+
 .github/
-├── copilot-instructions.md              # Symlink → ../.ai/AGENTS.md
 ├── instructions/<name>.instructions.md  # Transformed from .ai/rules/<name>.md
 ├── skills/<name>/                       # Symlinks → ../../.ai/skills/<name>/
 └── <overrides>                          # Symlinks from .ai/.copilot/
@@ -23,7 +24,7 @@ LNAI exports unified configuration to GitHub Copilot's native formats, including
 
 | Source                | Output                                        | Type        |
 | --------------------- | --------------------------------------------- | ----------- |
-| `.ai/AGENTS.md`       | `.github/copilot-instructions.md`             | Symlink     |
+| `.ai/AGENTS.md`       | `AGENTS.md` at project root                   | Symlink     |
 | `.ai/rules/<name>.md` | `.github/instructions/<name>.instructions.md` | Transformed |
 | `.ai/skills/<name>/`  | `.github/skills/<name>/`                      | Symlink     |
 | `.ai/settings.json`   | `.vscode/mcp.json`                            | Generated   |

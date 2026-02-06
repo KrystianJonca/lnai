@@ -1,4 +1,4 @@
-import { TOOL_OUTPUT_DIRS, UNIFIED_DIR } from "../../constants";
+import { TOOL_OUTPUT_DIRS } from "../../constants";
 import type {
   OutputFile,
   SkippedFeatureDetail,
@@ -6,9 +6,17 @@ import type {
   ValidationResult,
   ValidationWarningDetail,
 } from "../../types/index";
+import {
+  createNoAgentsMdWarning,
+  createRootAgentsMdSymlink,
+  createSkillSymlinks,
+  hasPermissionsConfigured,
+} from "../../utils/agents";
 import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
 import { serializeWindsurfRule, transformRuleToWindsurf } from "./transforms";
+
+const OUTPUT_DIR = TOOL_OUTPUT_DIRS.windsurf;
 
 /**
  * Windsurf IDE plugin for exporting to .windsurf/ format
@@ -37,15 +45,11 @@ export const windsurfPlugin: Plugin = {
 
   async export(state: UnifiedState, rootDir: string): Promise<OutputFile[]> {
     const files: OutputFile[] = [];
-    const outputDir = TOOL_OUTPUT_DIRS.windsurf;
 
     // AGENTS.md symlink at project root
-    if (state.agents) {
-      files.push({
-        path: "AGENTS.md",
-        type: "symlink",
-        target: `${UNIFIED_DIR}/AGENTS.md`,
-      });
+    const agentsSymlink = createRootAgentsMdSymlink(state);
+    if (agentsSymlink) {
+      files.push(agentsSymlink);
     }
 
     // Generate transformed rules as .md files with Windsurf frontmatter
@@ -57,20 +61,14 @@ export const windsurfPlugin: Plugin = {
       );
 
       files.push({
-        path: `${outputDir}/rules/${rule.path}`,
+        path: `${OUTPUT_DIR}/rules/${rule.path}`,
         type: "text",
         content: ruleContent,
       });
     }
 
     // Create skill symlinks
-    for (const skill of state.skills) {
-      files.push({
-        path: `${outputDir}/skills/${skill.path}`,
-        type: "symlink",
-        target: `../../${UNIFIED_DIR}/skills/${skill.path}`,
-      });
-    }
+    files.push(...createSkillSymlinks(state, OUTPUT_DIR));
 
     return applyFileOverrides(files, rootDir, "windsurf");
   },
@@ -80,10 +78,7 @@ export const windsurfPlugin: Plugin = {
     const skipped: SkippedFeatureDetail[] = [];
 
     if (!state.agents) {
-      warnings.push({
-        path: ["AGENTS.md"],
-        message: "No AGENTS.md found - root AGENTS.md will not be created",
-      });
+      warnings.push(createNoAgentsMdWarning("root AGENTS.md"));
     }
 
     // Warn about manual rule invocation
@@ -108,18 +103,11 @@ export const windsurfPlugin: Plugin = {
     }
 
     // Warn about permissions (not supported)
-    if (state.settings?.permissions) {
-      const hasPermissions =
-        (state.settings.permissions.allow?.length ?? 0) > 0 ||
-        (state.settings.permissions.ask?.length ?? 0) > 0 ||
-        (state.settings.permissions.deny?.length ?? 0) > 0;
-
-      if (hasPermissions) {
-        skipped.push({
-          feature: "permissions",
-          reason: "Windsurf does not support declarative permissions",
-        });
-      }
+    if (hasPermissionsConfigured(state.settings?.permissions)) {
+      skipped.push({
+        feature: "permissions",
+        reason: "Windsurf does not support declarative permissions",
+      });
     }
 
     return { valid: true, errors: [], warnings, skipped };

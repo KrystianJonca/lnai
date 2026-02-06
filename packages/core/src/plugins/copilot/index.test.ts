@@ -30,28 +30,24 @@ describe("copilotPlugin", () => {
       await cleanupTempDir(tempDir);
     });
 
-    it("creates copilot-instructions.md symlink when agents exists", async () => {
+    it("creates AGENTS.md symlink at project root when agents exists", async () => {
       const state = createMinimalState({ agents: "# Instructions" });
 
       const files = await copilotPlugin.export(state, tempDir);
 
-      const copilotInstructions = files.find(
-        (f) => f.path === ".github/copilot-instructions.md"
-      );
-      expect(copilotInstructions).toBeDefined();
-      expect(copilotInstructions?.type).toBe("symlink");
-      expect(copilotInstructions?.target).toBe("../.ai/AGENTS.md");
+      const agentsMd = files.find((f) => f.path === "AGENTS.md");
+      expect(agentsMd).toBeDefined();
+      expect(agentsMd?.type).toBe("symlink");
+      expect(agentsMd?.target).toBe(".ai/AGENTS.md");
     });
 
-    it("skips copilot-instructions.md symlink when no agents", async () => {
+    it("skips AGENTS.md symlink when no agents", async () => {
       const state = createMinimalState({ agents: null });
 
       const files = await copilotPlugin.export(state, tempDir);
 
-      const copilotInstructions = files.find(
-        (f) => f.path === ".github/copilot-instructions.md"
-      );
-      expect(copilotInstructions).toBeUndefined();
+      const agentsMd = files.find((f) => f.path === "AGENTS.md");
+      expect(agentsMd).toBeUndefined();
     });
 
     it("generates transformed .instructions.md rule files", async () => {
@@ -205,10 +201,8 @@ describe("copilotPlugin", () => {
 
       const files = await copilotPlugin.export(state, tempDir);
 
-      // Should have copilot-instructions.md symlink
-      expect(
-        files.find((f) => f.path === ".github/copilot-instructions.md")
-      ).toBeDefined();
+      // Should have root AGENTS.md symlink
+      expect(files.find((f) => f.path === "AGENTS.md")).toBeDefined();
 
       // Should have .instructions.md rule files
       const ruleFiles = files.filter((f) =>
@@ -461,7 +455,7 @@ describe("copilotPlugin", () => {
       expect(result.valid).toBe(true);
       expect(result.warnings).toHaveLength(1);
       expect(result.warnings[0]?.message).toContain("AGENTS.md");
-      expect(result.warnings[0]?.message).toContain("copilot-instructions.md");
+      expect(result.warnings[0]?.message).toContain("root AGENTS.md");
     });
 
     it("no warning when agents exists", () => {

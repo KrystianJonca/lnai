@@ -5,8 +5,14 @@ import type {
   ValidationResult,
   ValidationWarningDetail,
 } from "../../types/index";
+import {
+  createNoAgentsMdWarning,
+  createSkillSymlinks,
+} from "../../utils/agents";
 import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
+
+const OUTPUT_DIR = TOOL_OUTPUT_DIRS.claudeCode;
 
 /**
  * Claude Code plugin for exporting to .claude/ format
@@ -32,11 +38,10 @@ export const claudeCodePlugin: Plugin = {
 
   async export(state: UnifiedState, rootDir: string): Promise<OutputFile[]> {
     const files: OutputFile[] = [];
-    const outputDir = TOOL_OUTPUT_DIRS.claudeCode;
 
     if (state.agents) {
       files.push({
-        path: `${outputDir}/CLAUDE.md`,
+        path: `${OUTPUT_DIR}/CLAUDE.md`,
         type: "symlink",
         target: `../${UNIFIED_DIR}/AGENTS.md`,
       });
@@ -44,19 +49,13 @@ export const claudeCodePlugin: Plugin = {
 
     if (state.rules.length > 0) {
       files.push({
-        path: `${outputDir}/rules`,
+        path: `${OUTPUT_DIR}/rules`,
         type: "symlink",
         target: `../${UNIFIED_DIR}/rules`,
       });
     }
 
-    for (const skill of state.skills) {
-      files.push({
-        path: `${outputDir}/skills/${skill.path}`,
-        type: "symlink",
-        target: `../../${UNIFIED_DIR}/skills/${skill.path}`,
-      });
-    }
+    files.push(...createSkillSymlinks(state, OUTPUT_DIR));
 
     const settings: Record<string, unknown> = {};
     if (state.settings?.permissions) {
@@ -68,7 +67,7 @@ export const claudeCodePlugin: Plugin = {
 
     if (Object.keys(settings).length > 0) {
       files.push({
-        path: `${outputDir}/settings.json`,
+        path: `${OUTPUT_DIR}/settings.json`,
         type: "json",
         content: settings,
       });
@@ -80,10 +79,7 @@ export const claudeCodePlugin: Plugin = {
   validate(state: UnifiedState): ValidationResult {
     const warnings: ValidationWarningDetail[] = [];
     if (!state.agents) {
-      warnings.push({
-        path: ["AGENTS.md"],
-        message: "No AGENTS.md found - .claude/CLAUDE.md will not be created",
-      });
+      warnings.push(createNoAgentsMdWarning(".claude/CLAUDE.md"));
     }
     return { valid: true, errors: [], warnings, skipped: [] };
   },

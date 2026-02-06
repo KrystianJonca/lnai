@@ -46,13 +46,14 @@ LNAI provides a single source of truth in the `.ai/` directory that exports to n
 └── .windsurf/ (overrides)
 
 Outputs:
-- AGENTS.md (root)
+- AGENTS.md (root, shared by most tools)
+- .agents/ (skills/, shared by Codex + OpenCode)
 - .claude/ (CLAUDE.md, settings.json, rules/, skills/)
-- .codex/ (config.toml, skills/)
-- .cursor/ (rules/*.mdc, mcp.json, cli.json)
-- .gemini/ (GEMINI.md, settings.json, skills/) + <dir>/GEMINI.md
-- .opencode/ (rules/, skills/) + opencode.json
-- .github/ (copilot-instructions.md, instructions/, skills/)
+- .codex/ (config.toml)
+- .cursor/ (rules/*.mdc, mcp.json, cli.json, skills/)
+- .gemini/ (settings.json, skills/) + <dir>/GEMINI.md
+- .opencode/ (rules/) + opencode.json
+- .github/ (instructions/, skills/) + .vscode/mcp.json
 - .windsurf/ (rules/, skills/)
 ```
 

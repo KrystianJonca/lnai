@@ -157,7 +157,7 @@ export async function writeFiles(
 /**
  * Update .gitignore with paths that should not be version controlled.
  * Manages a dedicated "lnai-generated" section to avoid conflicts with user entries.
- * Merges new paths with existing ones to support partial syncs (e.g., syncing one tool).
+ * Replaces the managed section on each run so stale paths are removed.
  */
 export async function updateGitignore(
   rootDir: string,
@@ -165,35 +165,44 @@ export async function updateGitignore(
 ): Promise<void> {
   const gitignorePath = path.join(rootDir, ".gitignore");
   let content = "";
+  let hasExistingFile = true;
 
   try {
     content = await fs.readFile(gitignorePath, "utf-8");
   } catch {
     // File doesn't exist, start fresh
+    hasExistingFile = false;
   }
 
   const marker = "# lnai-generated";
   const endMarker = "# end lnai-generated";
-
-  // Extract existing paths from the lnai-generated section
-  const extractRegex = new RegExp(`${marker}\\n([\\s\\S]*?)${endMarker}`);
-  const match = extractRegex.exec(content);
-  const existingSection = match?.[1] ?? "";
-  const existingPaths = existingSection
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line && !line.startsWith("#"));
-
-  // Remove old section
   const markerRegex = new RegExp(`${marker}[\\s\\S]*?${endMarker}\\n?`, "g");
+  const hasManagedSection = new RegExp(`${marker}[\\s\\S]*?${endMarker}`).test(
+    content
+  );
+
+  // Remove old managed section before rebuilding it.
   content = content.replace(markerRegex, "");
-  content = content.trimEnd();
+  const baseContent = content.trimEnd();
+  const uniquePaths = [...new Set(paths)].sort();
 
-  // Merge existing and new paths
-  const uniquePaths = [...new Set([...existingPaths, ...paths])].sort();
-  const newSection = ["", marker, ...uniquePaths, endMarker, ""].join("\n");
+  if (uniquePaths.length === 0) {
+    // Nothing to manage and no managed section previously existed.
+    if (!hasManagedSection && !hasExistingFile) {
+      return;
+    }
 
-  content = content + newSection;
+    const cleanedContent =
+      baseContent.length > 0 ? `${baseContent}\n` : baseContent;
+    await fs.writeFile(gitignorePath, cleanedContent, "utf-8");
+    return;
+  }
 
-  await fs.writeFile(gitignorePath, content, "utf-8");
+  const managedSection = [marker, ...uniquePaths, endMarker].join("\n");
+  const nextContent =
+    baseContent.length > 0
+      ? `${baseContent}\n\n${managedSection}\n`
+      : `${managedSection}\n`;
+
+  await fs.writeFile(gitignorePath, nextContent, "utf-8");
 }

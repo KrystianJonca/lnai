@@ -1,4 +1,4 @@
-import { TOOL_OUTPUT_DIRS, UNIFIED_DIR } from "../../constants";
+import { TOOL_OUTPUT_DIRS } from "../../constants";
 import type {
   OutputFile,
   Permissions,
@@ -6,6 +6,11 @@ import type {
   ValidationResult,
   ValidationWarningDetail,
 } from "../../types/index";
+import {
+  createNoAgentsMdWarning,
+  createRootAgentsMdSymlink,
+  createSkillSymlinks,
+} from "../../utils/agents";
 import { validateMcpServers } from "../../utils/mcp";
 import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
@@ -15,6 +20,8 @@ import {
   transformPermissionsToCursor,
   transformRuleToCursor,
 } from "./transforms";
+
+const OUTPUT_DIR = TOOL_OUTPUT_DIRS.cursor;
 
 /**
  * Cursor IDE plugin for exporting to .cursor/ format
@@ -40,15 +47,11 @@ export const cursorPlugin: Plugin = {
 
   async export(state: UnifiedState, rootDir: string): Promise<OutputFile[]> {
     const files: OutputFile[] = [];
-    const outputDir = TOOL_OUTPUT_DIRS.cursor;
 
     // AGENTS.md symlink at project root
-    if (state.agents) {
-      files.push({
-        path: "AGENTS.md",
-        type: "symlink",
-        target: `${UNIFIED_DIR}/AGENTS.md`,
-      });
+    const agentsSymlink = createRootAgentsMdSymlink(state);
+    if (agentsSymlink) {
+      files.push(agentsSymlink);
     }
 
     // Generate transformed rules as .mdc files
@@ -63,27 +66,21 @@ export const cursorPlugin: Plugin = {
       const outputFilename = rule.path.replace(/\.md$/, ".mdc");
 
       files.push({
-        path: `${outputDir}/rules/${outputFilename}`,
+        path: `${OUTPUT_DIR}/rules/${outputFilename}`,
         type: "text",
         content: ruleContent,
       });
     }
 
     // Create skill symlinks
-    for (const skill of state.skills) {
-      files.push({
-        path: `${outputDir}/skills/${skill.path}`,
-        type: "symlink",
-        target: `../../${UNIFIED_DIR}/skills/${skill.path}`,
-      });
-    }
+    files.push(...createSkillSymlinks(state, OUTPUT_DIR));
 
     // Generate mcp.json if MCP servers exist
     const mcpServers = transformMcpToCursor(state.settings?.mcpServers);
 
     if (mcpServers) {
       files.push({
-        path: `${outputDir}/mcp.json`,
+        path: `${OUTPUT_DIR}/mcp.json`,
         type: "json",
         content: { mcpServers },
       });
@@ -93,7 +90,7 @@ export const cursorPlugin: Plugin = {
     const cliContent = buildCliContent(state.settings?.permissions);
     if (cliContent) {
       files.push({
-        path: `${outputDir}/cli.json`,
+        path: `${OUTPUT_DIR}/cli.json`,
         type: "json",
         content: cliContent,
       });
@@ -106,10 +103,7 @@ export const cursorPlugin: Plugin = {
     const warnings: ValidationWarningDetail[] = [];
 
     if (!state.agents) {
-      warnings.push({
-        path: ["AGENTS.md"],
-        message: "No AGENTS.md found - root AGENTS.md will not be created",
-      });
+      warnings.push(createNoAgentsMdWarning("root AGENTS.md"));
     }
 
     // Check if "ask" permissions are used (not supported by Cursor)

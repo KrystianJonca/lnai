@@ -1,6 +1,6 @@
 {
   "permissions": {
-    "allow": ["Bash(pnpm:*)"],
+    "allow": ["Bash(pnpm:*)", "WebSearch", "WebFetch"],
     "ask": ["Bash(git:*)"],
     "deny": ["Read(.env)"]
   },

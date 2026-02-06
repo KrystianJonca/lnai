@@ -92,10 +92,8 @@ describe("opencodePlugin", () => {
 
       const files = await opencodePlugin.export(state, tempDir);
 
-      const deploySkill = files.find(
-        (f) => f.path === ".opencode/skills/deploy"
-      );
-      const testSkill = files.find((f) => f.path === ".opencode/skills/test");
+      const deploySkill = files.find((f) => f.path === ".agents/skills/deploy");
+      const testSkill = files.find((f) => f.path === ".agents/skills/test");
 
       expect(deploySkill).toBeDefined();
       expect(deploySkill?.type).toBe("symlink");
@@ -184,7 +182,7 @@ describe("opencodePlugin", () => {
       expect(files.find((f) => f.path === "AGENTS.md")).toBeDefined();
       expect(files.find((f) => f.path === ".opencode/rules")).toBeDefined();
       expect(
-        files.find((f) => f.path === ".opencode/skills/deploy")
+        files.find((f) => f.path === ".agents/skills/deploy")
       ).toBeDefined();
       expect(files.find((f) => f.path === "opencode.json")).toBeDefined();
     });

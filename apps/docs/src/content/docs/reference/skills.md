@@ -70,7 +70,10 @@ Each skill directory can contain additional files if needed.
 | Claude Code | `.claude/skills/<name>/` (symlink per skill)   |
 | Cursor      | `.cursor/skills/<name>/` (symlink per skill)   |
 | Copilot     | `.github/skills/<name>/` (symlink per skill)   |
-| OpenCode    | `.opencode/skills/<name>/` (symlink per skill) |
+| OpenCode    | `.agents/skills/<name>/` (symlink per skill)   |
+| Windsurf    | `.windsurf/skills/<name>/` (symlink per skill) |
+| Gemini CLI  | `.gemini/skills/<name>/` (symlink per skill)   |
+| Codex       | `.agents/skills/<name>/` (symlink per skill)   |
 
 :::note
 All tools use symlinks to the original skill directories, preserving any additional files that may exist in the skill folder.

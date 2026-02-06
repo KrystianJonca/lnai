@@ -1,4 +1,4 @@
-import { TOOL_OUTPUT_DIRS, UNIFIED_DIR } from "../../constants";
+import { TOOL_OUTPUT_DIRS } from "../../constants";
 import type {
   OutputFile,
   SkippedFeatureDetail,
@@ -6,13 +6,28 @@ import type {
   ValidationResult,
   ValidationWarningDetail,
 } from "../../types/index";
+import {
+  createNoAgentsMdWarning,
+  createRootAgentsMdSymlink,
+  createSkillSymlinks,
+  hasPermissionsConfigured,
+} from "../../utils/agents";
 import { applyFileOverrides } from "../../utils/overrides";
 import { groupRulesByDirectory } from "../../utils/rules";
 import type { Plugin } from "../types";
 import { transformMcpToGemini } from "./transforms";
 
+const OUTPUT_DIR = TOOL_OUTPUT_DIRS.gemini;
+
 /**
  * Gemini CLI / Antigravity plugin for exporting to .gemini/ format
+ *
+ * Output structure:
+ * - AGENTS.md (symlink -> .ai/AGENTS.md) [at project root]
+ * - .gemini/settings.json (generated - MCP servers + context.fileName)
+ * - .gemini/skills/<name>/ (symlink -> ../../.ai/skills/<name>)
+ * - .gemini/<overrides> (symlinks from .ai/.gemini/)
+ * - <dir>/GEMINI.md (generated from rules per directory)
  */
 export const geminiPlugin: Plugin = {
   id: "gemini",
@@ -28,14 +43,11 @@ export const geminiPlugin: Plugin = {
 
   async export(state: UnifiedState, rootDir: string): Promise<OutputFile[]> {
     const files: OutputFile[] = [];
-    const outputDir = TOOL_OUTPUT_DIRS.gemini;
 
-    if (state.agents) {
-      files.push({
-        path: `${outputDir}/GEMINI.md`,
-        type: "symlink",
-        target: `../${UNIFIED_DIR}/AGENTS.md`,
-      });
+    // AGENTS.md symlink at project root
+    const agentsSymlink = createRootAgentsMdSymlink(state);
+    if (agentsSymlink) {
+      files.push(agentsSymlink);
     }
 
     const rulesMap = groupRulesByDirectory(state.rules);
@@ -50,20 +62,27 @@ export const geminiPlugin: Plugin = {
       });
     }
 
-    for (const skill of state.skills) {
-      files.push({
-        path: `${outputDir}/skills/${skill.path}`,
-        type: "symlink",
-        target: `../../${UNIFIED_DIR}/skills/${skill.path}`,
-      });
-    }
+    files.push(...createSkillSymlinks(state, OUTPUT_DIR));
 
+    // Generate settings.json when agents or MCP servers exist
     const mcpServers = transformMcpToGemini(state.settings?.mcpServers);
-    if (mcpServers) {
+    const hasAgents = !!state.agents;
+
+    if (mcpServers || hasAgents) {
+      const settingsContent: Record<string, unknown> = {};
+
+      if (hasAgents) {
+        settingsContent["context"] = { fileName: ["AGENTS.md"] };
+      }
+
+      if (mcpServers) {
+        settingsContent["mcpServers"] = mcpServers;
+      }
+
       files.push({
-        path: `${outputDir}/settings.json`,
+        path: `${OUTPUT_DIR}/settings.json`,
         type: "json",
-        content: { mcpServers },
+        content: settingsContent,
       });
     }
 
@@ -75,25 +94,15 @@ export const geminiPlugin: Plugin = {
     const skipped: SkippedFeatureDetail[] = [];
 
     if (!state.agents) {
-      warnings.push({
-        path: ["AGENTS.md"],
-        message: "No AGENTS.md found - GEMINI.md will not be created",
-      });
+      warnings.push(createNoAgentsMdWarning("root AGENTS.md"));
     }
 
-    if (state.settings?.permissions) {
-      const hasPermissions =
-        (state.settings.permissions.allow?.length ?? 0) > 0 ||
-        (state.settings.permissions.ask?.length ?? 0) > 0 ||
-        (state.settings.permissions.deny?.length ?? 0) > 0;
-
-      if (hasPermissions) {
-        skipped.push({
-          feature: "permissions",
-          reason:
-            "Gemini CLI does not support declarative permissions - permissions must be granted interactively",
-        });
-      }
+    if (hasPermissionsConfigured(state.settings?.permissions)) {
+      skipped.push({
+        feature: "permissions",
+        reason:
+          "Gemini CLI does not support declarative permissions - permissions must be granted interactively",
+      });
     }
 
     if (state.rules.length > 0) {

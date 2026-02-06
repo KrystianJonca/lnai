@@ -10,25 +10,27 @@ LNAI exports unified configuration to Codex Team Config under the `.codex/` dire
 ## Output Structure
 
 ```text
-AGENTS.md            # Symlink -> .ai/AGENTS.md (at project root)
+AGENTS.md              # Symlink -> .ai/AGENTS.md (at project root)
+
+.agents/
+└── skills/<name>/     # Symlinks -> ../../.ai/skills/<name>/
 
 .codex/
-├── config.toml      # Generated (MCP servers)
-├── skills/<name>/   # Symlinks -> ../../.ai/skills/<name>/
-└── <overrides>      # Symlinks from .ai/.codex/
+├── config.toml        # Generated (MCP servers)
+└── <overrides>        # Symlinks from .ai/.codex/
 
-<dir>/AGENTS.md      # Generated (rules per directory)
+<dir>/AGENTS.md        # Generated (rules per directory)
 ```
 
 ## File Mapping
 
-| Source               | Output                 | Type      |
-| -------------------- | ---------------------- | --------- |
-| `.ai/AGENTS.md`      | `AGENTS.md`            | Symlink   |
-| `.ai/rules/*.md`     | `<dir>/AGENTS.md`      | Generated |
-| `.ai/skills/<name>/` | `.codex/skills/<name>` | Symlink   |
-| `.ai/settings.json`  | `.codex/config.toml`   | Generated |
-| `.ai/.codex/<path>`  | `.codex/<path>`        | Symlink   |
+| Source               | Output                   | Type      |
+| -------------------- | ------------------------ | --------- |
+| `.ai/AGENTS.md`      | `AGENTS.md`              | Symlink   |
+| `.ai/rules/*.md`     | `<dir>/AGENTS.md`        | Generated |
+| `.ai/skills/<name>/` | `.agents/skills/<name>/` | Symlink   |
+| `.ai/settings.json`  | `.codex/config.toml`     | Generated |
+| `.ai/.codex/<path>`  | `.codex/<path>`          | Symlink   |
 
 ## Generated config.toml
 

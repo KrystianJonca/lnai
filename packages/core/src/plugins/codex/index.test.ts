@@ -122,7 +122,7 @@ describe("codexPlugin", () => {
 
       const files = await codexPlugin.export(state, tempDir);
 
-      const deploySkill = files.find((f) => f.path === ".codex/skills/deploy");
+      const deploySkill = files.find((f) => f.path === ".agents/skills/deploy");
       expect(deploySkill).toBeDefined();
       expect(deploySkill?.type).toBe("symlink");
       expect(deploySkill?.target).toBe("../../.ai/skills/deploy");
