@@ -30,24 +30,24 @@ describe("geminiPlugin", () => {
       await cleanupTempDir(tempDir);
     });
 
-    it("creates GEMINI.md symlink when agents exists", async () => {
+    it("creates AGENTS.md symlink at project root when agents exists", async () => {
       const state = createMinimalState({ agents: "# Instructions" });
 
       const files = await geminiPlugin.export(state, tempDir);
 
-      const geminiMd = files.find((f) => f.path === ".gemini/GEMINI.md");
-      expect(geminiMd).toBeDefined();
-      expect(geminiMd?.type).toBe("symlink");
-      expect(geminiMd?.target).toBe("../.ai/AGENTS.md");
+      const agentsMd = files.find((f) => f.path === "AGENTS.md");
+      expect(agentsMd).toBeDefined();
+      expect(agentsMd?.type).toBe("symlink");
+      expect(agentsMd?.target).toBe(".ai/AGENTS.md");
     });
 
-    it("skips GEMINI.md symlink when no agents", async () => {
+    it("skips AGENTS.md symlink when no agents", async () => {
       const state = createMinimalState({ agents: null });
 
       const files = await geminiPlugin.export(state, tempDir);
 
-      const geminiMd = files.find((f) => f.path === ".gemini/GEMINI.md");
-      expect(geminiMd).toBeUndefined();
+      const agentsMd = files.find((f) => f.path === "AGENTS.md");
+      expect(agentsMd).toBeUndefined();
     });
 
     it("creates skill symlinks for each skill", async () => {
@@ -99,6 +99,37 @@ describe("geminiPlugin", () => {
       ).toBeDefined();
     });
 
+    it("creates settings.json with context.fileName when agents exists", async () => {
+      const state = createMinimalState({ agents: "# Instructions" });
+
+      const files = await geminiPlugin.export(state, tempDir);
+
+      const settings = files.find((f) => f.path === ".gemini/settings.json");
+      expect(settings).toBeDefined();
+      expect(settings?.type).toBe("json");
+      const content = settings?.content as Record<string, unknown>;
+      expect(content["context"]).toEqual({ fileName: ["AGENTS.md"] });
+    });
+
+    it("creates settings.json with both context and mcpServers", async () => {
+      const state = createMinimalState({
+        agents: "# Instructions",
+        settings: {
+          mcpServers: {
+            db: { command: "npx", args: ["-y", "@example/db"] },
+          },
+        },
+      });
+
+      const files = await geminiPlugin.export(state, tempDir);
+
+      const settings = files.find((f) => f.path === ".gemini/settings.json");
+      expect(settings).toBeDefined();
+      const content = settings?.content as Record<string, unknown>;
+      expect(content["context"]).toEqual({ fileName: ["AGENTS.md"] });
+      expect(content["mcpServers"]).toBeDefined();
+    });
+
     it("transforms url to httpUrl in mcpServers", async () => {
       const state = createMinimalState({
         settings: {
@@ -120,8 +151,8 @@ describe("geminiPlugin", () => {
       );
     });
 
-    it("skips settings.json when no mcpServers", async () => {
-      const state = createMinimalState({ settings: {} });
+    it("skips settings.json when no mcpServers and no agents", async () => {
+      const state = createMinimalState({ agents: null, settings: {} });
 
       const files = await geminiPlugin.export(state, tempDir);
 
@@ -255,9 +286,9 @@ describe("geminiPlugin", () => {
       const result = geminiPlugin.validate(state);
 
       expect(result.valid).toBe(true);
-      expect(result.warnings.some((w) => w.message.includes("AGENTS.md"))).toBe(
-        true
-      );
+      expect(
+        result.warnings.some((w) => w.message.includes("root AGENTS.md"))
+      ).toBe(true);
     });
 
     it("returns skipped when permissions are configured", () => {

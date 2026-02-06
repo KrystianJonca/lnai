@@ -1,4 +1,4 @@
-import { TOOL_OUTPUT_DIRS, UNIFIED_DIR } from "../../constants";
+import { TOOL_OUTPUT_DIRS } from "../../constants";
 import type {
   McpServer,
   OutputFile,
@@ -7,9 +7,18 @@ import type {
   ValidationResult,
   ValidationWarningDetail,
 } from "../../types/index";
+import {
+  createNoAgentsMdWarning,
+  createRootAgentsMdSymlink,
+  createSkillSymlinks,
+  hasPermissionsConfigured,
+} from "../../utils/agents";
 import { applyFileOverrides } from "../../utils/overrides";
 import { groupRulesByDirectory } from "../../utils/rules";
 import type { Plugin } from "../types";
+
+const OUTPUT_DIR = TOOL_OUTPUT_DIRS.codex;
+const SKILLS_DIR = ".agents";
 
 /**
  * Codex plugin for exporting to .codex/ format
@@ -17,7 +26,7 @@ import type { Plugin } from "../types";
  * Output structure:
  * - AGENTS.md (symlink -> .ai/AGENTS.md) [at project root]
  * - <dir>/AGENTS.md (generated from .ai/rules/*.md, per glob directory)
- * - .codex/skills/<name>/ (symlink -> ../../.ai/skills/<name>)
+ * - .agents/skills/<name>/ (symlink -> ../../.ai/skills/<name>)
  * - .codex/config.toml (generated from settings.mcpServers)
  * - .codex/<path> (symlink -> ../.ai/.codex/<path>) for override files
  */
@@ -35,14 +44,10 @@ export const codexPlugin: Plugin = {
 
   async export(state: UnifiedState, rootDir: string): Promise<OutputFile[]> {
     const files: OutputFile[] = [];
-    const outputDir = TOOL_OUTPUT_DIRS.codex;
 
-    if (state.agents) {
-      files.push({
-        path: "AGENTS.md",
-        type: "symlink",
-        target: `${UNIFIED_DIR}/AGENTS.md`,
-      });
+    const agentsSymlink = createRootAgentsMdSymlink(state);
+    if (agentsSymlink) {
+      files.push(agentsSymlink);
     }
 
     const rulesMap = groupRulesByDirectory(state.rules);
@@ -59,18 +64,13 @@ export const codexPlugin: Plugin = {
       });
     }
 
-    for (const skill of state.skills) {
-      files.push({
-        path: `${outputDir}/skills/${skill.path}`,
-        type: "symlink",
-        target: `../../${UNIFIED_DIR}/skills/${skill.path}`,
-      });
-    }
+    // Skills go to .agents/skills/ (cross-tool standard path)
+    files.push(...createSkillSymlinks(state, SKILLS_DIR));
 
     const configToml = buildCodexConfigToml(state.settings?.mcpServers);
     if (configToml) {
       files.push({
-        path: `${outputDir}/config.toml`,
+        path: `${OUTPUT_DIR}/config.toml`,
         type: "text",
         content: configToml,
       });
@@ -84,10 +84,7 @@ export const codexPlugin: Plugin = {
     const skipped: SkippedFeatureDetail[] = [];
 
     if (!state.agents) {
-      warnings.push({
-        path: ["AGENTS.md"],
-        message: "No AGENTS.md found - root AGENTS.md will not be created",
-      });
+      warnings.push(createNoAgentsMdWarning("root AGENTS.md"));
     }
 
     const rulesMap = groupRulesByDirectory(state.rules);
@@ -111,18 +108,11 @@ export const codexPlugin: Plugin = {
       }
     }
 
-    if (state.settings?.permissions) {
-      const hasPermissions =
-        (state.settings.permissions.allow?.length ?? 0) > 0 ||
-        (state.settings.permissions.ask?.length ?? 0) > 0 ||
-        (state.settings.permissions.deny?.length ?? 0) > 0;
-
-      if (hasPermissions) {
-        skipped.push({
-          feature: "permissions",
-          reason: "Codex rules are not generated from LNAI permissions",
-        });
-      }
+    if (hasPermissionsConfigured(state.settings?.permissions)) {
+      skipped.push({
+        feature: "permissions",
+        reason: "Codex rules are not generated from LNAI permissions",
+      });
     }
 
     return { valid: true, errors: [], warnings, skipped };

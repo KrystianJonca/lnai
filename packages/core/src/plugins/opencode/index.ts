@@ -5,6 +5,11 @@ import type {
   ValidationResult,
   ValidationWarningDetail,
 } from "../../types/index";
+import {
+  createNoAgentsMdWarning,
+  createRootAgentsMdSymlink,
+  createSkillSymlinks,
+} from "../../utils/agents";
 import { validateMcpServers } from "../../utils/mcp";
 import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
@@ -13,13 +18,16 @@ import {
   transformPermissionsToOpenCode,
 } from "./transforms";
 
+const OUTPUT_DIR = TOOL_OUTPUT_DIRS.opencode;
+const SKILLS_DIR = ".agents";
+
 /**
  * OpenCode plugin for exporting to opencode.json format
  *
  * Output structure:
  * - AGENTS.md (symlink -> .ai/AGENTS.md) [at project root]
  * - .opencode/rules/ (symlink -> ../.ai/rules)
- * - .opencode/skills/<name>/ (symlink -> ../../.ai/skills/<name>)
+ * - .agents/skills/<name>/ (symlink -> ../../.ai/skills/<name>)
  * - opencode.json (generated config merged with .ai/.opencode/opencode.json)
  * - .opencode/<path> (symlink -> ../.ai/.opencode/<path>) for other override files
  */
@@ -37,37 +45,28 @@ export const opencodePlugin: Plugin = {
 
   async export(state: UnifiedState, rootDir: string): Promise<OutputFile[]> {
     const files: OutputFile[] = [];
-    const outputDir = TOOL_OUTPUT_DIRS.opencode;
 
-    if (state.agents) {
-      files.push({
-        path: "AGENTS.md",
-        type: "symlink",
-        target: `${UNIFIED_DIR}/AGENTS.md`,
-      });
+    const agentsSymlink = createRootAgentsMdSymlink(state);
+    if (agentsSymlink) {
+      files.push(agentsSymlink);
     }
 
     if (state.rules.length > 0) {
       files.push({
-        path: `${outputDir}/rules`,
+        path: `${OUTPUT_DIR}/rules`,
         type: "symlink",
         target: `../${UNIFIED_DIR}/rules`,
       });
     }
 
-    for (const skill of state.skills) {
-      files.push({
-        path: `${outputDir}/skills/${skill.path}`,
-        type: "symlink",
-        target: `../../${UNIFIED_DIR}/skills/${skill.path}`,
-      });
-    }
+    // Skills go to .agents/skills/ (cross-tool standard path)
+    files.push(...createSkillSymlinks(state, SKILLS_DIR));
 
     const config: Record<string, unknown> = {
       $schema: "https://opencode.ai/config.json",
     };
     if (state.rules.length > 0) {
-      config["instructions"] = [`${outputDir}/rules/*.md`];
+      config["instructions"] = [`${OUTPUT_DIR}/rules/*.md`];
     }
 
     const mcp = transformMcpToOpenCode(state.settings?.mcpServers);
@@ -95,10 +94,7 @@ export const opencodePlugin: Plugin = {
     const warnings: ValidationWarningDetail[] = [];
 
     if (!state.agents) {
-      warnings.push({
-        path: ["AGENTS.md"],
-        message: "No AGENTS.md found - root AGENTS.md will not be created",
-      });
+      warnings.push(createNoAgentsMdWarning("root AGENTS.md"));
     }
 
     // Validate MCP servers

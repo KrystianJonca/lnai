@@ -105,7 +105,6 @@ export async function runSyncPipeline(
   let manifest = (await readManifest(rootDir)) ?? createEmptyManifest();
 
   const results: SyncResult[] = [];
-  const pathsToIgnore: string[] = [];
 
   for (const toolId of toolsToSync) {
     const plugin = pluginRegistry.get(toolId);
@@ -142,19 +141,21 @@ export async function runSyncPipeline(
     if (!dryRun) {
       manifest = updateToolManifest(manifest, toolId, outputFiles);
     }
-
-    const toolConfig = state.config.tools?.[toolId];
-    if (!toolConfig?.versionControl) {
-      pathsToIgnore.push(...outputFiles.map((f) => f.path));
-    }
   }
 
   // Write updated manifest (only if not dry-run)
   if (!dryRun) {
     await writeManifest(rootDir, manifest);
-  }
 
-  if (pathsToIgnore.length > 0 && !dryRun) {
+    // Rebuild managed .gitignore entries from the latest manifest state.
+    // This keeps .gitignore aligned when files are deleted or moved.
+    const pathsToIgnore = Object.entries(manifest.tools).flatMap(
+      ([toolId, toolManifest]) =>
+        !state.config.tools?.[toolId as ToolId]?.versionControl &&
+        toolManifest?.files
+          ? toolManifest.files.map((file) => file.path)
+          : []
+    );
     await updateGitignore(rootDir, pathsToIgnore);
   }
 

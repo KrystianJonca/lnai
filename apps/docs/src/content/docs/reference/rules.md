@@ -56,9 +56,14 @@ Components in this directory should:
 | Cursor      | `.cursor/rules/<name>.mdc` (generated, transformed)       |
 | Copilot     | `.github/instructions/<name>.instructions.md` (generated) |
 | OpenCode    | `.opencode/rules/` (symlink to directory)                 |
+| Windsurf    | `.windsurf/rules/<name>.md` (generated, transformed)      |
+| Gemini CLI  | `<dir>/GEMINI.md` (generated, grouped by directory)       |
+| Codex       | `<dir>/AGENTS.md` (generated, grouped by directory)       |
 
 ### Format Differences
 
-- **Claude Code & OpenCode**: Symlink entire rules directory
+- **Claude Code & OpenCode**: Symlink entire rules directory — rules are used as-is
 - **Cursor**: Transforms rules to `.mdc` format with Cursor-specific frontmatter (`description`, `globs`, `alwaysApply`)
 - **Copilot**: Transforms rules to `.instructions.md` format with Copilot-specific frontmatter (`applyTo`, `description`)
+- **Windsurf**: Transforms rules to `.md` format with `trigger: manual` frontmatter
+- **Gemini CLI & Codex**: Groups rules by directory from their `paths` globs and combines them into per-directory files (`GEMINI.md` or `AGENTS.md`)

@@ -1,4 +1,4 @@
-import { UNIFIED_DIR } from "../../constants";
+import { TOOL_OUTPUT_DIRS } from "../../constants";
 import type {
   OutputFile,
   SkippedFeatureDetail,
@@ -6,6 +6,12 @@ import type {
   ValidationResult,
   ValidationWarningDetail,
 } from "../../types/index";
+import {
+  createNoAgentsMdWarning,
+  createRootAgentsMdSymlink,
+  createSkillSymlinks,
+  hasPermissionsConfigured,
+} from "../../utils/agents";
 import { validateMcpServers } from "../../utils/mcp";
 import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
@@ -15,11 +21,13 @@ import {
   transformRuleToCopilot,
 } from "./transforms";
 
+const OUTPUT_DIR = TOOL_OUTPUT_DIRS.copilot;
+
 /**
  * GitHub Copilot plugin for exporting to .github/ and .vscode/ formats
  *
  * Output structure:
- * - .github/copilot-instructions.md (symlink -> ../.ai/AGENTS.md)
+ * - AGENTS.md (symlink -> .ai/AGENTS.md) [at project root]
  * - .github/instructions/<name>.instructions.md (generated from .ai/rules/*.md)
  * - .github/skills/<name>/ (symlink -> ../../.ai/skills/<name>)
  * - .vscode/mcp.json (generated from settings.mcpServers)
@@ -40,13 +48,10 @@ export const copilotPlugin: Plugin = {
   async export(state: UnifiedState, rootDir: string): Promise<OutputFile[]> {
     const files: OutputFile[] = [];
 
-    // AGENTS.md symlink at .github/copilot-instructions.md
-    if (state.agents) {
-      files.push({
-        path: ".github/copilot-instructions.md",
-        type: "symlink",
-        target: `../${UNIFIED_DIR}/AGENTS.md`,
-      });
+    // AGENTS.md symlink at project root
+    const agentsSymlink = createRootAgentsMdSymlink(state);
+    if (agentsSymlink) {
+      files.push(agentsSymlink);
     }
 
     // Generate transformed rules as .instructions.md files
@@ -61,20 +66,14 @@ export const copilotPlugin: Plugin = {
       const outputFilename = rule.path.replace(/\.md$/, ".instructions.md");
 
       files.push({
-        path: `.github/instructions/${outputFilename}`,
+        path: `${OUTPUT_DIR}/instructions/${outputFilename}`,
         type: "text",
         content: ruleContent,
       });
     }
 
-    // Create skill symlinks to .github/skills/
-    for (const skill of state.skills) {
-      files.push({
-        path: `.github/skills/${skill.path}`,
-        type: "symlink",
-        target: `../../${UNIFIED_DIR}/skills/${skill.path}`,
-      });
-    }
+    // Create skill symlinks
+    files.push(...createSkillSymlinks(state, OUTPUT_DIR));
 
     // Generate .vscode/mcp.json if MCP servers exist
     const mcpConfig = transformMcpToCopilot(state.settings?.mcpServers);
@@ -95,22 +94,11 @@ export const copilotPlugin: Plugin = {
     const skipped: SkippedFeatureDetail[] = [];
 
     if (!state.agents) {
-      warnings.push({
-        path: ["AGENTS.md"],
-        message:
-          "No AGENTS.md found - .github/copilot-instructions.md will not be created",
-      });
+      warnings.push(createNoAgentsMdWarning("root AGENTS.md"));
     }
 
     // Check if permissions are configured (not supported by Copilot)
-    const permissions = state.settings?.permissions;
-    const hasPermissions =
-      permissions &&
-      ((permissions.allow && permissions.allow.length > 0) ||
-        (permissions.ask && permissions.ask.length > 0) ||
-        (permissions.deny && permissions.deny.length > 0));
-
-    if (hasPermissions) {
+    if (hasPermissionsConfigured(state.settings?.permissions)) {
       skipped.push({
         feature: "permissions",
         reason: "GitHub Copilot does not support declarative permissions",

@@ -273,6 +273,24 @@ describe("runSyncPipeline", () => {
         // File doesn't exist, which is fine
       }
     });
+
+    it("preserves managed entries during single-tool partial sync", async () => {
+      await copyFixture("valid/full", tempDir);
+
+      // Initial full sync writes managed entries for claudeCode (versionControl: false)
+      await runSyncPipeline({ rootDir: tempDir });
+
+      const gitignorePath = path.join(tempDir, ".gitignore");
+      const before = await fs.readFile(gitignorePath, "utf-8");
+      expect(before).toContain(".claude/CLAUDE.md");
+
+      // Partial sync only opencode (versionControl: true) should not drop claude entries
+      await runSyncPipeline({ rootDir: tempDir, tools: ["opencode"] });
+
+      const after = await fs.readFile(gitignorePath, "utf-8");
+      expect(after).toContain(".claude/CLAUDE.md");
+      expect(after).toContain("# lnai-generated");
+    });
   });
 
   describe("change detection", () => {
@@ -382,6 +400,25 @@ describe("runSyncPipeline", () => {
 
       // Skill symlink should be deleted
       await expect(fs.lstat(skillPath)).rejects.toThrow();
+    });
+
+    it("removes deleted files from managed .gitignore entries", async () => {
+      await copyFixture("valid/full", tempDir);
+
+      await runSyncPipeline({ rootDir: tempDir, tools: ["claudeCode"] });
+
+      const gitignorePath = path.join(tempDir, ".gitignore");
+      const gitignoreBefore = await fs.readFile(gitignorePath, "utf-8");
+      expect(gitignoreBefore).toContain(".claude/skills/deploy");
+
+      const skillsDir = path.join(tempDir, UNIFIED_DIR, "skills");
+      await fs.rm(skillsDir, { recursive: true, force: true });
+
+      await runSyncPipeline({ rootDir: tempDir, tools: ["claudeCode"] });
+
+      const gitignoreAfter = await fs.readFile(gitignorePath, "utf-8");
+      expect(gitignoreAfter).not.toContain(".claude/skills/deploy");
+      expect(gitignoreAfter).toContain("# lnai-generated");
     });
 
     it("shows delete actions in dry-run without deleting", async () => {

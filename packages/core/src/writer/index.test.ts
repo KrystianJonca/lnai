@@ -399,7 +399,7 @@ describe("updateGitignore", () => {
     expect(lnaiSection?.match(/opencode\.json/g)?.length).toBe(1);
   });
 
-  it("merges with existing lnai-generated section", async () => {
+  it("replaces existing lnai-generated section", async () => {
     // Create .gitignore with existing lnai section
     await fs.writeFile(
       path.join(tempDir, ".gitignore"),
@@ -421,8 +421,8 @@ describe("updateGitignore", () => {
     expect(content).toContain("node_modules/");
     expect(content).toContain(".env");
     expect(content).toContain(".new-claude/");
-    // Should preserve existing paths (merge behavior for partial syncs)
-    expect(content).toContain(".old-claude/");
+    // Old managed paths should be removed
+    expect(content).not.toContain(".old-claude/");
     // Should only have one lnai section
     expect(content.split("# lnai-generated").length).toBe(2);
   });
@@ -459,15 +459,32 @@ node_modules/
     expect(content).toContain(".claude/");
   });
 
-  it("handles empty paths array", async () => {
+  it("does not create .gitignore for empty paths when file is missing", async () => {
+    await updateGitignore(tempDir, []);
+
+    await expect(fs.access(path.join(tempDir, ".gitignore"))).rejects.toThrow();
+  });
+
+  it("removes lnai-generated section when paths become empty", async () => {
+    await fs.writeFile(
+      path.join(tempDir, ".gitignore"),
+      `node_modules/
+# lnai-generated
+.claude/
+# end lnai-generated
+.env`,
+      "utf-8"
+    );
+
     await updateGitignore(tempDir, []);
 
     const content = await fs.readFile(
       path.join(tempDir, ".gitignore"),
       "utf-8"
     );
-
-    expect(content).toContain("# lnai-generated");
-    expect(content).toContain("# end lnai-generated");
+    expect(content).toContain("node_modules/");
+    expect(content).toContain(".env");
+    expect(content).not.toContain("# lnai-generated");
+    expect(content).not.toContain(".claude/");
   });
 });

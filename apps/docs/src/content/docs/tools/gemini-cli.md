@@ -12,9 +12,10 @@ LNAI exports unified configuration to the native `.gemini/` format, transforming
 ## Output Structure
 
 ```text
+AGENTS.md              # Symlink → .ai/AGENTS.md (at project root)
+
 .gemini/
-├── GEMINI.md          # Symlink → ../.ai/AGENTS.md
-├── settings.json      # Generated (MCP servers)
+├── settings.json      # Generated (MCP servers + context.fileName)
 ├── skills/<name>/     # Symlinks → ../../.ai/skills/<name>/
 └── <overrides>        # Symlinks from .ai/.gemini/
 
@@ -23,15 +24,30 @@ LNAI exports unified configuration to the native `.gemini/` format, transforming
 
 ## File Mapping
 
-| Source               | Output                   | Type        |
-| -------------------- | ------------------------ | ----------- |
-| `.ai/AGENTS.md`      | `.gemini/GEMINI.md`      | Symlink     |
-| `.ai/rules/*.md`     | `<dir>/GEMINI.md`        | Generated   |
-| `.ai/skills/<name>/` | `.gemini/skills/<name>/` | Symlink     |
-| `.ai/settings.json`  | `.gemini/settings.json`  | Transformed |
-| `.ai/.gemini/<path>` | `.gemini/<path>`         | Symlink     |
+| Source               | Output                   | Type                              |
+| -------------------- | ------------------------ | --------------------------------- |
+| `.ai/AGENTS.md`      | `AGENTS.md` at root      | Symlink                           |
+| `.ai/AGENTS.md`      | `.gemini/settings.json`  | `context.fileName: ["AGENTS.md"]` |
+| `.ai/rules/*.md`     | `<dir>/GEMINI.md`        | Generated                         |
+| `.ai/skills/<name>/` | `.gemini/skills/<name>/` | Symlink                           |
+| `.ai/settings.json`  | `.gemini/settings.json`  | Transformed                       |
+| `.ai/.gemini/<path>` | `.gemini/<path>`         | Symlink                           |
 
 ## Transformations
+
+### Context
+
+When `AGENTS.md` exists, LNAI configures Gemini CLI to read it via `context.fileName` in `settings.json`:
+
+```json
+{
+  "context": {
+    "fileName": ["AGENTS.md"]
+  }
+}
+```
+
+This tells Gemini CLI to automatically include the root `AGENTS.md` file as context.
 
 ### MCP Servers
 
