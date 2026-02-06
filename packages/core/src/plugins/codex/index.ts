@@ -1,4 +1,4 @@
-import { TOOL_OUTPUT_DIRS } from "../../constants";
+import { CROSS_TOOL_SKILLS_DIR, TOOL_OUTPUT_DIRS } from "../../constants";
 import type {
   McpServer,
   OutputFile,
@@ -18,7 +18,6 @@ import { groupRulesByDirectory } from "../../utils/rules";
 import type { Plugin } from "../types";
 
 const OUTPUT_DIR = TOOL_OUTPUT_DIRS.codex;
-const SKILLS_DIR = ".agents";
 
 /**
  * Codex plugin for exporting to .codex/ format
@@ -65,7 +64,7 @@ export const codexPlugin: Plugin = {
     }
 
     // Skills go to .agents/skills/ (cross-tool standard path)
-    files.push(...createSkillSymlinks(state, SKILLS_DIR));
+    files.push(...createSkillSymlinks(state, CROSS_TOOL_SKILLS_DIR));
 
     const configToml = buildCodexConfigToml(state.settings?.mcpServers);
     if (configToml) {

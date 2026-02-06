@@ -1,4 +1,8 @@
-import { TOOL_OUTPUT_DIRS, UNIFIED_DIR } from "../../constants";
+import {
+  CROSS_TOOL_SKILLS_DIR,
+  TOOL_OUTPUT_DIRS,
+  UNIFIED_DIR,
+} from "../../constants";
 import type {
   OutputFile,
   UnifiedState,
@@ -19,7 +23,6 @@ import {
 } from "./transforms";
 
 const OUTPUT_DIR = TOOL_OUTPUT_DIRS.opencode;
-const SKILLS_DIR = ".agents";
 
 /**
  * OpenCode plugin for exporting to opencode.json format
@@ -60,7 +63,7 @@ export const opencodePlugin: Plugin = {
     }
 
     // Skills go to .agents/skills/ (cross-tool standard path)
-    files.push(...createSkillSymlinks(state, SKILLS_DIR));
+    files.push(...createSkillSymlinks(state, CROSS_TOOL_SKILLS_DIR));
 
     const config: Record<string, unknown> = {
       $schema: "https://opencode.ai/config.json",

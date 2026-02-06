@@ -9,7 +9,12 @@ import {
 } from "../manifest/index";
 import { parseUnifiedConfig } from "../parser/index";
 import { pluginRegistry } from "../plugins/index";
-import type { ChangeResult, SyncResult } from "../types/index";
+import type {
+  ChangeResult,
+  LnaiManifest,
+  SyncResult,
+  UnifiedState,
+} from "../types/index";
 import { validateToolIds, validateUnifiedState } from "../validator/index";
 import { updateGitignore, writeFiles } from "../writer/index";
 
@@ -25,35 +30,6 @@ export interface SyncOptions {
   dryRun?: boolean;
   /** Skip cleanup of orphaned files */
   skipCleanup?: boolean;
-}
-
-function getToolsToSync(
-  config: {
-    tools?: Partial<
-      Record<ToolId, { enabled: boolean; versionControl?: boolean }>
-    >;
-  },
-  requestedTools?: ToolId[]
-): ToolId[] {
-  if (requestedTools && requestedTools.length > 0) {
-    return requestedTools.filter((tool) => pluginRegistry.has(tool));
-  }
-
-  const enabledTools: ToolId[] = [];
-
-  if (config.tools) {
-    for (const [toolId, toolConfig] of Object.entries(config.tools)) {
-      if (toolConfig?.enabled && pluginRegistry.has(toolId as ToolId)) {
-        enabledTools.push(toolId as ToolId);
-      }
-    }
-  }
-
-  if (enabledTools.length === 0) {
-    return pluginRegistry.getIds();
-  }
-
-  return enabledTools;
 }
 
 /**
@@ -149,15 +125,78 @@ export async function runSyncPipeline(
 
     // Rebuild managed .gitignore entries from the latest manifest state.
     // This keeps .gitignore aligned when files are deleted or moved.
-    const pathsToIgnore = Object.entries(manifest.tools).flatMap(
-      ([toolId, toolManifest]) =>
-        !state.config.tools?.[toolId as ToolId]?.versionControl &&
-        toolManifest?.files
-          ? toolManifest.files.map((file) => file.path)
-          : []
-    );
+    const pathsToIgnore = computePathsToIgnore(manifest, state.config.tools);
     await updateGitignore(rootDir, pathsToIgnore);
   }
 
   return results;
+}
+
+function getToolsToSync(
+  config: {
+    tools?: Partial<
+      Record<ToolId, { enabled: boolean; versionControl?: boolean }>
+    >;
+  },
+  requestedTools?: ToolId[]
+): ToolId[] {
+  if (requestedTools && requestedTools.length > 0) {
+    return requestedTools.filter((tool) => pluginRegistry.has(tool));
+  }
+
+  const enabledTools: ToolId[] = [];
+
+  if (config.tools) {
+    for (const [toolId, toolConfig] of Object.entries(config.tools)) {
+      if (toolConfig?.enabled && pluginRegistry.has(toolId as ToolId)) {
+        enabledTools.push(toolId as ToolId);
+      }
+    }
+  }
+
+  if (enabledTools.length === 0) {
+    return pluginRegistry.getIds();
+  }
+
+  return enabledTools;
+}
+
+/**
+ * Compute which output paths should be added to .gitignore.
+ *
+ * A path is only ignored if **every** tool that produces it has
+ * `versionControl` unset or `false`. If any producing tool has
+ * `versionControl: true`, the path is kept out of .gitignore.
+ */
+function computePathsToIgnore(
+  manifest: LnaiManifest,
+  toolConfigs: UnifiedState["config"]["tools"]
+): string[] {
+  const pathToTools = new Map<string, Set<ToolId>>();
+
+  for (const [toolId, toolManifest] of Object.entries(manifest.tools)) {
+    if (!toolManifest?.files) {
+      continue;
+    }
+    for (const file of toolManifest.files) {
+      let tools = pathToTools.get(file.path);
+      if (!tools) {
+        tools = new Set<ToolId>();
+        pathToTools.set(file.path, tools);
+      }
+      tools.add(toolId as ToolId);
+    }
+  }
+
+  const result: string[] = [];
+  for (const [filePath, toolIds] of pathToTools) {
+    const anyVersionControlled = [...toolIds].some(
+      (toolId) => toolConfigs?.[toolId]?.versionControl === true
+    );
+    if (!anyVersionControlled) {
+      result.push(filePath);
+    }
+  }
+
+  return result;
 }
