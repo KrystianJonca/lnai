@@ -1,6 +1,6 @@
 {
   "name": "lnai",
-  "version": "0.6.6.2",
+  "version": "0.6.7",
   "description": "CLI tool that syncs a unified .ai/ config to native formats for AI coding tools",
   "type": "module",
   "license": "MIT",
