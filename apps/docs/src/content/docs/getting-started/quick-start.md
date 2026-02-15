@@ -48,7 +48,13 @@ Edit `.ai/settings.json` to add permissions or MCP servers:
 lnai sync
 ```
 
-## 5. Validate configuration
+## 5. Commit `.ai/` to version control
+
+Commit the `.ai/` directory to share configuration with your team. Generated tool files are automatically added to `.gitignore` by `lnai sync`, so collaborators just need to run `lnai sync` after cloning.
+
+See [Version Control](/reference/version-control/) for details.
+
+## 6. Validate configuration
 
 ```bash
 lnai validate

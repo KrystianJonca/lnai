@@ -1,8 +1,10 @@
 import { computeFilesToDelete, deleteFiles } from "../cleanup/index";
 import type { ToolId } from "../constants";
+import { UNIFIED_DIR } from "../constants";
 import { ValidationError } from "../errors";
 import {
   createEmptyManifest,
+  MANIFEST_FILENAME,
   readManifest,
   updateToolManifest,
   writeManifest,
@@ -126,6 +128,7 @@ export async function runSyncPipeline(
     // Rebuild managed .gitignore entries from the latest manifest state.
     // This keeps .gitignore aligned when files are deleted or moved.
     const pathsToIgnore = computePathsToIgnore(manifest, state.config.tools);
+    pathsToIgnore.push(`${UNIFIED_DIR}/${MANIFEST_FILENAME}`);
     await updateGitignore(rootDir, pathsToIgnore);
   }
 

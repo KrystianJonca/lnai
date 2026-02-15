@@ -36,6 +36,7 @@ npm-debug.log*
 pnpm-debug.log*
 
 # lnai-generated
+.ai/.lnai-manifest.json
 .agents/skills/add-tool-plugin
 .agents/skills/update-tool-plugin
 .claude/CLAUDE.md
