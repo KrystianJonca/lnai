@@ -127,7 +127,26 @@ describe("claudeCodePlugin", () => {
       });
     });
 
-    it("creates settings.json with mcpServers", async () => {
+    it("creates .mcp.json at project root with mcpServers", async () => {
+      const state = createMinimalState({
+        settings: {
+          mcpServers: {
+            db: { command: "npx", args: ["-y", "@example/db"] },
+          },
+        },
+      });
+
+      const files = await claudeCodePlugin.export(state, tempDir);
+
+      const mcpJson = files.find((f) => f.path === ".mcp.json");
+      expect(mcpJson).toBeDefined();
+      expect(mcpJson?.type).toBe("json");
+      expect(
+        (mcpJson?.content as Record<string, unknown>)["mcpServers"]
+      ).toBeDefined();
+    });
+
+    it("does not put mcpServers in settings.json", async () => {
       const state = createMinimalState({
         settings: {
           mcpServers: {
@@ -139,10 +158,11 @@ describe("claudeCodePlugin", () => {
       const files = await claudeCodePlugin.export(state, tempDir);
 
       const settings = files.find((f) => f.path === ".claude/settings.json");
-      expect(settings).toBeDefined();
       expect(
-        (settings?.content as Record<string, unknown>)["mcpServers"]
-      ).toBeDefined();
+        (settings?.content as Record<string, unknown> | undefined)?.[
+          "mcpServers"
+        ]
+      ).toBeUndefined();
     });
 
     it("skips settings.json when no settings content", async () => {

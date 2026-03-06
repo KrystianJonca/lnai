@@ -61,15 +61,23 @@ export const claudeCodePlugin: Plugin = {
     if (state.settings?.permissions) {
       settings["permissions"] = state.settings.permissions;
     }
-    if (state.settings?.mcpServers) {
-      settings["mcpServers"] = state.settings.mcpServers;
-    }
 
     if (Object.keys(settings).length > 0) {
       files.push({
         path: `${OUTPUT_DIR}/settings.json`,
         type: "json",
         content: settings,
+      });
+    }
+
+    if (
+      state.settings?.mcpServers &&
+      Object.keys(state.settings.mcpServers).length > 0
+    ) {
+      files.push({
+        path: ".mcp.json",
+        type: "json",
+        content: { mcpServers: state.settings.mcpServers },
       });
     }
 
