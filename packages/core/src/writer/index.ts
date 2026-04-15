@@ -187,8 +187,8 @@ export async function updateGitignore(
   const uniquePaths = [
     ...new Set(
       paths
-        .map(p => p.replace(/\\/g, "/"))
-        .map(p => (p.includes("/") || p.startsWith(".") ? p : `/${p}`))
+        .map((p) => p.replace(/\\/g, "/"))
+        .map((p) => (p.includes("/") || p.startsWith(".") ? p : `/${p}`))
     ),
   ].sort();
 
