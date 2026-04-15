@@ -358,7 +358,8 @@ describe("runSyncPipeline", () => {
       );
 
       // AGENTS.md SHOULD be ignored because both tools have versionControl: false
-      expect(gitignore).toMatch(/^AGENTS\.md$/m);
+      // Root-level files get a leading "/" prefix for precise gitignore matching
+      expect(gitignore).toMatch(/^\/AGENTS\.md$/m);
     });
 
     it("preserves managed entries during single-tool partial sync", async () => {

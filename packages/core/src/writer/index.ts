@@ -184,7 +184,13 @@ export async function updateGitignore(
   // Remove old managed section before rebuilding it.
   content = content.replace(markerRegex, "");
   const baseContent = content.trimEnd();
-  const uniquePaths = [...new Set(paths)].sort();
+  const uniquePaths = [
+    ...new Set(
+      paths
+        .map(p => p.replace(/\\/g, "/"))
+        .map(p => (p.includes("/") || p.startsWith(".") ? p : `/${p}`))
+    ),
+  ].sort();
 
   if (uniquePaths.length === 0) {
     // Nothing to manage and no managed section previously existed.

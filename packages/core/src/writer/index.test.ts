@@ -358,7 +358,8 @@ describe("updateGitignore", () => {
     expect(content).toContain("# lnai-generated");
     expect(content).toContain("# end lnai-generated");
     expect(content).toContain(".claude/");
-    expect(content).toContain("opencode.json");
+    // Root-level files without "/" or leading "." get a "/" prefix
+    expect(content).toContain("/opencode.json");
   });
 
   it("adds to existing .gitignore", async () => {
@@ -486,5 +487,86 @@ node_modules/
     expect(content).toContain(".env");
     expect(content).not.toContain("# lnai-generated");
     expect(content).not.toContain(".claude/");
+  });
+
+  it("normalizes backslashes to forward slashes", async () => {
+    await updateGitignore(tempDir, [
+      ".cursor\\mcp.json",
+      ".ai\\.lnai-manifest.json",
+    ]);
+
+    const content = await fs.readFile(
+      path.join(tempDir, ".gitignore"),
+      "utf-8"
+    );
+
+    expect(content).toContain(".cursor/mcp.json");
+    expect(content).toContain(".ai/.lnai-manifest.json");
+    expect(content).not.toContain("\\");
+  });
+
+  it("prepends / to root-level files without path separators", async () => {
+    await updateGitignore(tempDir, ["AGENTS.md", "opencode.json"]);
+
+    const content = await fs.readFile(
+      path.join(tempDir, ".gitignore"),
+      "utf-8"
+    );
+
+    expect(content).toContain("/AGENTS.md");
+    expect(content).toContain("/opencode.json");
+  });
+
+  it("does not prepend / to paths containing slashes", async () => {
+    await updateGitignore(tempDir, [
+      ".cursor/mcp.json",
+      ".ai/.lnai-manifest.json",
+    ]);
+
+    const content = await fs.readFile(
+      path.join(tempDir, ".gitignore"),
+      "utf-8"
+    );
+
+    expect(content).toContain(".cursor/mcp.json");
+    expect(content).toContain(".ai/.lnai-manifest.json");
+    expect(content).not.toMatch(/^\/.cursor\/mcp\.json$/m);
+    expect(content).not.toMatch(/^\/.ai\/.lnai-manifest\.json$/m);
+  });
+
+  it("does not prepend / to paths starting with a dot", async () => {
+    await updateGitignore(tempDir, [".claude/", ".env"]);
+
+    const content = await fs.readFile(
+      path.join(tempDir, ".gitignore"),
+      "utf-8"
+    );
+
+    expect(content).toContain(".claude/");
+    expect(content).toContain(".env");
+    expect(content).not.toMatch(/^\/.claude\/$/m);
+    expect(content).not.toMatch(/^\/.env$/m);
+  });
+
+  it("deduplicates after normalization", async () => {
+    await updateGitignore(tempDir, [
+      ".cursor\\mcp.json",
+      ".cursor/mcp.json",
+      "AGENTS.md",
+      "AGENTS.md",
+    ]);
+
+    const content = await fs.readFile(
+      path.join(tempDir, ".gitignore"),
+      "utf-8"
+    );
+
+    const lnaiSection = content
+      .split("# lnai-generated")[1]
+      ?.split("# end lnai-generated")[0];
+
+    expect(lnaiSection).toBeDefined();
+    expect(lnaiSection?.match(/\.cursor\/mcp\.json/g)?.length).toBe(1);
+    expect(lnaiSection?.match(/AGENTS\.md/g)?.length).toBe(1);
   });
 });

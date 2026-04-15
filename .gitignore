@@ -36,9 +36,9 @@ npm-debug.log*
 pnpm-debug.log*
 
 # lnai-generated
-.ai/.lnai-manifest.json
 .agents/skills/add-tool-plugin
 .agents/skills/update-tool-plugin
+.ai/.lnai-manifest.json
 .claude/CLAUDE.md
 .claude/rules
 .claude/settings.json
@@ -60,6 +60,7 @@ pnpm-debug.log*
 .github/instructions/typescript.instructions.md
 .github/skills/add-tool-plugin
 .github/skills/update-tool-plugin
+.mcp.json
 .opencode/rules
 .vscode/mcp.json
 .windsurf/rules/code-organization.md
@@ -67,11 +68,11 @@ pnpm-debug.log*
 .windsurf/rules/typescript.md
 .windsurf/skills/add-tool-plugin
 .windsurf/skills/update-tool-plugin
-AGENTS.md
-GEMINI.md
+/AGENTS.md
+/GEMINI.md
+/opencode.json
 apps/AGENTS.md
 apps/GEMINI.md
-opencode.json
 packages/AGENTS.md
 packages/GEMINI.md
 # end lnai-generated
