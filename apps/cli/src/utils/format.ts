@@ -1,6 +1,6 @@
 import chalk from "chalk";
 
-export const GITHUB_URL = "https://github.com/KrystianJonca/lnai";
+const GITHUB_URL = "https://github.com/KrystianJonca/lnai";
 
 export interface ValidationItem {
   path: string[];
@@ -10,7 +10,7 @@ export interface ValidationItem {
 /**
  * Format a single validation item (error or warning) as a string.
  */
-export function formatValidationItem(
+function formatValidationItem(
   item: ValidationItem,
   color: "red" | "yellow"
 ): string {

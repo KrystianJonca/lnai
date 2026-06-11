@@ -70,9 +70,13 @@ export {
 export {
   claudeCodePlugin,
   codexPlugin,
+  copilotPlugin,
+  cursorPlugin,
+  geminiPlugin,
   opencodePlugin,
   type Plugin,
   pluginRegistry,
+  windsurfPlugin,
 } from "./plugins/index";
 
 // Pipeline

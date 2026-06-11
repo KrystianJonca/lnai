@@ -13,7 +13,7 @@ export interface CursorMcpServer {
   headers?: Record<string, string>;
 }
 
-export interface CursorPermissions {
+interface CursorPermissions {
   allow: string[];
   deny: string[];
 }

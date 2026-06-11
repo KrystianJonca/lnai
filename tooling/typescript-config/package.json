@@ -8,8 +8,5 @@
     "./base.json": "./base.json",
     "./library.json": "./library.json",
     "./app.json": "./app.json"
-  },
-  "devDependencies": {
-    "eslint": "^10.4.1"
   }
 }
