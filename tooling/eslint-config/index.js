@@ -15,7 +15,15 @@ export default [
     languageOptions: {
       parser: tsparser,
       parserOptions: {
-        projectService: true,
+        projectService: {
+          // ** is not allowed here; cover config files at repo root,
+          // package level (apps/cli), and one level deeper
+          allowDefaultProject: [
+            "*.config.ts",
+            "*/*.config.ts",
+            "*/*/*.config.ts",
+          ],
+        },
       },
       globals: {
         ...globals.node,

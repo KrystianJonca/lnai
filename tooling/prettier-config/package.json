@@ -9,5 +9,8 @@
   },
   "peerDependencies": {
     "prettier": "^3.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^10.4.1"
   }
 }

@@ -13,13 +13,13 @@
     "clean": "rm -rf dist .turbo .astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.37.4",
-    "astro": "^5.16.15",
-    "sharp": "^0.34.5"
+    "@astrojs/starlight": "^0.40.0",
+    "astro": "^6.4.6",
+    "sharp": "^0.35.1"
   },
   "devDependencies": {
     "@lnai/typescript-config": "workspace:*",
-    "eslint": "^9.39.2",
-    "typescript": "^5.9.3"
+    "eslint": "^10.4.1",
+    "typescript": "^6.0.3"
   }
 }
