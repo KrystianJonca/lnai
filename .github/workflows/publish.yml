@@ -70,10 +70,16 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Set version from release tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "Publishing version $VERSION (from tag $GITHUB_REF_NAME)"
+          pnpm --filter @lnai/core exec npm version "$VERSION" --no-git-tag-version --allow-same-version
+          pnpm --filter lnai exec npm version "$VERSION" --no-git-tag-version --allow-same-version
 
       - name: Build
         run: pnpm build
