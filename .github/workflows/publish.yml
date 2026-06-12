@@ -54,6 +54,9 @@ jobs:
   publish:
     needs: build-and-test
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # required for npm OIDC trusted publishing
+      contents: read
 
     steps:
       - name: Checkout
@@ -77,10 +80,6 @@ jobs:
 
       - name: Publish @lnai/core
         run: pnpm --filter @lnai/core publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish lnai
         run: pnpm --filter lnai publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
