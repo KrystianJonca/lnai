@@ -71,6 +71,11 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      # pnpm publish shells out to `npm publish`, so OIDC trusted publishing
+      # needs npm >= 11.5.1 (newer than the version bundled with Node 22).
+      - name: Upgrade npm for OIDC trusted publishing
+        run: npm install -g npm@latest
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
