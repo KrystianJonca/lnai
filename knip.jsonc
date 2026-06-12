@@ -1,0 +1,10 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "workspaces": {
+    ".": {
+      // lnai is the published CLI installed at the root to dogfood
+      // syncing this repo's own .ai/ config (run manually, not via scripts)
+      "ignoreDependencies": ["lnai"],
+    },
+  },
+}

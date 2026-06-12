@@ -5,6 +5,7 @@
     "lib": ["ES2023"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "types": ["node"],
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

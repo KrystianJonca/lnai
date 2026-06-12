@@ -12,7 +12,6 @@ import type {
 } from "./types";
 
 export type {
-  CursorPermissions,
   CursorRuleFrontmatter,
   TransformPermissionsResult,
 } from "./types";

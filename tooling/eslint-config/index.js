@@ -15,7 +15,15 @@ export default [
     languageOptions: {
       parser: tsparser,
       parserOptions: {
-        projectService: true,
+        projectService: {
+          // ** is not allowed here. Covers package-root config files for
+          // per-package eslint runs (cwd = package) and apps/*, packages/*
+          // config files for repo-root runs (lint-staged). No deeper glob:
+          // files like apps/docs/src/content.config.ts are already in their
+          // project (Astro's tsconfig includes **/*) and listing them here
+          // would conflict.
+          allowDefaultProject: ["*.config.ts", "*/*/*.config.ts"],
+        },
       },
       globals: {
         ...globals.node,

@@ -1,4 +1,4 @@
-export interface GeminiMcpServer {
+interface GeminiMcpServer {
   command?: string;
   args?: string[];
   env?: Record<string, string>;
@@ -7,9 +7,4 @@ export interface GeminiMcpServer {
 
 export interface GeminiMcpSettings {
   [key: string]: GeminiMcpServer;
-}
-
-export interface GeminiRule {
-  dir: string;
-  content: string;
 }

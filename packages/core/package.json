@@ -1,6 +1,6 @@
 {
   "name": "@lnai/core",
-  "version": "0.6.91",
+  "version": "0.6.92",
   "description": "Core library for LNAI - unified AI config management",
   "type": "module",
   "license": "MIT",
@@ -50,14 +50,14 @@
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@lnai/typescript-config": "workspace:*",
-    "@types/node": "^25.0.10",
-    "eslint": "^9.39.2",
+    "@types/node": "^25.9.3",
+    "eslint": "^10.4.1",
     "tsup": "^8.5.1",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
   }
 }

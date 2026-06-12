@@ -38,11 +38,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Audit
+        run: pnpm audit --prod --audit-level high
+
       - name: Typecheck
         run: pnpm typecheck
 
       - name: Lint
         run: pnpm lint
+
+      - name: Knip
+        run: pnpm knip
 
       - name: Format check
         run: pnpm format:check

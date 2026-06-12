@@ -17,14 +17,17 @@
       "cache": false,
       "persistent": true
     },
+    "topo": {
+      "dependsOn": ["^topo"]
+    },
     "lint": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build", "topo"]
     },
     "lint:fix": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build", "topo"]
     },
     "typecheck": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build", "topo"]
     },
     "clean": {
       "cache": false
