@@ -31,6 +31,11 @@
     "typescript": "^6.0.3"
   },
   "packageManager": "pnpm@10.28.1",
+  "pnpm": {
+    "overrides": {
+      "esbuild": ">=0.28.1"
+    }
+  },
   "engines": {
     "node": ">=22"
   },
