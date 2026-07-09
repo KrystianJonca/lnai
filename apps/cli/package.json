@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@lnai/typescript-config": "workspace:*",
-    "@types/node": "^25.9.3",
+    "@types/node": "^26.1.0",
     "eslint": "^10.6.0",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
