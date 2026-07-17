@@ -21,13 +21,13 @@
   "devDependencies": {
     "@lnai/eslint-config": "workspace:*",
     "@lnai/prettier-config": "workspace:*",
-    "eslint": "^10.6.0",
+    "eslint": "^10.7.0",
     "husky": "^9.1.7",
-    "knip": "^6.24.0",
+    "knip": "^6.27.0",
     "lint-staged": "^17.0.8",
     "lnai": "^0.6.91",
     "prettier": "^3.9.4",
-    "turbo": "^2.10.2",
+    "turbo": "^2.10.5",
     "typescript": "^6.0.3"
   },
   "packageManager": "pnpm@10.28.1",
