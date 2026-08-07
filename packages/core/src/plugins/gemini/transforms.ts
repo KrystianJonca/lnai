@@ -24,6 +24,19 @@ export function transformMcpToGemini(
     if (config.url) {
       geminiMcp[name].httpUrl = config.url;
     }
+
+    if (config.oauth) {
+      geminiMcp[name].oauth = {
+        enabled: true,
+        clientId: config.oauth.clientId,
+        ...(config.oauth.clientSecret !== undefined && {
+          clientSecret: config.oauth.clientSecret,
+        }),
+        ...(config.oauth.scopes !== undefined && {
+          scopes: config.oauth.scopes,
+        }),
+      };
+    }
   }
 
   return Object.keys(geminiMcp).length > 0 ? geminiMcp : undefined;

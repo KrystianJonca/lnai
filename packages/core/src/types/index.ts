@@ -9,6 +9,7 @@ import type {
 
 export type {
   Config,
+  McpOAuth,
   McpServer,
   Permissions,
   RuleFrontmatter,

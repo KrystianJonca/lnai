@@ -4,6 +4,13 @@ export interface CursorRuleFrontmatter {
   alwaysApply: boolean;
 }
 
+/** Cursor-specific static OAuth config for remote servers */
+interface CursorMcpAuth {
+  CLIENT_ID: string;
+  CLIENT_SECRET?: string;
+  scopes?: string[];
+}
+
 /** Cursor-specific MCP server output format */
 export interface CursorMcpServer {
   command?: string;
@@ -11,6 +18,7 @@ export interface CursorMcpServer {
   env?: Record<string, string>;
   url?: string;
   headers?: Record<string, string>;
+  auth?: CursorMcpAuth;
 }
 
 interface CursorPermissions {

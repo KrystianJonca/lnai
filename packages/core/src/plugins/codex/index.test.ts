@@ -109,6 +109,92 @@ describe("codexPlugin", () => {
       );
     });
 
+    it("syncs client_id into a nested [mcp_servers.<name>.oauth] table and scopes as a sibling key", async () => {
+      const state = createMinimalState({
+        settings: {
+          mcpServers: {
+            "my-remote-server": {
+              url: "http://localhost:3000",
+              oauth: {
+                clientId: "client-123",
+                clientSecret: "shh-its-a-secret",
+                callbackPort: 8080,
+                scopes: ["read", "write"],
+              },
+            },
+          },
+        },
+      });
+
+      const files = await codexPlugin.export(state, tempDir);
+
+      const configToml = files.find((f) => f.path === ".codex/config.toml");
+      const content = String(configToml?.content);
+      // The callback port is a single global setting in Codex, written as a
+      // root-level key before any [mcp_servers.*] table headers
+      expect(content).toContain("mcp_oauth_callback_port = 8080");
+      expect(content.indexOf("mcp_oauth_callback_port")).toBeLessThan(
+        content.indexOf("[mcp_servers.")
+      );
+      // `scopes` is a sibling of `oauth` under [mcp_servers.<name>], not nested inside it
+      expect(content).toMatch(
+        /\[mcp_servers\.my-remote-server\]\nurl = "http:\/\/localhost:3000"\nscopes = \["read", "write"\]/
+      );
+      expect(content).toContain("[mcp_servers.my-remote-server.oauth]");
+      expect(content).toContain('client_id = "client-123"');
+      // Codex's per-server oauth table has no client_secret field
+      expect(content).not.toContain("client_secret");
+      // callback_port is not a per-server field under [mcp_servers.*.oauth]
+      expect(content).not.toMatch(/\ncallback_port =/);
+    });
+
+    it("omits scopes when not provided", async () => {
+      const state = createMinimalState({
+        settings: {
+          mcpServers: {
+            remote: {
+              url: "http://localhost:3000",
+              oauth: { clientId: "client-123" },
+            },
+          },
+        },
+      });
+
+      const files = await codexPlugin.export(state, tempDir);
+
+      const configToml = files.find((f) => f.path === ".codex/config.toml");
+      const content = String(configToml?.content);
+      expect(content).toContain("[mcp_servers.remote.oauth]");
+      expect(content).toContain('client_id = "client-123"');
+      expect(content).not.toContain("mcp_oauth_callback_port");
+      expect(content).not.toContain("client_secret");
+      expect(content).not.toContain("scopes");
+    });
+
+    it("uses the first callbackPort when multiple servers disagree", async () => {
+      const state = createMinimalState({
+        settings: {
+          mcpServers: {
+            first: {
+              url: "http://localhost:3000",
+              oauth: { clientId: "client-1", callbackPort: 8080 },
+            },
+            second: {
+              url: "http://localhost:4000",
+              oauth: { clientId: "client-2", callbackPort: 9090 },
+            },
+          },
+        },
+      });
+
+      const files = await codexPlugin.export(state, tempDir);
+
+      const configToml = files.find((f) => f.path === ".codex/config.toml");
+      const content = String(configToml?.content);
+      expect(content).toContain("mcp_oauth_callback_port = 8080");
+      expect(content).not.toContain("mcp_oauth_callback_port = 9090");
+    });
+
     it("creates skill symlinks", async () => {
       const state = createMinimalState({
         skills: [
@@ -163,6 +249,78 @@ describe("codexPlugin", () => {
       expect(result.skipped.some((s) => s.feature === "permissions")).toBe(
         true
       );
+    });
+
+    it("warns when MCP servers request conflicting OAuth callback ports", () => {
+      const state = createMinimalState({
+        settings: {
+          mcpServers: {
+            first: {
+              url: "http://localhost:3000",
+              oauth: { clientId: "client-1", callbackPort: 8080 },
+            },
+            second: {
+              url: "http://localhost:4000",
+              oauth: { clientId: "client-2", callbackPort: 9090 },
+            },
+          },
+        },
+      });
+
+      const result = codexPlugin.validate(state);
+
+      const portWarning = result.warnings.find((w) =>
+        w.message.includes("callbackPort")
+      );
+      expect(portWarning).toBeDefined();
+      expect(portWarning?.message).toContain("8080");
+      expect(portWarning?.message).toContain("9090");
+      expect(portWarning?.message).toContain("mcp_oauth_callback_port");
+    });
+
+    it("no warning when servers agree on the same callback port", () => {
+      const state = createMinimalState({
+        settings: {
+          mcpServers: {
+            first: {
+              url: "http://localhost:3000",
+              oauth: { clientId: "client-1", callbackPort: 8080 },
+            },
+            second: {
+              url: "http://localhost:4000",
+              oauth: { clientId: "client-2", callbackPort: 8080 },
+            },
+          },
+        },
+      });
+
+      const result = codexPlugin.validate(state);
+
+      const portWarning = result.warnings.find((w) =>
+        w.message.includes("callbackPort")
+      );
+      expect(portWarning).toBeUndefined();
+    });
+
+    it("warns that Codex's oauth table has no clientSecret field", () => {
+      const state = createMinimalState({
+        settings: {
+          mcpServers: {
+            api: {
+              url: "http://localhost:3000",
+              oauth: { clientId: "client-123", clientSecret: "shh" },
+            },
+          },
+        },
+      });
+
+      const result = codexPlugin.validate(state);
+
+      const secretWarning = result.warnings.find((w) =>
+        w.message.includes("clientSecret")
+      );
+      expect(secretWarning).toBeDefined();
+      expect(secretWarning?.message).toContain("Codex");
     });
   });
 });

@@ -12,7 +12,7 @@ import {
   createSkillSymlinks,
   hasPermissionsConfigured,
 } from "../../utils/agents";
-import { validateMcpServers } from "../../utils/mcp";
+import { validateMcpServers, validateOAuthFieldSupport } from "../../utils/mcp";
 import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
 import {
@@ -111,6 +111,16 @@ export const copilotPlugin: Plugin = {
         "settings",
         "mcpServers",
       ])
+    );
+
+    // Copilot's OAuth config only has a clientId setting
+    warnings.push(
+      ...validateOAuthFieldSupport(
+        state.settings?.mcpServers,
+        ["settings", "mcpServers"],
+        "GitHub Copilot",
+        ["clientSecret", "callbackPort", "scopes"]
+      )
     );
 
     return { valid: true, errors: [], warnings, skipped };

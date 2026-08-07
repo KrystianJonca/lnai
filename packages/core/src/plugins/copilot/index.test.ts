@@ -521,6 +521,34 @@ describe("copilotPlugin", () => {
       expect(mcpWarning?.message).toContain("will be skipped");
     });
 
+    it("warns when an MCP server has OAuth clientSecret/callbackPort/scopes configured", () => {
+      const state = createMinimalState({
+        settings: {
+          mcpServers: {
+            api: {
+              type: "http",
+              url: "https://api.example.com/mcp",
+              oauth: {
+                clientId: "client-123",
+                clientSecret: "shh",
+                callbackPort: 8080,
+                scopes: ["read"],
+              },
+            },
+          },
+        },
+      });
+
+      const result = copilotPlugin.validate(state);
+
+      const oauthWarning = result.warnings.find((w) =>
+        w.message.includes("clientSecret")
+      );
+      expect(oauthWarning).toBeDefined();
+      expect(oauthWarning?.message).toContain("callbackPort");
+      expect(oauthWarning?.message).toContain("GitHub Copilot");
+    });
+
     it("no skipped features", () => {
       const state = createMinimalState({
         skills: [

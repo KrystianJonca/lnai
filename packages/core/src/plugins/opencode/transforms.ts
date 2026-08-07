@@ -31,6 +31,20 @@ export function transformMcpToOpenCode(
       if (server.headers) {
         openCodeServer.headers = server.headers;
       }
+      if (server.oauth) {
+        openCodeServer.oauth = {
+          clientId: server.oauth.clientId,
+          ...(server.oauth.clientSecret !== undefined && {
+            clientSecret: server.oauth.clientSecret,
+          }),
+          ...(server.oauth.scopes !== undefined && {
+            scope: server.oauth.scopes.join(" "),
+          }),
+          ...(server.oauth.callbackPort !== undefined && {
+            callbackPort: server.oauth.callbackPort,
+          }),
+        };
+      }
       result[name] = openCodeServer;
     } else if (server.command) {
       const command = [server.command, ...(server.args || [])];

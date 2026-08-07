@@ -249,6 +249,21 @@ describe("transformMcpToCopilot", () => {
         },
       });
     });
+
+    it("converts oauth to clientId only", () => {
+      const result = transformMcpToCopilot({
+        api: {
+          type: "http",
+          url: "https://api.example.com/mcp",
+          oauth: { clientId: "client-123", callbackPort: 8080 },
+        },
+      });
+
+      expect(result?.servers["api"]).toEqual({
+        url: "https://api.example.com/mcp",
+        oauth: { clientId: "client-123" },
+      });
+    });
   });
 
   describe("sse servers", () => {

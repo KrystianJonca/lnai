@@ -12,6 +12,7 @@ import {
   createSkillSymlinks,
   hasPermissionsConfigured,
 } from "../../utils/agents";
+import { validateOAuthFieldSupport } from "../../utils/mcp";
 import { applyFileOverrides } from "../../utils/overrides";
 import { groupRulesByDirectory } from "../../utils/rules";
 import type { Plugin } from "../types";
@@ -112,6 +113,16 @@ export const geminiPlugin: Plugin = {
           "Rules will be generated into GEMINI.md files in their respective subdirectories (e.g. apps/cli/GEMINI.md).",
       });
     }
+
+    // Gemini CLI's OAuth config has no callback port setting
+    warnings.push(
+      ...validateOAuthFieldSupport(
+        state.settings?.mcpServers,
+        ["settings", "mcpServers"],
+        "Gemini CLI",
+        ["callbackPort"]
+      )
+    );
 
     return { valid: true, errors: [], warnings, skipped };
   },

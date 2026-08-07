@@ -101,6 +101,8 @@ MCP servers are exported to `.vscode/mcp.json` with transformations:
 | `type: "sse"`  | `url` field only (no type)     |
 | `headers: {}`  | `requestInit: { headers: {} }` |
 
+Only `oauth.clientId` is copied to a matching `oauth` object - it's the only field Copilot's `mcp.json` format supports. `clientSecret`, `callbackPort`, and `scopes` have no equivalent there and are skipped with a warning.
+
 ## Rules Transformation
 
 Rules are transformed from `.md` to `.instructions.md` format with YAML frontmatter:

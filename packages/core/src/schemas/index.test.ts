@@ -54,6 +54,41 @@ describe("mcpServerSchema", () => {
 
     expect(result.success).toBe(false);
   });
+
+  it("validates config with full oauth settings", () => {
+    const result = mcpServerSchema.safeParse({
+      type: "http",
+      url: "https://api.example.com/mcp",
+      oauth: {
+        clientId: "client-123",
+        clientSecret: "shh-its-a-secret",
+        callbackPort: 8080,
+        scopes: ["read", "write"],
+      },
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("validates oauth with only clientId", () => {
+    const result = mcpServerSchema.safeParse({
+      type: "http",
+      url: "https://api.example.com/mcp",
+      oauth: { clientId: "client-123" },
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects oauth missing clientId", () => {
+    const result = mcpServerSchema.safeParse({
+      type: "http",
+      url: "https://api.example.com/mcp",
+      oauth: { callbackPort: 8080 },
+    });
+
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("permissionsSchema", () => {

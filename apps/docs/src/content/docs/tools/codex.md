@@ -65,6 +65,45 @@ url = "https://mcp.example.com"
 http_headers = { Authorization = "Bearer ${API_KEY}" }
 ```
 
+`clientId` is synced into a nested `[mcp_servers.<name>.oauth]` table, and `scopes` as a sibling key at the server level (not nested inside `oauth` - Codex's per-server oauth table only has room for `client_id`):
+
+```json
+// Input (LNAI format)
+{
+  "mcpServers": {
+    "my-remote-server": {
+      "url": "https://mcp.example.com",
+      "oauth": {
+        "clientId": "client-123",
+        "callbackPort": 8080,
+        "scopes": ["read", "write"]
+      }
+    }
+  }
+}
+```
+
+```toml
+# Output (Codex format)
+mcp_oauth_callback_port = 8080
+
+[mcp_servers.my-remote-server]
+url = "https://mcp.example.com"
+scopes = ["read", "write"]
+
+[mcp_servers.my-remote-server.oauth]
+client_id = "client-123"
+```
+
+| LNAI           | Codex                                              |
+| -------------- | -------------------------------------------------- |
+| `clientId`     | `client_id` under `[mcp_servers.<name>.oauth]`     |
+| `scopes`       | `scopes` on `[mcp_servers.<name>]` itself          |
+| `callbackPort` | `mcp_oauth_callback_port` (global, root-level key) |
+| `clientSecret` | ⚠️ Not supported by Codex - skipped with a warning |
+
+`callbackPort` has no per-server equivalent in Codex - it's a single global setting shared by every MCP server's OAuth flow. If multiple servers configure different `callbackPort` values, LNAI uses the first one and warns about the rest, since Codex can't apply more than one.
+
 ## Rules
 
 Rules are grouped by directory using their `paths` globs and written to

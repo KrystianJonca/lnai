@@ -167,6 +167,34 @@ describe("claudeCodePlugin", () => {
       ).toBeUndefined();
     });
 
+    it("syncs oauth settings through to .mcp.json", async () => {
+      const state = createMinimalState({
+        settings: {
+          mcpServers: {
+            api: {
+              type: "http",
+              url: "https://api.example.com/mcp",
+              oauth: {
+                clientId: "client-123",
+                callbackPort: 8080,
+              },
+            },
+          },
+        },
+      });
+
+      const files = await claudeCodePlugin.export(state, tempDir);
+
+      const mcpJson = files.find((f) => f.path === ".mcp.json");
+      const mcpServers = (mcpJson?.content as Record<string, unknown>)[
+        "mcpServers"
+      ] as Record<string, { oauth?: unknown }>;
+      expect(mcpServers["api"]?.oauth).toEqual({
+        clientId: "client-123",
+        callbackPort: 8080,
+      });
+    });
+
     it("skips .mcp.json when mcpServers is empty", async () => {
       const state = createMinimalState({
         settings: {

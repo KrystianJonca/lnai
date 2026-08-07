@@ -61,4 +61,6 @@ opencode.json          # Generated (at project root)
 | `env: {}`                 | `environment: {}`                 |
 | `${VAR}`                  | `{env:VAR}`                       |
 
+`oauth` on a remote server maps to OpenCode's `oauth` object: `clientId`, `clientSecret`, and `callbackPort` pass through as-is, and `scopes` is joined into a single space-separated `scope` string.
+
 Place OpenCode-specific files in `.ai/.opencode/` to have them symlinked to `.opencode/`.

@@ -328,6 +328,28 @@ describe("geminiPlugin", () => {
         true
       );
     });
+
+    it("warns when an MCP server has OAuth callbackPort configured", () => {
+      const state = createMinimalState({
+        settings: {
+          mcpServers: {
+            api: {
+              type: "http",
+              url: "https://api.example.com/mcp",
+              oauth: { clientId: "client-123", callbackPort: 8080 },
+            },
+          },
+        },
+      });
+
+      const result = geminiPlugin.validate(state);
+
+      const oauthWarning = result.warnings.find((w) =>
+        w.message.includes("callbackPort")
+      );
+      expect(oauthWarning).toBeDefined();
+      expect(oauthWarning?.message).toContain("Gemini CLI");
+    });
   });
 
   describe("detect", () => {

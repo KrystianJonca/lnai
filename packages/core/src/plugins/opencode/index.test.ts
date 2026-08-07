@@ -155,6 +155,30 @@ describe("opencodePlugin", () => {
       expect(mcp["db"]?.["command"]).toEqual(["npx", "-y", "@example/db"]);
     });
 
+    it("syncs oauth settings including callbackPort", async () => {
+      const state = createMinimalState({
+        settings: {
+          mcpServers: {
+            api: {
+              type: "http",
+              url: "https://api.example.com/mcp",
+              oauth: { clientId: "client-123", callbackPort: 8080 },
+            },
+          },
+        },
+      });
+
+      const files = await opencodePlugin.export(state, tempDir);
+
+      const config = files.find((f) => f.path === "opencode.json");
+      const content = config?.content as Record<string, unknown>;
+      const mcp = content["mcp"] as Record<string, Record<string, unknown>>;
+      expect(mcp["api"]?.["oauth"]).toEqual({
+        clientId: "client-123",
+        callbackPort: 8080,
+      });
+    });
+
     it("transforms and adds permissions", async () => {
       const state = createMinimalState({
         settings: {
@@ -293,6 +317,32 @@ describe("opencodePlugin", () => {
       const result = opencodePlugin.validate(state);
 
       expect(result.skipped).toHaveLength(0);
+    });
+
+    it("no warning for OAuth fields since OpenCode supports clientId/clientSecret/scopes/callbackPort", () => {
+      const state = createMinimalState({
+        settings: {
+          mcpServers: {
+            api: {
+              type: "http",
+              url: "https://api.example.com/mcp",
+              oauth: {
+                clientId: "client-123",
+                clientSecret: "shh",
+                callbackPort: 8080,
+                scopes: ["read"],
+              },
+            },
+          },
+        },
+      });
+
+      const result = opencodePlugin.validate(state);
+
+      const oauthWarning = result.warnings.find((w) =>
+        w.message.includes("OAuth")
+      );
+      expect(oauthWarning).toBeUndefined();
     });
   });
 });
