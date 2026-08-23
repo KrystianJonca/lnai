@@ -13,8 +13,8 @@
     "lint:fix": "turbo run lint:fix",
     "typecheck": "turbo run typecheck",
     "knip": "knip",
-    "format": "prettier --ignore-path .gitignore --write .",
-    "format:check": "prettier --ignore-path .gitignore --check .",
+    "format": "prettier --ignore-path .gitignore --ignore-path .prettierignore --write .",
+    "format:check": "prettier --ignore-path .gitignore --ignore-path .prettierignore --check .",
     "clean": "turbo run clean && rm -rf node_modules",
     "prepare": "husky"
   },
