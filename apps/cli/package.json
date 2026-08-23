@@ -50,7 +50,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "@inquirer/prompts": "^8.5.2",
+    "@inquirer/prompts": "^8.6.0",
     "@lnai/core": "workspace:*",
     "chalk": "^5.6.2",
     "commander": "^15.0.0",
@@ -58,10 +58,10 @@
   },
   "devDependencies": {
     "@lnai/typescript-config": "workspace:*",
-    "@types/node": "^26.1.0",
-    "eslint": "^10.6.0",
+    "@types/node": "^26.2.0",
+    "eslint": "^10.8.1",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.11"
   }
 }
