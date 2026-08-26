@@ -91,6 +91,17 @@ export function transformMcpToCursor(
       if (server.headers) {
         cursorServer.headers = transformEnvVars(server.headers, "cursor");
       }
+      if (server.oauth) {
+        cursorServer.auth = {
+          CLIENT_ID: server.oauth.clientId,
+          ...(server.oauth.clientSecret !== undefined && {
+            CLIENT_SECRET: server.oauth.clientSecret,
+          }),
+          ...(server.oauth.scopes !== undefined && {
+            scopes: server.oauth.scopes,
+          }),
+        };
+      }
       result[name] = cursorServer;
     } else if (server.command) {
       const cursorServer: CursorMcpServer = {

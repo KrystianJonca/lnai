@@ -13,6 +13,7 @@ import {
   createSkillSymlinks,
   hasPermissionsConfigured,
 } from "../../utils/agents";
+import { validateOAuthFieldSupport } from "../../utils/mcp";
 import { applyFileOverrides } from "../../utils/overrides";
 import { groupRulesByDirectory } from "../../utils/rules";
 import type { Plugin } from "../types";
@@ -114,6 +115,26 @@ export const codexPlugin: Plugin = {
       });
     }
 
+    if (mcpServers) {
+      const callbackPorts = getOAuthCallbackPorts(mcpServers);
+      if (callbackPorts.length > 1) {
+        warnings.push({
+          path: ["settings", "mcpServers"],
+          message: `Multiple MCP servers request different OAuth callbackPort values (${callbackPorts.join(", ")}) - Codex only supports one global mcp_oauth_callback_port, so only ${callbackPorts[0]} will be applied`,
+        });
+      }
+    }
+
+    // Codex's per-server oauth table only has a `client_id` field
+    warnings.push(
+      ...validateOAuthFieldSupport(
+        state.settings?.mcpServers,
+        ["settings", "mcpServers"],
+        "Codex",
+        ["clientSecret"]
+      )
+    );
+
     return { valid: true, errors: [], warnings, skipped };
   },
 };
@@ -154,6 +175,18 @@ function buildCodexConfigToml(
       }
     }
 
+    if (server.oauth) {
+      // `scopes` is a sibling of `oauth`, not nested inside it - Codex's
+      // per-server oauth table only accepts `client_id`
+      if (server.oauth.scopes && server.oauth.scopes.length > 0) {
+        lines.push(`scopes = ${formatTomlArray(server.oauth.scopes)}`);
+      }
+
+      lines.push("");
+      lines.push(`[mcp_servers.${formatTomlKey(name)}.oauth]`);
+      lines.push(`client_id = ${formatTomlString(server.oauth.clientId)}`);
+    }
+
     lines.push("");
   }
 
@@ -161,7 +194,36 @@ function buildCodexConfigToml(
     return undefined;
   }
 
+  // `mcp_oauth_callback_port` is a single global setting in Codex, not
+  // per-server, so it must be a root-level key written before any
+  // [mcp_servers.*] table headers.
+  const callbackPorts = getOAuthCallbackPorts(mcpServers);
+  if (callbackPorts.length > 0) {
+    lines.unshift(`mcp_oauth_callback_port = ${callbackPorts[0]}`, "");
+  }
+
   return `${lines.join("\n").trimEnd()}\n`;
+}
+
+/**
+ * Collect the distinct OAuth callback ports requested across MCP servers,
+ * in first-seen order. Codex only supports one global callback port
+ * (`mcp_oauth_callback_port`), so more than one distinct value here means
+ * a conflict - only the first is applied.
+ */
+function getOAuthCallbackPorts(
+  mcpServers: Record<string, McpServer>
+): number[] {
+  const ports: number[] = [];
+
+  for (const server of Object.values(mcpServers)) {
+    const port = server.oauth?.callbackPort;
+    if (port !== undefined && !ports.includes(port)) {
+      ports.push(port);
+    }
+  }
+
+  return ports;
 }
 
 function formatTomlString(value: string): string {

@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+/** MCP Server OAuth configuration (Claude format as source of truth) */
+export const mcpOAuthSchema = z.object({
+  clientId: z.string(),
+  clientSecret: z.string().optional(),
+  callbackPort: z.number().optional(),
+  scopes: z.array(z.string()).optional(),
+});
+
 /** MCP Server configuration (Claude format as source of truth) */
 export const mcpServerSchema = z.object({
   command: z.string().optional(),
@@ -8,6 +16,7 @@ export const mcpServerSchema = z.object({
   type: z.enum(["http", "sse"]).optional(),
   url: z.string().optional(),
   headers: z.record(z.string(), z.string()).optional(),
+  oauth: mcpOAuthSchema.optional(),
 });
 
 export const permissionsSchema = z.object({
@@ -64,6 +73,7 @@ export const ruleFrontmatterSchema = z.object({
   paths: z.array(z.string()).min(1),
 });
 
+export type McpOAuth = z.infer<typeof mcpOAuthSchema>;
 export type McpServer = z.infer<typeof mcpServerSchema>;
 export type Permissions = z.infer<typeof permissionsSchema>;
 export type ToolConfig = z.infer<typeof toolConfigSchema>;

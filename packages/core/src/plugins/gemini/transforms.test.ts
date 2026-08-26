@@ -57,6 +57,44 @@ describe("transformMcpToGemini", () => {
 
     expect(transformMcpToGemini(input)).toEqual(expected);
   });
+
+  it("should convert oauth to enabled clientId/clientSecret/scopes", () => {
+    const input = {
+      server1: {
+        url: "http://localhost:3000",
+        oauth: {
+          clientId: "client-123",
+          clientSecret: "secret-456",
+          scopes: ["read", "write"],
+        },
+      },
+    };
+
+    const result = transformMcpToGemini(input);
+
+    expect(result?.["server1"]?.oauth).toEqual({
+      enabled: true,
+      clientId: "client-123",
+      clientSecret: "secret-456",
+      scopes: ["read", "write"],
+    });
+  });
+
+  it("should omit clientSecret and scopes when not provided", () => {
+    const input = {
+      server1: {
+        url: "http://localhost:3000",
+        oauth: { clientId: "client-123" },
+      },
+    };
+
+    const result = transformMcpToGemini(input);
+
+    expect(result?.["server1"]?.oauth).toEqual({
+      enabled: true,
+      clientId: "client-123",
+    });
+  });
 });
 
 describe("groupRulesByDirectory", () => {

@@ -77,6 +77,8 @@ HTTP/SSE servers use `httpUrl` instead of `url`:
 | ----- | ---------- |
 | `url` | `httpUrl`  |
 
+`oauth` on a remote server maps to Gemini CLI's `oauth` object with `enabled: true` plus `clientId`, `clientSecret`, and `scopes` passed through as-is. `callbackPort` has no equivalent in Gemini CLI's format and is skipped with a warning.
+
 ### Rules
 
 Rules are grouped by their target directory and combined into `GEMINI.md` files:

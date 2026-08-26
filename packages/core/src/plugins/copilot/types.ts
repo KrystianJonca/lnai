@@ -17,6 +17,9 @@ export interface CopilotMcpRemoteServer {
   requestInit?: {
     headers?: Record<string, string>;
   };
+  oauth?: {
+    clientId: string;
+  };
 }
 
 export type CopilotMcpServer = CopilotMcpStdioServer | CopilotMcpRemoteServer;

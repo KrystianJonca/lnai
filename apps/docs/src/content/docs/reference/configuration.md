@@ -157,4 +157,34 @@ Configure Model Context Protocol servers.
 }
 ```
 
+### OAuth
+
+Remote servers that require a statically-registered OAuth client can configure it under `oauth`:
+
+```json
+{
+  "mcpServers": {
+    "api": {
+      "type": "http",
+      "url": "https://mcp.example.com",
+      "oauth": {
+        "clientId": "client-123",
+        "clientSecret": "${OAUTH_CLIENT_SECRET}",
+        "callbackPort": 8080,
+        "scopes": ["read", "write"]
+      }
+    }
+  }
+}
+```
+
+| Field          | Required | Description                                      |
+| -------------- | -------- | ------------------------------------------------ |
+| `clientId`     | Yes      | OAuth client ID                                  |
+| `clientSecret` | No       | OAuth client secret                              |
+| `callbackPort` | No       | Fixed local port for the OAuth redirect callback |
+| `scopes`       | No       | OAuth scopes to request during authorization     |
+
+Not every tool's native MCP format supports every field - see each tool's page under [Supported Tools](/tools/claude-code/) for what's synced and what's skipped with a warning.
+
 Use `${VAR}` syntax for environment variables.

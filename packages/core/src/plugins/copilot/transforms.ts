@@ -95,6 +95,9 @@ export function transformMcpToCopilot(
           headers: transformEnvVars(server.headers, "copilot"),
         };
       }
+      if (server.oauth) {
+        copilotServer.oauth = { clientId: server.oauth.clientId };
+      }
       result[name] = copilotServer;
     } else if (server.command) {
       // Stdio server

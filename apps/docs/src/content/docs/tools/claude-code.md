@@ -59,3 +59,5 @@ MCP servers are written to `.mcp.json` at the project root (not inside `.claude/
   }
 }
 ```
+
+`oauth` (`clientId`, `clientSecret`, `callbackPort`, `scopes`) on a remote server is copied through as-is, since Claude Code's own MCP format is the source of truth for this field.

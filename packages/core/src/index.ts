@@ -22,6 +22,7 @@ export {
 // Schemas
 export {
   configSchema,
+  mcpOAuthSchema,
   mcpServerSchema,
   permissionsSchema,
   ruleFrontmatterSchema,
@@ -39,6 +40,7 @@ export type {
   ManifestEntry,
   MarkdownFile,
   MarkdownFrontmatter,
+  McpOAuth,
   McpServer,
   OutputFile,
   PermissionLevel,

@@ -64,6 +64,8 @@ MCP servers are exported to `.cursor/mcp.json` with environment variable transfo
 | `type: "http"` | `url` field only |
 | `type: "sse"`  | `url` field only |
 
+`oauth` on a remote server maps to Cursor's static `auth` object: `clientId` → `CLIENT_ID`, `clientSecret` → `CLIENT_SECRET`, `scopes` → `scopes`. `callbackPort` has no equivalent in Cursor's format and is skipped with a warning.
+
 ## Generated cli.json
 
 Permissions are exported to `.cursor/cli.json` with transformations:

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { validateMcpServers } from "./mcp";
+import { validateMcpServers, validateOAuthFieldSupport } from "./mcp";
 
 describe("validateMcpServers", () => {
   const pathPrefix = ["settings", "mcpServers"];
@@ -147,5 +147,94 @@ describe("validateMcpServers", () => {
 
     expect(warnings).toHaveLength(1);
     expect(warnings[0]?.path).toEqual(["custom", "path", "badServer"]);
+  });
+});
+
+describe("validateOAuthFieldSupport", () => {
+  const pathPrefix = ["settings", "mcpServers"];
+
+  it("returns empty array for undefined mcpServers", () => {
+    const warnings = validateOAuthFieldSupport(
+      undefined,
+      pathPrefix,
+      "Cursor",
+      ["callbackPort"]
+    );
+
+    expect(warnings).toEqual([]);
+  });
+
+  it("returns empty array when no server has oauth configured", () => {
+    const warnings = validateOAuthFieldSupport(
+      { myServer: { command: "npx" } },
+      pathPrefix,
+      "Cursor",
+      ["callbackPort"]
+    );
+
+    expect(warnings).toEqual([]);
+  });
+
+  it("returns empty array when the configured oauth fields are all supported", () => {
+    const warnings = validateOAuthFieldSupport(
+      {
+        myServer: {
+          type: "http",
+          url: "https://example.com/mcp",
+          oauth: { clientId: "abc" },
+        },
+      },
+      pathPrefix,
+      "Cursor",
+      ["callbackPort"]
+    );
+
+    expect(warnings).toEqual([]);
+  });
+
+  it("warns about a single unsupported field", () => {
+    const warnings = validateOAuthFieldSupport(
+      {
+        myServer: {
+          type: "http",
+          url: "https://example.com/mcp",
+          oauth: { clientId: "abc", callbackPort: 8080 },
+        },
+      },
+      pathPrefix,
+      "Cursor",
+      ["callbackPort"]
+    );
+
+    expect(warnings).toEqual([
+      {
+        path: ["settings", "mcpServers", "myServer", "oauth"],
+        message:
+          'MCP server "myServer" has OAuth callbackPort configured - Cursor does not support syncing this field, so it will be skipped',
+      },
+    ]);
+  });
+
+  it("warns about multiple unsupported fields", () => {
+    const warnings = validateOAuthFieldSupport(
+      {
+        myServer: {
+          type: "http",
+          url: "https://example.com/mcp",
+          oauth: { clientId: "abc", clientSecret: "shh", scopes: ["read"] },
+        },
+      },
+      pathPrefix,
+      "GitHub Copilot",
+      ["clientSecret", "scopes"]
+    );
+
+    expect(warnings).toEqual([
+      {
+        path: ["settings", "mcpServers", "myServer", "oauth"],
+        message:
+          'MCP server "myServer" has OAuth clientSecret, scopes configured - GitHub Copilot does not support syncing these fields, so they will be skipped',
+      },
+    ]);
   });
 });

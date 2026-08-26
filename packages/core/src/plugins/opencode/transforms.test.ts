@@ -90,6 +90,40 @@ describe("transformMcpToOpenCode", () => {
       expect(result?.["api"]?.headers?.["Authorization"]).toBe("Bearer token");
       expect(result?.["api"]?.headers?.["X-Custom"]).toBe("value");
     });
+
+    it("converts oauth clientId/clientSecret/callbackPort and joins scopes into scope", () => {
+      const result = transformMcpToOpenCode({
+        api: {
+          type: "http",
+          url: "https://api.example.com/mcp",
+          oauth: {
+            clientId: "client-123",
+            clientSecret: "secret-456",
+            scopes: ["read", "write"],
+            callbackPort: 8080,
+          },
+        },
+      });
+
+      expect(result?.["api"]?.oauth).toEqual({
+        clientId: "client-123",
+        clientSecret: "secret-456",
+        scope: "read write",
+        callbackPort: 8080,
+      });
+    });
+
+    it("omits clientSecret and scope when not provided", () => {
+      const result = transformMcpToOpenCode({
+        api: {
+          type: "http",
+          url: "https://api.example.com/mcp",
+          oauth: { clientId: "client-123" },
+        },
+      });
+
+      expect(result?.["api"]?.oauth).toEqual({ clientId: "client-123" });
+    });
   });
 
   describe("sse servers", () => {

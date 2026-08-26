@@ -11,7 +11,7 @@ import {
   createRootAgentsMdSymlink,
   createSkillSymlinks,
 } from "../../utils/agents";
-import { validateMcpServers } from "../../utils/mcp";
+import { validateMcpServers, validateOAuthFieldSupport } from "../../utils/mcp";
 import { applyFileOverrides } from "../../utils/overrides";
 import type { Plugin } from "../types";
 import {
@@ -124,6 +124,16 @@ export const cursorPlugin: Plugin = {
         "settings",
         "mcpServers",
       ])
+    );
+
+    // Cursor's static OAuth config has no callback port setting
+    warnings.push(
+      ...validateOAuthFieldSupport(
+        state.settings?.mcpServers,
+        ["settings", "mcpServers"],
+        "Cursor",
+        ["callbackPort"]
+      )
     );
 
     return { valid: true, errors: [], warnings, skipped: [] };

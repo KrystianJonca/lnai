@@ -282,6 +282,49 @@ describe("transformMcpToCursor", () => {
       );
       expect(result?.["api"]?.headers?.["X-Custom"]).toBe("static-value");
     });
+
+    it("converts oauth to auth with uppercase keys", () => {
+      const result = transformMcpToCursor({
+        api: {
+          type: "http",
+          url: "https://api.example.com/mcp",
+          oauth: {
+            clientId: "client-123",
+            clientSecret: "secret-456",
+            scopes: ["read", "write"],
+          },
+        },
+      });
+
+      expect(result?.["api"]?.auth).toEqual({
+        CLIENT_ID: "client-123",
+        CLIENT_SECRET: "secret-456",
+        scopes: ["read", "write"],
+      });
+    });
+
+    it("omits CLIENT_SECRET and scopes when not provided", () => {
+      const result = transformMcpToCursor({
+        api: {
+          type: "http",
+          url: "https://api.example.com/mcp",
+          oauth: { clientId: "client-123" },
+        },
+      });
+
+      expect(result?.["api"]?.auth).toEqual({ CLIENT_ID: "client-123" });
+    });
+
+    it("does not set auth when no oauth configured", () => {
+      const result = transformMcpToCursor({
+        api: {
+          type: "http",
+          url: "https://api.example.com/mcp",
+        },
+      });
+
+      expect(result?.["api"]?.auth).toBeUndefined();
+    });
   });
 
   describe("sse servers", () => {
