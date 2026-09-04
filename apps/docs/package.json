@@ -15,10 +15,10 @@
   "dependencies": {
     "@astrojs/starlight": "^0.40.0",
     "astro": "^6.4.6",
-    "sharp": "^0.35.3"
+    "sharp": "^0.35.4"
   },
   "devDependencies": {
-    "eslint": "^10.8.1",
+    "eslint": "^10.9.1",
     "typescript": "^6.0.3"
   }
 }
